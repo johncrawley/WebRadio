@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WebRadio</string>
+    <string name="no_stations_text">No Stations Saved</string>
+    <string name="play_button_text">Play</string>
 </resources>
