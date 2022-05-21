@@ -7,4 +7,5 @@
     <string name="add_station_title">Add Station</string>
     <string name="add_station_cancel_button">Cancel</string>
     <string name="add_station_save_button">Save</string>
+    <string name="menu_title_add_station">Add Station</string>
 </resources>

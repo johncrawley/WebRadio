@@ -1,8 +1,8 @@
 package com.jcrawley.webradio.repository;
 
 public class StationEntity {
-    private final String name;
-    private final String url;
+    private String name;
+    private String url;
     private final Long id;
 
     public StationEntity(String name, String url){
@@ -25,5 +25,12 @@ public class StationEntity {
 
     public Long getId(){
         return this.id;
+    }
+
+    public void setName(String name){
+        this.name = name;}
+
+    public void setUrl(String url){
+        this.url = url;
     }
 }

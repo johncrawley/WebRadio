@@ -11,8 +11,6 @@ import android.widget.EditText;
 import com.jcrawley.webradio.MainActivity;
 import com.jcrawley.webradio.R;
 import com.jcrawley.webradio.repository.StationEntity;
-import com.jcrawley.webradio.repository.StationsRepository;
-import com.jcrawley.webradio.repository.StationsRepositoryImpl;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +20,6 @@ public class StationDetailFragment extends DialogFragment {
 
     private MainActivity activity;
     private EditText stationNameEditText, stationUrlEditText;
-    private StationsRepository stationsRepository;
 
     public static StationDetailFragment newInstance() {
         return new StationDetailFragment();
@@ -32,18 +29,8 @@ public class StationDetailFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_station_detail, container, false);
-        Dialog dialog =  getDialog();
+
         Bundle bundle = getArguments();
-        if(getActivity() == null || bundle == null){
-            return rootView;
-        }
-        activity = (MainActivity)getActivity();
-        stationsRepository = new StationsRepositoryImpl(activity.getApplicationContext());
-
-        if(dialog != null){
-            dialog.setTitle(activity.getString(R.string.add_station_title));
-        }
-
         return rootView;
     }
 
@@ -51,6 +38,15 @@ public class StationDetailFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Dialog dialog =  getDialog();
+        activity = (MainActivity)getActivity();
+        if(activity == null){
+            System.out.println("onViewCreated, activity is null!");
+            return;
+        }
+        if(dialog != null){
+            dialog.setTitle(activity.getString(R.string.add_station_title));
+        }
         setupViews(view);
         setupSaveButton(view);
         setupCancelButton(view);
@@ -68,7 +64,12 @@ public class StationDetailFragment extends DialogFragment {
         saveButton.setOnClickListener((View v) -> {
             String name = stationNameEditText.getText().toString();
             String url = stationUrlEditText.getText().toString();
-            stationsRepository.createStation(new StationEntity(name,url));
+            if(activity == null){
+                System.out.println("Activity is null!");
+                return;
+            }
+            activity.saveStation(new StationEntity(name, url));
+            dismiss();
         });
     }
 
