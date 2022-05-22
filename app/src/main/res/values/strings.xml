@@ -2,6 +2,7 @@
     <string name="app_name">WebRadio</string>
     <string name="no_stations_text">No Stations Saved</string>
     <string name="play_button_text">Play</string>
+    <string name="stop_button_text">Stop</string>
     <string name="input_text_label_station_name">Name</string>
     <string name="input_text_label_station_url">URL</string>
     <string name="add_station_title">Add Station</string>

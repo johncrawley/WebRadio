@@ -77,7 +77,9 @@ public class ListAdapterHelper {
         setupEmptyView(noResultsFoundView);
         list.setOnItemLongClickListener(longClickListener);
         list.setOnItemClickListener(clickListener);
+
     }
+
 
     public void notifyChanges(){
         arrayAdapter.notifyDataSetChanged();

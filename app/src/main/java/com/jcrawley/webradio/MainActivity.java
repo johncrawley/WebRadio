@@ -27,9 +27,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
-    private MediaPlayer player;
     private ListAdapterHelper listAdapterHelper;
     private StationsRepository stationsRepository;
+    private String currentURL;
 
 
     @Override
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         startPauseButton.setOnClickListener((View view)-> initializeMediaPlayer());
+        findViewById(R.id.stopButton).setOnClickListener((View view) -> stopMediaPlayer());
         ListView stationsList = findViewById(R.id.stationsList);
         stationsRepository = new StationsRepositoryImpl(this.getApplicationContext());
         listAdapterHelper = new ListAdapterHelper(this,
@@ -47,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
                 this::select,
                 this::startDeleteConfirmation);
         refreshListFromDb();
+    }
+
+
+    private void stopMediaPlayer(){
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        mediaPlayer = null;
     }
 
 
@@ -67,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public void startAddStationFragment(){
         String tag = "add_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void select(StationEntity listItem){
-
+        currentURL = listItem.getUrl();
     }
 
 
@@ -118,19 +125,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void initializeMediaPlayer() {
-        player = new MediaPlayer();
-        String url = "SOME_URL_HERE";
-        player.setAudioAttributes( new AudioAttributes.Builder()
+        if(mediaPlayer!= null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioAttributes( new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
         try {
             //change with setDataSource(Context,Uri);
-            player.setDataSource(this, Uri.parse(url));
-            player.prepareAsync();
-            player.setOnPreparedListener(mp -> player.start());
+            mediaPlayer.setDataSource(this, Uri.parse(currentURL));
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {
             e.printStackTrace();
         }
