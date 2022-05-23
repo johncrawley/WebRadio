@@ -6,7 +6,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.jcrawley.webradio.R;
 import com.jcrawley.webradio.repository.StationEntity;
 
 import java.util.List;

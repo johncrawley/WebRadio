@@ -11,6 +11,24 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:dialogTheme">@style/CustomDialog</item>
     </style>
+
+
+    <style name="CustomDialog" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowTitleStyle">@style/dialog_title_style</item>
+        <item name="colorAccent">#3949AB</item>
+        <item name="colorPrimary">@color/dark_toolbar</item>
+
+    </style>
+
+
+    <style name="dialog_title_style" parent="android:Widget.TextView">
+        <item name="android:background">@color/dark_toolbar</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
 </resources>
