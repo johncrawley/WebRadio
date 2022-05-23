@@ -129,6 +129,20 @@ public class ListAdapterHelper {
     }
 
 
+    public void delete(long id){
+        int indexToDelete = -1;
+        for(int i=0; i< arrayAdapter.getCount(); i++){
+            if(arrayAdapter.getItem(i).getId() == id){
+                indexToDelete = i;
+                break;
+            }
+        }
+        if(indexToDelete > -1){
+           arrayAdapter.remove(arrayAdapter.getItem(indexToDelete));
+        }
+    }
+
+
     public void clearSelection(){
         list.clearChoices();
         list.clearFocus();

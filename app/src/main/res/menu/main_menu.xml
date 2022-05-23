@@ -6,7 +6,7 @@
     <item
         android:id="@+id/action_add_station"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/menu_title_add_station"
+        android:title="@string/add_station_menu_item_title"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction" />
 </menu>

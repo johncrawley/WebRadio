@@ -8,5 +8,9 @@
     <string name="add_station_title">Add Station</string>
     <string name="add_station_cancel_button">Cancel</string>
     <string name="add_station_save_button">Save</string>
-    <string name="menu_title_add_station">Add Station</string>
+    <string name="add_station_menu_item_title">Add Station</string>
+    <string name="update_station_delete_button">Remove</string>
+    <string name="update_station_update_button">Update</string>
+    <string name="update_station_dialog_title">Edit Station Details</string>
+    <string name="notification_title">WebRadio</string>
 </resources>
