@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,17 +24,18 @@ import com.jcrawley.webradio.notifier.PlayNotifier;
 import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
 import com.jcrawley.webradio.repository.StationsRepositoryImpl;
+import com.jcrawley.webradio.service.MediaPlayerService;
 
-import java.io.IOException;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    private MediaPlayer mediaPlayer;
     private ListAdapterHelper listAdapterHelper;
     private StationsRepository stationsRepository;
     private String currentURL;
     private PlayNotifier playNotifier;
+    Intent mediaPlayerServiceIntent;
+    private boolean isServiceBound;
 
 
     @Override
@@ -39,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button startPauseButton = findViewById(R.id.playPauseButton);
-        mediaPlayer = new MediaPlayer();
-        startPauseButton.setOnClickListener((View view)-> initializeMediaPlayer());
-        findViewById(R.id.stopButton).setOnClickListener((View view) -> stopMediaPlayer());
+        startPauseButton.setOnClickListener((View view)-> sendStartBroadcast());
+        findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
         ListView stationsList = findViewById(R.id.stationsList);
         stationsRepository = new StationsRepositoryImpl(this.getApplicationContext());
         listAdapterHelper = new ListAdapterHelper(this,
@@ -49,14 +52,60 @@ public class MainActivity extends AppCompatActivity {
                 this::select,
                 this::startEditStationFragment);
         refreshListFromDb();
+        startMediaPlayerService();
     }
 
 
-    private void stopMediaPlayer(){
-        mediaPlayer.stop();
-        mediaPlayer.release();
-        mediaPlayer = null;
-        dismissNotification();
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        log("Entered onStart()");
+        bindService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService();
+    }
+
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
+            MediaPlayerService.MyBinder binder = (MediaPlayerService.MyBinder) service;
+
+            isServiceBound = true;
+        }
+
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isServiceBound = false;
+        }
+    };
+
+
+    private void bindService() {
+        log("Entered bindService()");
+        bindService(mediaPlayerServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+
+    private void unbindService(){
+        if (isServiceBound) {
+            unbindService(serviceConnection);
+            isServiceBound = false;
+        }
+    }
+
+
+    private void startMediaPlayerService(){
+        mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
+        startService(mediaPlayerServiceIntent);
     }
 
 
@@ -65,8 +114,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-
 
 
     @Override
@@ -110,6 +157,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void sendStartBroadcast() {
+        Intent intent = new Intent();
+        intent.putExtra(MediaPlayerService.TAG_TRACK_URL, currentURL);
+        intent.setAction(MediaPlayerService.ACTION_START_PLAYER);
+        sendBroadcast(intent);
+    }
+
+
+    private void sendStopBroadcast(){
+        log("Entered send stopBroadcast()");
+        Intent intent = new Intent();
+        intent.setAction(MediaPlayerService.ACTION_STOP_PLAYER);
+        sendBroadcast(intent);
+    }
+
+
+
+    @SuppressWarnings("deprecation")
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    private void log(String msg){
+        System.out.println("^^^ MainActivity: " + msg);
+    }
 
 
     private void select(StationEntity listItem){
@@ -137,16 +217,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        stopPlayer();
         dismissNotification();
-    }
-
-    private void stopPlayer(){
-        if (mediaPlayer != null) {
-            mediaPlayer.reset();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
     }
 
 
@@ -156,33 +227,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAll();
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundText));
     }
-
-
-    private void initializeMediaPlayer() {
-        if(mediaPlayer!= null){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioAttributes( new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build());
-        try {
-            //change with setDataSource(Context,Uri);
-            mediaPlayer.setDataSource(this, Uri.parse(currentURL));
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
-        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
-            e.printStackTrace();
-        }
-        issueNotification();
-    }
-
 
 
     public void issueNotification(){
