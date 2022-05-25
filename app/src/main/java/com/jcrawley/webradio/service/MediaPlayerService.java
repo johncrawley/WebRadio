@@ -114,10 +114,12 @@ public class MediaPlayerService extends Service {
 
     private Notification createNotification(String text){
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("Webradio")
+                .setContentTitle(getApplicationContext().getString(R.string.app_name))
                 .setContentText(text)
                 .setSilent(true)
                 .setSmallIcon(R.drawable.ic_launcher_background)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE)
+                .setNumber(-1)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true);

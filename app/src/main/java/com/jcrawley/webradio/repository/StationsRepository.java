@@ -7,6 +7,7 @@ public interface StationsRepository {
     void createStation(StationEntity stationEntity);
     List<StationEntity> getAll();
     void delete(long id);
+    void update(StationEntity stationEntity);
 
 
 }

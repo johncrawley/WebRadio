@@ -84,14 +84,23 @@ public class EditStationFragment extends DialogFragment {
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
     }
 
+    private void log(String msg){
+            System.out.println("^^^ EditStationFragment: " + msg);
+    }
+
 
     private void setupUpdateButton(View parentView){
+        log("Entered setupUpdateButton()");
         Button update = parentView.findViewById(R.id.update_button);
         update.setOnClickListener((View v) -> {
             String name = stationNameEditText.getText().toString();
             String url = stationUrlEditText.getText().toString();
             if(activity != null){
-                activity.updateStation(new StationEntity(name, url));
+                log("activity is not null!");
+                activity.updateStation(new StationEntity(stationId, name, url));
+            }
+            else{
+                log("Activity is null!");
             }
             dismiss();
         });

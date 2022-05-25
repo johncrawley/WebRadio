@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private String currentStationName;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sendStopBroadcast(){
-        log("Entered send stopBroadcast()");
         Intent intent = new Intent();
         intent.setAction(MediaPlayerService.ACTION_STOP_PLAYER);
         sendBroadcast(intent);
@@ -189,7 +187,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void updateStation(StationEntity stationEntity){
-
+        stationsRepository.update(stationEntity);
+        refreshListFromDb();
     }
 
 

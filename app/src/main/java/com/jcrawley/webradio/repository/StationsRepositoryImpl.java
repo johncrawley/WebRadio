@@ -27,7 +27,20 @@ public class StationsRepositoryImpl implements StationsRepository{
             ContentValues contentValues = new ContentValues();
             contentValues.put(StationsEntry.COL_STATION_NAME, stationEntity.getName());
             contentValues.put(StationsEntry.COL_URL, stationEntity.getUrl());
-            addValuesToTable(db, StationsEntry.TABLE_NAME, contentValues);
+            addValuesToTable(db, contentValues);
+    }
+
+    @Override
+    public void update(StationEntity stationEntity){
+        System.out.println("^^^ StationsRepositoryImpl: entered update()");
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(StationsEntry.COL_STATION_NAME, stationEntity.getName());
+        contentValues.put(StationsEntry.COL_URL, stationEntity.getUrl());
+
+        db.update(StationsEntry.TABLE_NAME,
+                contentValues,
+                "_id=?",
+                new String[]{String.valueOf(stationEntity.getId())});
     }
 
 
@@ -59,7 +72,7 @@ public class StationsRepositoryImpl implements StationsRepository{
     public void delete(long id) {
         try {
             db.delete(StationsEntry.TABLE_NAME,
-                    "_id = ? );",
+                    "_id=?",
                     new String[]{String.valueOf(id)});
         }
         catch(SQLException e){
@@ -68,17 +81,16 @@ public class StationsRepositoryImpl implements StationsRepository{
     }
 
 
-    static long addValuesToTable(SQLiteDatabase db, String tableName, ContentValues contentValues){
-        long id = -1;
+
+    static void addValuesToTable(SQLiteDatabase db, ContentValues contentValues){
         db.beginTransaction();
         try {
-            id = db.insertOrThrow(tableName, null, contentValues);
+            db.insertOrThrow(StationsEntry.TABLE_NAME, null, contentValues);
             db.setTransactionSuccessful();
         }catch(SQLException e){
             e.printStackTrace();
         }
         db.endTransaction();
-        return id;
     }
 
 
