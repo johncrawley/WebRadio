@@ -25,7 +25,8 @@
         </activity>
         <service
             android:name=".service.MediaPlayerService"
-            android:label="MediaPlayerService" >
+            android:label="MediaPlayerService"
+            android:stopWithTask="true">
         </service>
     </application>
 

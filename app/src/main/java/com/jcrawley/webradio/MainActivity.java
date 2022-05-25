@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.widget.ListView;
 import com.jcrawley.webradio.fragment.EditStationFragment;
 import com.jcrawley.webradio.fragment.StationDetailFragment;
 import com.jcrawley.webradio.list.ListAdapterHelper;
-import com.jcrawley.webradio.notifier.PlayNotifier;
 import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
 import com.jcrawley.webradio.repository.StationsRepositoryImpl;
@@ -33,9 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private ListAdapterHelper listAdapterHelper;
     private StationsRepository stationsRepository;
     private String currentURL;
-    private PlayNotifier playNotifier;
     Intent mediaPlayerServiceIntent;
     private boolean isServiceBound;
+    private String currentStationName;
+
 
 
     @Override
@@ -57,17 +56,18 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart(){
         super.onStart();
         log("Entered onStart()");
         bindService();
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
         unbindService();
+
     }
 
 
@@ -75,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-
-            MediaPlayerService.MyBinder binder = (MediaPlayerService.MyBinder) service;
-
             isServiceBound = true;
         }
 
@@ -105,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startMediaPlayerService(){
         mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
-        startService(mediaPlayerServiceIntent);
+        getApplicationContext().startForegroundService(mediaPlayerServiceIntent);
     }
 
 
@@ -159,7 +156,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendStartBroadcast() {
         Intent intent = new Intent();
-        intent.putExtra(MediaPlayerService.TAG_TRACK_URL, currentURL);
+        intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
+        intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
         intent.setAction(MediaPlayerService.ACTION_START_PLAYER);
         sendBroadcast(intent);
     }
@@ -173,20 +171,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    @SuppressWarnings("deprecation")
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-
     private void log(String msg){
         System.out.println("^^^ MainActivity: " + msg);
     }
@@ -194,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void select(StationEntity listItem){
         currentURL = listItem.getUrl();
+        currentStationName = listItem.getName();
     }
 
 
@@ -217,14 +202,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        dismissNotification();
-    }
-
-
-    private void dismissNotification(){
-        if(playNotifier != null) {
-            playNotifier.dismissNotification();
-        }
     }
 
 
@@ -233,14 +210,4 @@ public class MainActivity extends AppCompatActivity {
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundText));
     }
 
-
-    public void issueNotification(){
-        if(playNotifier != null && playNotifier.isActive()){
-            return;
-        }
-        runOnUiThread(() -> {
-            playNotifier = new PlayNotifier(MainActivity.this);
-            playNotifier.issueNotification();
-        });
-    }
 }
