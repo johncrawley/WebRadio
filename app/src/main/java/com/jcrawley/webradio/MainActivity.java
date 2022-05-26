@@ -13,8 +13,6 @@ import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
 
 import com.jcrawley.webradio.fragment.EditStationFragment;
 import com.jcrawley.webradio.fragment.StationDetailFragment;
@@ -40,15 +38,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button startPauseButton = findViewById(R.id.playPauseButton);
-        startPauseButton.setOnClickListener((View view)-> sendStartBroadcast());
-        findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
-        ListView stationsList = findViewById(R.id.stationsList);
-        stationsRepository = new StationsRepositoryImpl(this.getApplicationContext());
-        listAdapterHelper = new ListAdapterHelper(this,
-                stationsList,
-                this::select,
-                this::startEditStationFragment);
+        setupButtons();
+        setupRepository();
+        setupStationList();
         refreshListFromDb();
         startMediaPlayerService();
     }
@@ -57,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
-        log("Entered onStart()");
         bindService();
     }
 
@@ -66,42 +57,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         unbindService();
-
-    }
-
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            isServiceBound = true;
-        }
-
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            isServiceBound = false;
-        }
-    };
-
-
-    private void bindService() {
-        log("Entered bindService()");
-        bindService(mediaPlayerServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-
-    private void unbindService(){
-        if (isServiceBound) {
-            unbindService(serviceConnection);
-            isServiceBound = false;
-        }
-    }
-
-
-    private void startMediaPlayerService(){
-        mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
-        getApplicationContext().startForegroundService(mediaPlayerServiceIntent);
     }
 
 
@@ -122,7 +77,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void startAddStationFragment(){
+    private void setupButtons(){
+        findViewById(R.id.playPauseButton).setOnClickListener((View view)-> sendStartBroadcast());
+        findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
+    }
+
+
+    private void setupRepository(){
+        stationsRepository = new StationsRepositoryImpl(this.getApplicationContext());
+    }
+
+
+    private void setupStationList(){
+        listAdapterHelper = new ListAdapterHelper(this,
+                findViewById(R.id.stationsList),
+                this::select,
+                this::startEditStationFragment);
+    }
+
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override public void onServiceConnected(ComponentName className, IBinder service) { isServiceBound = true; }
+        @Override public void onServiceDisconnected(ComponentName arg0) {
+            isServiceBound = false;
+        }
+    };
+
+
+    private void bindService() {
+        bindService(mediaPlayerServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+
+    private void unbindService(){
+        if (isServiceBound) {
+            unbindService(serviceConnection);
+            isServiceBound = false;
+        }
+    }
+
+
+    private void startMediaPlayerService(){
+        mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
+        getApplicationContext().startForegroundService(mediaPlayerServiceIntent);
+    }
+
+
+    private void startAddStationFragment(){
         String tag = "add_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag(tag);
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void startEditStationFragment(StationEntity listItem){
+    private void startEditStationFragment(StationEntity listItem){
         String tag = "edit_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag(tag);
@@ -169,14 +170,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void log(String msg){
-        System.out.println("^^^ MainActivity: " + msg);
+    private void sendChangeStationBroadcast(){
+        Intent intent = new Intent();
+        intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
+        intent.setAction(MediaPlayerService.ACTION_CHANGE_STATION);
+        sendBroadcast(intent);
     }
 
 
     private void select(StationEntity listItem){
         currentURL = listItem.getUrl();
         currentStationName = listItem.getName();
+        sendChangeStationBroadcast();
     }
 
 
@@ -195,12 +200,6 @@ public class MainActivity extends AppCompatActivity {
     public void deleteStation(long stationId){
         listAdapterHelper.delete(stationId);
         stationsRepository.delete(stationId);
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
 

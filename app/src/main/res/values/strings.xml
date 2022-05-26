@@ -13,4 +13,7 @@
     <string name="update_station_update_button">Update</string>
     <string name="update_station_dialog_title">Edit Station Details</string>
     <string name="notification_title">WebRadio</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_playing">Playing</string>
+    <string name="status_error">Unable To Connect</string>
 </resources>
