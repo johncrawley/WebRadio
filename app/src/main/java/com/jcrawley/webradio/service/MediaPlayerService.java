@@ -184,6 +184,11 @@ public class MediaPlayerService extends Service {
         }
         isPlaying = true;
         hasEncounteredError = false;
+        if(currentURL == null) {
+            stopPlayer();
+            hasEncounteredError = true;
+            return;
+        }
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes( new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)

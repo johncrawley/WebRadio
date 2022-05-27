@@ -16,6 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import static com.jcrawley.webradio.fragment.FragmentUtils.areAnyEmpty;
+import static com.jcrawley.webradio.fragment.FragmentUtils.disableButtonWhenAnyEmptyInputs;
+
 
 public class EditStationFragment extends DialogFragment {
 
@@ -25,6 +28,8 @@ public class EditStationFragment extends DialogFragment {
     public static final String BUNDLE_STATION_NAME = "STATION_NAME";
     public static final String BUNDLE_STATION_URL = "STATION_URL";
     public long stationId;
+    private Button updateButton;
+
 
     public static EditStationFragment newInstance() {
         return new EditStationFragment();
@@ -72,38 +77,36 @@ public class EditStationFragment extends DialogFragment {
             dialog.setTitle(activity.getString(R.string.update_station_dialog_title));
         }
         setupViews(view);
-        setupUpdateButton(view);
-        setupCancelButton(view);
-        setupDeleteButton(view);
-
     }
 
 
     private void setupViews(View parentView){
+        updateButton = parentView.findViewById(R.id.update_button);
         stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
+        disableButtonWhenAnyEmptyInputs(updateButton, stationNameEditText, stationUrlEditText);
+        setupUpdateButton();
+        setupCancelButton(parentView);
+        setupDeleteButton(parentView);
     }
 
-    private void log(String msg){
-            System.out.println("^^^ EditStationFragment: " + msg);
-    }
 
-
-    private void setupUpdateButton(View parentView){
-        log("Entered setupUpdateButton()");
-        Button update = parentView.findViewById(R.id.update_button);
-        update.setOnClickListener((View v) -> {
+    private void setupUpdateButton(){
+        disableButtonIfInputsAreEmpty();
+        updateButton.setOnClickListener((View v) -> {
             String name = stationNameEditText.getText().toString();
             String url = stationUrlEditText.getText().toString();
             if(activity != null){
-                log("activity is not null!");
                 activity.updateStation(new StationEntity(stationId, name, url));
-            }
-            else{
-                log("Activity is null!");
             }
             dismiss();
         });
+    }
+
+    private void disableButtonIfInputsAreEmpty(){
+        if(areAnyEmpty(stationNameEditText, stationUrlEditText)){
+            updateButton.setEnabled(false);
+        }
     }
 
 

@@ -16,10 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import static com.jcrawley.webradio.fragment.FragmentUtils.disableButtonWhenAnyEmptyInputs;
+
 public class StationDetailFragment extends DialogFragment {
 
     private MainActivity activity;
     private EditText stationNameEditText, stationUrlEditText;
+    private Button saveButton;
+
 
     public static StationDetailFragment newInstance() {
         return new StationDetailFragment();
@@ -28,10 +32,7 @@ public class StationDetailFragment extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_station_detail, container, false);
-
-        Bundle bundle = getArguments();
-        return rootView;
+        return inflater.inflate(R.layout.fragment_station_detail, container, false);
     }
 
 
@@ -47,8 +48,10 @@ public class StationDetailFragment extends DialogFragment {
         if(dialog != null){
             dialog.setTitle(activity.getString(R.string.add_station_title));
         }
+
+        saveButton = view.findViewById(R.id.save_button);
         setupViews(view);
-        setupSaveButton(view);
+        setupSaveButton();
         setupCancelButton(view);
     }
 
@@ -56,11 +59,11 @@ public class StationDetailFragment extends DialogFragment {
     private void setupViews(View parentView){
         stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
+        disableButtonWhenAnyEmptyInputs(saveButton, stationNameEditText, stationUrlEditText);
     }
 
 
-    private void setupSaveButton(View parentView){
-        Button saveButton = parentView.findViewById(R.id.save_button);
+    private void setupSaveButton(){
         saveButton.setOnClickListener((View v) -> {
             String name = stationNameEditText.getText().toString();
             String url = stationUrlEditText.getText().toString();

@@ -8,8 +8,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,9 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private ListAdapterHelper listAdapterHelper;
     private StationsRepository stationsRepository;
     private String currentURL;
-    Intent mediaPlayerServiceIntent;
+    private Intent mediaPlayerServiceIntent;
     private boolean isServiceBound;
     private String currentStationName;
+    private SharedPreferences sharedPreferences;
+    private final String PREF_PREVIOUS_STATION_NAME = "previous_station_name";
+    private final String PREF_PREVIOUS_STATION_URL = "previous_station_url";
 
 
     @Override
@@ -43,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setupStationList();
         refreshListFromDb();
         startMediaPlayerService();
+        loadCurrentStationPreference();
     }
 
 
@@ -77,6 +84,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void saveStation(StationEntity stationEntity){
+        listAdapterHelper.addToList(stationEntity);
+        stationsRepository.createStation(stationEntity);
+    }
+
+
+    public void updateStation(StationEntity stationEntity){
+        stationsRepository.update(stationEntity);
+        refreshListFromDb();
+    }
+
+
+    public void deleteStation(long stationId){
+        listAdapterHelper.delete(stationId);
+        stationsRepository.delete(stationId);
+    }
+
+
     private void setupButtons(){
         findViewById(R.id.playPauseButton).setOnClickListener((View view)-> sendStartBroadcast());
         findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
@@ -93,6 +118,14 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.stationsList),
                 this::select,
                 this::startEditStationFragment);
+    }
+
+
+    private void select(StationEntity station){
+        currentURL = station.getUrl();
+        currentStationName = station.getName();
+        saveCurrentStationPreference();
+        sendChangeStationBroadcast();
     }
 
 
@@ -173,39 +206,33 @@ public class MainActivity extends AppCompatActivity {
     private void sendChangeStationBroadcast(){
         Intent intent = new Intent();
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
+        intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
         intent.setAction(MediaPlayerService.ACTION_CHANGE_STATION);
         sendBroadcast(intent);
     }
 
 
-    private void select(StationEntity listItem){
-        currentURL = listItem.getUrl();
-        currentStationName = listItem.getName();
-        sendChangeStationBroadcast();
-    }
-
-
-    public void saveStation(StationEntity stationEntity){
-        listAdapterHelper.addToList(stationEntity);
-        stationsRepository.createStation(stationEntity);
-    }
-
-
-    public void updateStation(StationEntity stationEntity){
-        stationsRepository.update(stationEntity);
-        refreshListFromDb();
-    }
-
-
-    public void deleteStation(long stationId){
-        listAdapterHelper.delete(stationId);
-        stationsRepository.delete(stationId);
-    }
-
-
-    public void refreshListFromDb(){
+    private void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAll();
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundText));
+    }
+
+
+    private void saveCurrentStationPreference(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREF_PREVIOUS_STATION_NAME, currentStationName);
+        editor.putString(PREF_PREVIOUS_STATION_URL, currentURL);
+        editor.apply();
+    }
+
+
+    private void loadCurrentStationPreference(){
+        sharedPreferences = getSharedPreferences("webRadioEditor", MODE_PRIVATE);
+        String name = sharedPreferences.getString(PREF_PREVIOUS_STATION_NAME, "");
+        String url = sharedPreferences.getString(PREF_PREVIOUS_STATION_URL, "");
+        StationEntity station = new StationEntity(name, url);
+
+        new Handler(Looper.getMainLooper()).postDelayed(()-> select(station), 500);
     }
 
 }
