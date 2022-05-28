@@ -26,6 +26,7 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
     public static final String ACTION_STOP_PLAYER = "com.jcrawley.webradio.stopPlayer";
     public static final String ACTION_CHANGE_STATION = "com.jcrawley.webradio.changeStation";
+    public static final String ACTION_PLAY_CURRENT = "com.jcrawley.webradio.playCurrent";
     public static final String TAG_STATION_URL = "station_url";
     public static final String TAG_STATION_NAME = "station_name";
     private MediaPlayer mediaPlayer;
@@ -35,6 +36,7 @@ public class MediaPlayerService extends Service {
     public boolean hasEncounteredError;
     private boolean isPlaying;
     private String currentStationName  = "";
+    private String currentUrl = "";
 
 
     public MediaPlayerService() {
@@ -52,9 +54,18 @@ public class MediaPlayerService extends Service {
     private final BroadcastReceiver serviceReceiverForStartPlayer = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String url = intent.getStringExtra(TAG_STATION_URL);
+            currentUrl = intent.getStringExtra(TAG_STATION_URL);
             currentStationName = intent.getStringExtra(TAG_STATION_NAME);
-            play(url);
+            System.out.println("Entered onReceive() for start player(), station: " + currentStationName + " url: " + currentUrl);
+            play(currentUrl);
+        }
+    };
+
+
+    private final BroadcastReceiver serviceReceiverForPlayCurrent = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            play(currentUrl);
         }
     };
 
@@ -63,6 +74,7 @@ public class MediaPlayerService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             currentStationName = intent.getStringExtra(TAG_STATION_NAME);
+            currentUrl = intent.getStringExtra(TAG_STATION_URL);
             if(isPlaying){
                 return;
             }
@@ -84,6 +96,7 @@ public class MediaPlayerService extends Service {
         registerReceiver(serviceReceiverForStopPlayer, new IntentFilter(ACTION_STOP_PLAYER));
         registerReceiver(serviceReceiverForStartPlayer, new IntentFilter(ACTION_START_PLAYER));
         registerReceiver(serviceReceiverForChangeStation, new IntentFilter(ACTION_CHANGE_STATION));
+        registerReceiver(serviceReceiverForPlayCurrent, new IntentFilter(ACTION_PLAY_CURRENT));
         moveToForeground();
     }
 
@@ -157,6 +170,8 @@ public class MediaPlayerService extends Service {
 
 
     private Notification createNotification(String heading, String channelName){
+
+
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(heading)
                 .setContentText(channelName)
@@ -167,8 +182,29 @@ public class MediaPlayerService extends Service {
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true);
+        addPlayButtonTo(notification);
+        addStopButtonTo(notification);
         return notification.build();
     }
+
+
+    private void addPlayButtonTo(NotificationCompat.Builder notification){
+        if(!isPlaying && !currentUrl.isEmpty()){
+            Intent playIntent = new Intent(ACTION_PLAY_CURRENT);
+            PendingIntent playPendingIntent = PendingIntent.getBroadcast(this, 0, playIntent, PendingIntent.FLAG_IMMUTABLE);
+            notification.addAction(R.drawable.play_button_background, "play", playPendingIntent);
+        }
+    }
+
+
+    private void addStopButtonTo(NotificationCompat.Builder notification){
+        if(isPlaying){
+            Intent stopIntent = new Intent(ACTION_STOP_PLAYER);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE);
+            notification.addAction(R.drawable.ic_launcher_background, "stop", pendingIntent);
+        }
+    }
+
 
 
     private void dismissNotification(){
