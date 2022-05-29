@@ -26,9 +26,13 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
     public static final String ACTION_STOP_PLAYER = "com.jcrawley.webradio.stopPlayer";
     public static final String ACTION_CHANGE_STATION = "com.jcrawley.webradio.changeStation";
+    public static final String ACTION_UPDATE_STATION_COUNT = "com.jcrawley.webradio.updateStationCount";
     public static final String ACTION_PLAY_CURRENT = "com.jcrawley.webradio.playCurrent";
+    public static final String ACTION_SELECT_PREVIOUS_STATION = "com.jcrawley.webradio.selectPreviousStation";
+    public static final String ACTION_SELECT_NEXT_STATION = "com.jcrawley.webradio.selectNextStation";
     public static final String TAG_STATION_URL = "station_url";
     public static final String TAG_STATION_NAME = "station_name";
+    public static final String TAG_STATION_COUNT = "station_count";
     private MediaPlayer mediaPlayer;
     private final int NOTIFICATION_ID = 1001;
     final String NOTIFICATION_CHANNEL_ID = "com.jcrawley.webradio-notification";
@@ -37,6 +41,7 @@ public class MediaPlayerService extends Service {
     private boolean isPlaying;
     private String currentStationName  = "";
     private String currentUrl = "";
+    private int stationCount;
 
 
     public MediaPlayerService() {
@@ -70,6 +75,14 @@ public class MediaPlayerService extends Service {
     };
 
 
+    private final BroadcastReceiver serviceReceiverForUpdateStationCount = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            stationCount = intent.getIntExtra(TAG_STATION_COUNT, 0);
+        }
+    };
+
+
     private final BroadcastReceiver serviceReceiverForChangeStation = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -82,6 +95,7 @@ public class MediaPlayerService extends Service {
             updateNotification();
         }
     };
+
 
 
     @Override
@@ -97,15 +111,8 @@ public class MediaPlayerService extends Service {
         registerReceiver(serviceReceiverForStartPlayer, new IntentFilter(ACTION_START_PLAYER));
         registerReceiver(serviceReceiverForChangeStation, new IntentFilter(ACTION_CHANGE_STATION));
         registerReceiver(serviceReceiverForPlayCurrent, new IntentFilter(ACTION_PLAY_CURRENT));
+        registerReceiver(serviceReceiverForUpdateStationCount, new IntentFilter(ACTION_UPDATE_STATION_COUNT));
         moveToForeground();
-    }
-
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        dismissNotification();
-        this.stopSelf();
     }
 
 
@@ -115,6 +122,16 @@ public class MediaPlayerService extends Service {
         unregisterReceiver(serviceReceiverForStartPlayer);
         unregisterReceiver(serviceReceiverForStopPlayer);
         unregisterReceiver(serviceReceiverForChangeStation);
+        unregisterReceiver(serviceReceiverForUpdateStationCount);
+        unregisterReceiver(serviceReceiverForPlayCurrent);
+    }
+
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        dismissNotification();
+        this.stopSelf();
     }
 
 
@@ -182,29 +199,50 @@ public class MediaPlayerService extends Service {
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true);
+        addPreviousButtonTo(notification);
         addPlayButtonTo(notification);
         addStopButtonTo(notification);
+        addNextButtonTo(notification);
         return notification.build();
     }
 
 
     private void addPlayButtonTo(NotificationCompat.Builder notification){
         if(!isPlaying && !currentUrl.isEmpty()){
-            Intent playIntent = new Intent(ACTION_PLAY_CURRENT);
-            PendingIntent playPendingIntent = PendingIntent.getBroadcast(this, 0, playIntent, PendingIntent.FLAG_IMMUTABLE);
-            notification.addAction(R.drawable.play_button_background, "play", playPendingIntent);
+            notification.addAction(R.drawable.play_button_background, "play", createPendingIntentFor(ACTION_PLAY_CURRENT));
         }
     }
 
 
     private void addStopButtonTo(NotificationCompat.Builder notification){
         if(isPlaying){
-            Intent stopIntent = new Intent(ACTION_STOP_PLAYER);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE);
-            notification.addAction(R.drawable.ic_launcher_background, "stop", pendingIntent);
+            notification.addAction(R.drawable.ic_launcher_background, "stop", createPendingIntentFor(ACTION_STOP_PLAYER));
         }
     }
 
+
+    private void addPreviousButtonTo(NotificationCompat.Builder notification){
+        if(stationCount == 0) {
+            return;
+        }
+        notification.addAction(R.drawable.ic_launcher_background, "Previous", createPendingIntentFor(ACTION_SELECT_PREVIOUS_STATION));
+    }
+
+
+    private void addNextButtonTo(NotificationCompat.Builder notification){
+        if(stationCount == 0) {
+            return;
+        }
+        notification.addAction(R.drawable.ic_launcher_background, "Next", createPendingIntentFor(ACTION_SELECT_NEXT_STATION));
+    }
+
+
+    private PendingIntent createPendingIntentFor(String action){
+       return PendingIntent.getBroadcast(this,
+               0,
+               new Intent(action),
+               PendingIntent.FLAG_IMMUTABLE);
+    }
 
 
     private void dismissNotification(){

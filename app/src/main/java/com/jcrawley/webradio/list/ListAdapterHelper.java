@@ -46,6 +46,14 @@ public class ListAdapterHelper {
     }
 
 
+    public int getCount(){
+        if(arrayAdapter == null){
+            return 0;
+        }
+        return arrayAdapter.getCount();
+    }
+
+
     public void setupList(final List<StationEntity> items, int layoutRes, View noResultsFoundView){
         if(list == null){
             return;

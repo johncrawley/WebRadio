@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -27,6 +29,9 @@ import com.jcrawley.webradio.service.MediaPlayerService;
 
 import java.util.List;
 
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_NEXT_STATION;
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_PREVIOUS_STATION;
+
 
 public class MainActivity extends AppCompatActivity {
     private ListAdapterHelper listAdapterHelper;
@@ -39,6 +44,25 @@ public class MainActivity extends AppCompatActivity {
     private final String PREF_PREVIOUS_STATION_NAME = "previous_station_name";
     private final String PREF_PREVIOUS_STATION_URL = "previous_station_url";
 
+    private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            log("Entered onReceive for Previous Station broadcast!");
+        }
+    };
+
+    private final BroadcastReceiver serviceReceiverForNextStation = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            log("Entered onReceive for Next Station broadcast!");
+        }
+    };
+
+
+    private void log(String msg){
+        System.out.println("^^^ MainActivity: "  + msg);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         refreshListFromDb();
         startMediaPlayerService();
         loadCurrentStationPreference();
+        setupBroadcastReceivers();
     }
 
 
@@ -66,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
         unbindService();
     }
 
+    @Override
+    protected  void onDestroy(){
+        super.onDestroy();
+        unregisterReceiver(serviceReceiverForPreviousStation);
+        unregisterReceiver(serviceReceiverForNextStation);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     public void saveStation(StationEntity stationEntity){
         listAdapterHelper.addToList(stationEntity);
         stationsRepository.createStation(stationEntity);
+        sendUpdateStationCountBroadcast();
     }
 
 
@@ -99,6 +131,13 @@ public class MainActivity extends AppCompatActivity {
     public void deleteStation(long stationId){
         listAdapterHelper.delete(stationId);
         stationsRepository.delete(stationId);
+        sendUpdateStationCountBroadcast();
+    }
+
+
+    private void setupBroadcastReceivers(){
+        registerReceiver(serviceReceiverForPreviousStation, new IntentFilter(ACTION_SELECT_PREVIOUS_STATION));
+        registerReceiver(serviceReceiverForNextStation, new IntentFilter(ACTION_SELECT_NEXT_STATION));
     }
 
 
@@ -211,6 +250,13 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(intent);
     }
 
+    private void sendUpdateStationCountBroadcast(){
+        Intent intent = new Intent();
+        intent.putExtra(MediaPlayerService.TAG_STATION_COUNT, listAdapterHelper.getCount());
+        intent.setAction(MediaPlayerService.ACTION_UPDATE_STATION_COUNT);
+        sendBroadcast(intent);
+    }
+
 
     private void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAll();
@@ -232,7 +278,10 @@ public class MainActivity extends AppCompatActivity {
         String url = sharedPreferences.getString(PREF_PREVIOUS_STATION_URL, "");
         StationEntity station = new StationEntity(name, url);
 
-        new Handler(Looper.getMainLooper()).postDelayed(()-> select(station), 500);
+        new Handler(Looper.getMainLooper()).postDelayed(()->{
+            sendUpdateStationCountBroadcast();
+            select(station);
+        } , 500);
     }
 
 }
