@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             log("Entered onReceive for Previous Station broadcast!");
+            select(listAdapterHelper.getPreviousStation());
         }
     };
 
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             log("Entered onReceive for Next Station broadcast!");
+            select(listAdapterHelper.getNextStation());
         }
     };
 

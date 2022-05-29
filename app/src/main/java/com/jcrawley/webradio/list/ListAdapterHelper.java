@@ -54,6 +54,34 @@ public class ListAdapterHelper {
     }
 
 
+    public StationEntity getNextStation(){
+        if(arrayAdapter.getCount() == 0){
+            return createEmptyStation();
+        }
+        selectedIndex++;
+        if(selectedIndex >= arrayAdapter.getCount()){
+            selectedIndex = 0;
+        }
+        return arrayAdapter.getItem(selectedIndex);
+    }
+
+
+    public StationEntity getPreviousStation(){
+        if(arrayAdapter.getCount() == 0){
+            return createEmptyStation();
+        }
+        selectedIndex--;
+        if(selectedIndex < 0){
+            selectedIndex = arrayAdapter.getCount()-1;
+        }
+        return arrayAdapter.getItem(selectedIndex);
+    }
+
+
+    private StationEntity createEmptyStation(){
+        return new StationEntity("","");
+    }
+
     public void setupList(final List<StationEntity> items, int layoutRes, View noResultsFoundView){
         if(list == null){
             return;
