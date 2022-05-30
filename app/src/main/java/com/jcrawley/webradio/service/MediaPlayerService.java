@@ -78,7 +78,11 @@ public class MediaPlayerService extends Service {
     private final BroadcastReceiver serviceReceiverForUpdateStationCount = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            int oldStationCount = stationCount;
             stationCount = intent.getIntExtra(TAG_STATION_COUNT, 0);
+            if(stationCount != oldStationCount){
+                updateNotification();
+            }
         }
     };
 

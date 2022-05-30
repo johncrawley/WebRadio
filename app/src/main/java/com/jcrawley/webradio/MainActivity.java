@@ -224,10 +224,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sendStartBroadcast() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(MediaPlayerService.ACTION_START_PLAYER);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
-        intent.setAction(MediaPlayerService.ACTION_START_PLAYER);
         sendBroadcast(intent);
     }
 
@@ -240,17 +239,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sendChangeStationBroadcast(){
-        Intent intent = new Intent();
+        Intent intent = new Intent(MediaPlayerService.ACTION_CHANGE_STATION);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
-        intent.setAction(MediaPlayerService.ACTION_CHANGE_STATION);
         sendBroadcast(intent);
     }
 
+
     private void sendUpdateStationCountBroadcast(){
         Intent intent = new Intent();
-        intent.putExtra(MediaPlayerService.TAG_STATION_COUNT, listAdapterHelper.getCount());
         intent.setAction(MediaPlayerService.ACTION_UPDATE_STATION_COUNT);
+        intent.putExtra(MediaPlayerService.TAG_STATION_COUNT, listAdapterHelper.getCount());
         sendBroadcast(intent);
     }
 

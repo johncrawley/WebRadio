@@ -109,17 +109,11 @@ public class EditStationFragment extends DialogFragment {
                     .link(getTextOf(linkEditText))
                     .build();
             if(activity != null){
-                log("about to update station, description: " + getTextOf(descriptionEditText) + " station version: " + station.getDescription());
                 activity.updateStation(station);
             }
             dismiss();
         });
     }
-
-    private void log(String msg){
-        System.out.println("^^^ EditStationFragment: " + msg);
-    }
-
 
 
     private void disableButtonIfInputsAreEmpty(){
