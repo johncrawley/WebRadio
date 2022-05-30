@@ -18,15 +18,18 @@ import androidx.fragment.app.DialogFragment;
 
 import static com.jcrawley.webradio.fragment.FragmentUtils.areAnyEmpty;
 import static com.jcrawley.webradio.fragment.FragmentUtils.disableButtonWhenAnyEmptyInputs;
+import static com.jcrawley.webradio.fragment.FragmentUtils.getTextOf;
 
 
 public class EditStationFragment extends DialogFragment {
 
     private MainActivity activity;
-    private EditText stationNameEditText, stationUrlEditText;
+    private EditText stationNameEditText, stationUrlEditText, descriptionEditText, linkEditText;
     public static final String BUNDLE_STATION_ID = "STATION_ID";
     public static final String BUNDLE_STATION_NAME = "STATION_NAME";
     public static final String BUNDLE_STATION_URL = "STATION_URL";
+    public static final String BUNDLE_STATION_DESCRIPTION = "STATION_DESCRIPTION";
+    public static final String BUNDLE_STATION_LINK = "STATION_LINK";
     public long stationId;
     private Button updateButton;
 
@@ -50,6 +53,8 @@ public class EditStationFragment extends DialogFragment {
             stationId = bundle.getLong(BUNDLE_STATION_ID, -1);
             assignText(R.id.stationNameEditText, rootView, BUNDLE_STATION_NAME);
             assignText(R.id.stationUrlEditText, rootView, BUNDLE_STATION_URL);
+            assignText(R.id.descriptionEditText, rootView, BUNDLE_STATION_DESCRIPTION);
+            assignText(R.id.linkEditText, rootView, BUNDLE_STATION_LINK);
         }
     }
 
@@ -84,6 +89,8 @@ public class EditStationFragment extends DialogFragment {
         updateButton = parentView.findViewById(R.id.update_button);
         stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
+        descriptionEditText = parentView.findViewById(R.id.descriptionEditText);
+        linkEditText = parentView.findViewById(R.id.linkEditText);
         disableButtonWhenAnyEmptyInputs(updateButton, stationNameEditText, stationUrlEditText);
         setupUpdateButton();
         setupCancelButton(parentView);
@@ -94,14 +101,26 @@ public class EditStationFragment extends DialogFragment {
     private void setupUpdateButton(){
         disableButtonIfInputsAreEmpty();
         updateButton.setOnClickListener((View v) -> {
-            String name = stationNameEditText.getText().toString();
-            String url = stationUrlEditText.getText().toString();
+            StationEntity station = StationEntity.Builder.newInstance()
+                    .id(stationId)
+                    .name(getTextOf(stationNameEditText))
+                    .url(getTextOf(stationUrlEditText))
+                    .description(getTextOf(descriptionEditText))
+                    .link(getTextOf(linkEditText))
+                    .build();
             if(activity != null){
-                activity.updateStation(new StationEntity(stationId, name, url));
+                log("about to update station, description: " + getTextOf(descriptionEditText) + " station version: " + station.getDescription());
+                activity.updateStation(station);
             }
             dismiss();
         });
     }
+
+    private void log(String msg){
+        System.out.println("^^^ EditStationFragment: " + msg);
+    }
+
+
 
     private void disableButtonIfInputsAreEmpty(){
         if(areAnyEmpty(stationNameEditText, stationUrlEditText)){

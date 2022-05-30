@@ -19,9 +19,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CLOSING_BRACKET = " );";
     private static final  String INTEGER = " INTEGER";
     private static final String TEXT = " TEXT";
-    private static final String BLOB = " BLOB";
     private static final String COMMA = ",";
-    public static final String UNIQUE = " UNIQUE ";
     private static final String PRIMARY_KEY = " PRIMARY KEY";
     private static final String CREATE_TABLE_IF_NOT_EXISTS = "CREATE TABLE IF NOT EXISTS ";
 
@@ -31,7 +29,9 @@ public class DbHelper extends SQLiteOpenHelper {
                     + OPENING_BRACKET
                     + StationsEntry._ID + INTEGER + PRIMARY_KEY + COMMA
                     + StationsEntry.COL_STATION_NAME + TEXT + COMMA
-                    + StationsEntry.COL_URL + TEXT
+                    + StationsEntry.COL_URL + TEXT + COMMA
+                    + StationsEntry.COL_LINK + TEXT + COMMA
+                    + StationsEntry.COL_DESCRIPTION + TEXT
                     + CLOSING_BRACKET;
 
     private DbHelper(Context context) {

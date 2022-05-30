@@ -20,7 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.jcrawley.webradio.fragment.EditStationFragment;
-import com.jcrawley.webradio.fragment.StationDetailFragment;
+import com.jcrawley.webradio.fragment.AddStationFragment;
 import com.jcrawley.webradio.list.ListAdapterHelper;
 import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            log("Entered onReceive for Previous Station broadcast!");
             select(listAdapterHelper.getPreviousStation());
         }
     };
@@ -55,15 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver serviceReceiverForNextStation = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            log("Entered onReceive for Next Station broadcast!");
             select(listAdapterHelper.getNextStation());
         }
     };
-
-
-    private void log(String msg){
-        System.out.println("^^^ MainActivity: "  + msg);
-    }
 
 
     @Override
@@ -205,12 +198,12 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.remove(prev);
         }
         fragmentTransaction.addToBackStack(null);
-        StationDetailFragment stationDetailFragment = StationDetailFragment.newInstance();
+        AddStationFragment stationDetailFragment = AddStationFragment.newInstance();
         stationDetailFragment.show(fragmentTransaction, tag);
     }
 
 
-    private void startEditStationFragment(StationEntity listItem){
+    private void startEditStationFragment(StationEntity station){
         String tag = "edit_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag(tag);
@@ -219,9 +212,11 @@ public class MainActivity extends AppCompatActivity {
         }
         fragmentTransaction.addToBackStack(null);
         Bundle bundle = new Bundle();
-        bundle.putLong(EditStationFragment.BUNDLE_STATION_ID, listItem.getId());
-        bundle.putString(EditStationFragment.BUNDLE_STATION_NAME, listItem.getName());
-        bundle.putString(EditStationFragment.BUNDLE_STATION_URL, listItem.getUrl());
+        bundle.putLong(EditStationFragment.BUNDLE_STATION_ID, station.getId());
+        bundle.putString(EditStationFragment.BUNDLE_STATION_NAME, station.getName());
+        bundle.putString(EditStationFragment.BUNDLE_STATION_URL, station.getUrl());
+        bundle.putString(EditStationFragment.BUNDLE_STATION_DESCRIPTION, station.getDescription());
+        bundle.putString(EditStationFragment.BUNDLE_STATION_LINK, station.getLink());
         EditStationFragment editStationFragment = EditStationFragment.newInstance();
         editStationFragment.setArguments(bundle);
         editStationFragment.show(fragmentTransaction, tag);

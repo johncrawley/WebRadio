@@ -27,15 +27,19 @@ public class StationsRepositoryImpl implements StationsRepository{
             ContentValues contentValues = new ContentValues();
             contentValues.put(StationsEntry.COL_STATION_NAME, stationEntity.getName());
             contentValues.put(StationsEntry.COL_URL, stationEntity.getUrl());
+            contentValues.put(StationsEntry.COL_LINK, stationEntity.getLink());
+            contentValues.put(StationsEntry.COL_DESCRIPTION, stationEntity.getDescription());
             addValuesToTable(db, contentValues);
     }
 
+
     @Override
     public void update(StationEntity stationEntity){
-        System.out.println("^^^ StationsRepositoryImpl: entered update()");
         ContentValues contentValues = new ContentValues();
         contentValues.put(StationsEntry.COL_STATION_NAME, stationEntity.getName());
         contentValues.put(StationsEntry.COL_URL, stationEntity.getUrl());
+        contentValues.put(StationsEntry.COL_DESCRIPTION, stationEntity.getDescription());
+        contentValues.put(StationsEntry.COL_LINK, stationEntity.getLink());
 
         db.update(StationsEntry.TABLE_NAME,
                 contentValues,
@@ -53,10 +57,14 @@ public class StationsRepositoryImpl implements StationsRepository{
         try {
             cursor = db.rawQuery(query, null);
             while(cursor.moveToNext()){
-                String name = getString(cursor, StationsEntry.COL_STATION_NAME);
-                String url = getString(cursor, StationsEntry.COL_URL);
-                long id = getLong(cursor, StationsEntry._ID);
-                list.add(new StationEntity(id, name, url));
+                StationEntity station = StationEntity.Builder.newInstance()
+                        .id(getLong(cursor, StationsEntry._ID))
+                        .name(getString(cursor, StationsEntry.COL_STATION_NAME))
+                        .url(getString(cursor, StationsEntry.COL_URL))
+                        .description(getString(cursor, StationsEntry.COL_DESCRIPTION))
+                        .link(getString(cursor, StationsEntry.COL_LINK))
+                        .build();
+                list.add(station);
             }
         }
         catch(SQLException e){
@@ -79,7 +87,6 @@ public class StationsRepositoryImpl implements StationsRepository{
             e.printStackTrace();
         }
     }
-
 
 
     static void addValuesToTable(SQLiteDatabase db, ContentValues contentValues){

@@ -222,7 +222,7 @@ public class MediaPlayerService extends Service {
 
 
     private void addPreviousButtonTo(NotificationCompat.Builder notification){
-        if(stationCount == 0) {
+        if(stationCount < 2) {
             return;
         }
         notification.addAction(R.drawable.ic_launcher_background, "Previous", createPendingIntentFor(ACTION_SELECT_PREVIOUS_STATION));
@@ -230,7 +230,7 @@ public class MediaPlayerService extends Service {
 
 
     private void addNextButtonTo(NotificationCompat.Builder notification){
-        if(stationCount == 0) {
+        if(stationCount < 2) {
             return;
         }
         notification.addAction(R.drawable.ic_launcher_background, "Next", createPendingIntentFor(ACTION_SELECT_NEXT_STATION));

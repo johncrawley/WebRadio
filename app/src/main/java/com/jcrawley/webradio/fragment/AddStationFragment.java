@@ -17,22 +17,23 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import static com.jcrawley.webradio.fragment.FragmentUtils.disableButtonWhenAnyEmptyInputs;
+import static com.jcrawley.webradio.fragment.FragmentUtils.getTextOf;
 
-public class StationDetailFragment extends DialogFragment {
+public class AddStationFragment extends DialogFragment {
 
     private MainActivity activity;
-    private EditText stationNameEditText, stationUrlEditText;
+    private EditText stationNameEditText, stationUrlEditText, descriptionEditText, linkEditText;
     private Button saveButton;
 
 
-    public static StationDetailFragment newInstance() {
-        return new StationDetailFragment();
+    public static AddStationFragment newInstance() {
+        return new AddStationFragment();
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_station_detail, container, false);
+        return inflater.inflate(R.layout.fragment_add_station, container, false);
     }
 
 
@@ -42,7 +43,6 @@ public class StationDetailFragment extends DialogFragment {
         Dialog dialog =  getDialog();
         activity = (MainActivity)getActivity();
         if(activity == null){
-            System.out.println("onViewCreated, activity is null!");
             return;
         }
         if(dialog != null){
@@ -59,19 +59,24 @@ public class StationDetailFragment extends DialogFragment {
     private void setupViews(View parentView){
         stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
+        descriptionEditText = parentView.findViewById(R.id.descriptionEditText);
+        linkEditText = parentView.findViewById(R.id.linkEditText);
         disableButtonWhenAnyEmptyInputs(saveButton, stationNameEditText, stationUrlEditText);
     }
 
 
     private void setupSaveButton(){
         saveButton.setOnClickListener((View v) -> {
-            String name = stationNameEditText.getText().toString();
-            String url = stationUrlEditText.getText().toString();
             if(activity == null){
-                System.out.println("Activity is null!");
                 return;
             }
-            activity.saveStation(new StationEntity(name, url));
+            StationEntity station = StationEntity.Builder.newInstance()
+                    .name(getTextOf(stationNameEditText))
+                    .url(getTextOf(stationUrlEditText))
+                    .description(getTextOf(descriptionEditText))
+                    .link(getTextOf(linkEditText))
+                    .build();
+            activity.saveStation(station);
             dismiss();
         });
     }

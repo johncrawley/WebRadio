@@ -8,4 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dark_toolbar">#772C02</color>
+    <color name="dark_text_color">#772C02</color>
+    <color name="dark_edit_text_color">#E6E1DD</color>
+    <color name="dialog_background_dark">#00191919</color>
 </resources>

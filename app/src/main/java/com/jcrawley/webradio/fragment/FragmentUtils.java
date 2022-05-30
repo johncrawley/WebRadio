@@ -32,4 +32,11 @@ public class FragmentUtils {
         }
         return false;
     }
+
+
+    static String getTextOf(EditText editText){
+        return editText.getText().toString().trim();
+    }
+
+
 }

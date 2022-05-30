@@ -5,6 +5,8 @@
     <string name="stop_button_text">Stop</string>
     <string name="input_text_label_station_name">Name</string>
     <string name="input_text_label_station_url">URL</string>
+    <string name="input_text_label_station_description">Description</string>
+    <string name="input_text_label_station_link">Link</string>
     <string name="add_station_title">Add Station</string>
     <string name="add_station_cancel_button">Cancel</string>
     <string name="add_station_save_button">Save</string>
