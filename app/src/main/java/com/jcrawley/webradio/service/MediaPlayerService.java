@@ -256,7 +256,7 @@ public class MediaPlayerService extends Service {
 
 
     public void play(String currentURL) {
-        if(mediaPlayer!= null){
+        if(mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();
         }
@@ -267,21 +267,32 @@ public class MediaPlayerService extends Service {
             hasEncounteredError = true;
             return;
         }
+        createNewMediaPlayer();
+        prepareAndPlay(currentURL);
+        updateNotification();
+    }
+
+
+    private void createNewMediaPlayer(){
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes( new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
-       setupOnErrorListener();
+    }
+
+
+    private void prepareAndPlay(String currentURL){
         try {
+            assert mediaPlayer != null;
             mediaPlayer.setDataSource(this, Uri.parse(currentURL));
             mediaPlayer.prepareAsync();
+            setupOnErrorListener();
             mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {
             stopPlayer();
             hasEncounteredError = true;
         }
-        updateNotification();
     }
 
 

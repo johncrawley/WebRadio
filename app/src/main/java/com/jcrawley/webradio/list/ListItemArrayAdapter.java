@@ -27,8 +27,7 @@ public class ListItemArrayAdapter extends ArrayAdapter<StationEntity> {
 
     @Override
     @NonNull
-    public View getView(int position, View convertView, @NonNull ViewGroup parent){
-        View view = convertView;
+    public View getView(int position, View view, @NonNull ViewGroup parent){
         if(view == null){
             LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = vi.inflate(android.R.layout.simple_list_item_1,null);
