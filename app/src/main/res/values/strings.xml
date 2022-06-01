@@ -18,4 +18,5 @@
     <string name="status_ready">Ready</string>
     <string name="status_playing">Playing</string>
     <string name="status_error">Unable To Connect</string>
+    <string name="default_station_name_text_view">Select a Station</string>
 </resources>
