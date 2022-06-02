@@ -18,6 +18,7 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.jcrawley.webradio.fragment.EditStationFragment;
 import com.jcrawley.webradio.fragment.AddStationFragment;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private final String PREF_PREVIOUS_STATION_NAME = "previous_station_name";
     private final String PREF_PREVIOUS_STATION_URL = "previous_station_url";
+    private TextView stationNameTextView;
+
 
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
         @Override
@@ -63,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupButtons();
         setupRepository();
         setupStationList();
+        setupViews();
         refreshListFromDb();
         startMediaPlayerService();
         loadCurrentStationPreference();
@@ -136,9 +139,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void setupButtons(){
+    private void setupViews(){
         findViewById(R.id.playPauseButton).setOnClickListener((View view)-> sendStartBroadcast());
         findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
+        setupNameTextView();
+    }
+
+    private void setupNameTextView(){
+        stationNameTextView = findViewById(R.id.stationNameTextView);
+        if(isStationListEmpty()){
+            stationNameTextView.setText("");
+        }
     }
 
 
@@ -158,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
     private void select(StationEntity station){
         currentURL = station.getUrl();
         currentStationName = station.getName();
+        stationNameTextView.setText(currentStationName);
         saveCurrentStationPreference();
         sendChangeStationBroadcast();
     }
@@ -245,6 +257,10 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(intent);
     }
 
+    private boolean isStationListEmpty(){
+        return listAdapterHelper.getCount() == 0;
+    }
+
 
     private void sendUpdateStationCountBroadcast(){
         Intent intent = new Intent();
@@ -269,6 +285,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void loadCurrentStationPreference(){
+        if(isStationListEmpty()){
+            return;
+        }
         sharedPreferences = getSharedPreferences("webRadioEditor", MODE_PRIVATE);
         String name = sharedPreferences.getString(PREF_PREVIOUS_STATION_NAME, "");
         String url = sharedPreferences.getString(PREF_PREVIOUS_STATION_URL, "");

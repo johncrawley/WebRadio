@@ -61,8 +61,7 @@ public class MediaPlayerService extends Service {
         public void onReceive(Context context, Intent intent) {
             currentUrl = intent.getStringExtra(TAG_STATION_URL);
             currentStationName = intent.getStringExtra(TAG_STATION_NAME);
-            System.out.println("Entered onReceive() for start player(), station: " + currentStationName + " url: " + currentUrl);
-            play(currentUrl);
+            play();
         }
     };
 
@@ -70,7 +69,7 @@ public class MediaPlayerService extends Service {
     private final BroadcastReceiver serviceReceiverForPlayCurrent = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            play(currentUrl);
+            play();
         }
     };
 
@@ -93,7 +92,8 @@ public class MediaPlayerService extends Service {
             currentStationName = intent.getStringExtra(TAG_STATION_NAME);
             currentUrl = intent.getStringExtra(TAG_STATION_URL);
             if(isPlaying){
-                return;
+                stopPlayer();
+                play();
             }
             hasEncounteredError = false;
             updateNotification();
@@ -255,20 +255,20 @@ public class MediaPlayerService extends Service {
     }
 
 
-    public void play(String currentURL) {
+    public void play() {
         if(mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();
         }
         isPlaying = true;
         hasEncounteredError = false;
-        if(currentURL == null) {
+        if(currentUrl == null) {
             stopPlayer();
             hasEncounteredError = true;
             return;
         }
         createNewMediaPlayer();
-        prepareAndPlay(currentURL);
+        prepareAndPlay();
         updateNotification();
     }
 
@@ -282,10 +282,10 @@ public class MediaPlayerService extends Service {
     }
 
 
-    private void prepareAndPlay(String currentURL){
+    private void prepareAndPlay(){
         try {
             assert mediaPlayer != null;
-            mediaPlayer.setDataSource(this, Uri.parse(currentURL));
+            mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
             mediaPlayer.prepareAsync();
             setupOnErrorListener();
             mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());

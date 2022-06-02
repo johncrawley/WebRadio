@@ -43,6 +43,5 @@ public class ListItemArrayAdapter extends ArrayAdapter<StationEntity> {
         return view;
     }
 
-
 }
 
