@@ -1,9 +1,16 @@
 package com.jcrawley.webradio.fragment;
 
+import android.app.Activity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.jcrawley.webradio.R;
 
 public class FragmentUtils {
 
@@ -31,6 +38,25 @@ public class FragmentUtils {
             }
         }
         return false;
+    }
+
+    static void setupDimensions(View rootView, Activity activity){
+        DisplayMetrics metrics = FragmentUtils.getDisplayMetrics(activity);
+        int width = (int)(metrics.widthPixels /1.5f);
+        rootView.setLayoutParams(new FrameLayout.LayoutParams(width, rootView.getLayoutParams().height));
+    }
+
+
+    static void setupTitle(Activity activity, View rootView, int strId ){
+        TextView titleText = rootView.findViewById(R.id.fragmentTitleText);
+        titleText.setText(activity.getString(strId));
+    }
+
+
+    public static DisplayMetrics getDisplayMetrics(Activity activity){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics;
     }
 
 

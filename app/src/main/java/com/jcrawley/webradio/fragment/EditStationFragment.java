@@ -19,6 +19,7 @@ import androidx.fragment.app.DialogFragment;
 import static com.jcrawley.webradio.fragment.FragmentUtils.areAnyEmpty;
 import static com.jcrawley.webradio.fragment.FragmentUtils.disableButtonWhenAnyEmptyInputs;
 import static com.jcrawley.webradio.fragment.FragmentUtils.getTextOf;
+import static com.jcrawley.webradio.fragment.FragmentUtils.setupTitle;
 
 
 public class EditStationFragment extends DialogFragment {
@@ -81,20 +82,23 @@ public class EditStationFragment extends DialogFragment {
         if(dialog != null){
             dialog.setTitle(activity.getString(R.string.update_station_dialog_title));
         }
+
+        setupTitle(activity, view, R.string.update_station_dialog_title);
         setupViews(view);
+        FragmentUtils.setupDimensions(view, activity);
     }
 
 
-    private void setupViews(View parentView){
-        updateButton = parentView.findViewById(R.id.update_button);
-        stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
-        stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
-        descriptionEditText = parentView.findViewById(R.id.descriptionEditText);
-        linkEditText = parentView.findViewById(R.id.linkEditText);
+    private void setupViews(View rootView){
+        updateButton = rootView.findViewById(R.id.update_button);
+        stationNameEditText = rootView.findViewById(R.id.stationNameEditText);
+        stationUrlEditText = rootView.findViewById(R.id.stationUrlEditText);
+        descriptionEditText = rootView.findViewById(R.id.descriptionEditText);
+        linkEditText = rootView.findViewById(R.id.linkEditText);
         disableButtonWhenAnyEmptyInputs(updateButton, stationNameEditText, stationUrlEditText);
         setupUpdateButton();
-        setupCancelButton(parentView);
-        setupDeleteButton(parentView);
+        setupCancelButton(rootView);
+        setupDeleteButton(rootView);
     }
 
 

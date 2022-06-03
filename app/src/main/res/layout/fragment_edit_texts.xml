@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:paddingHorizontal="@dimen/dialog_edit_text_horizontal_padding"
     android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
@@ -11,6 +12,7 @@
             android:id="@+id/stationNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:hint="@string/input_text_label_station_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -21,6 +23,7 @@
             android:id="@+id/stationUrlEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="2"
             android:hint="@string/input_text_label_station_url" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -31,6 +34,7 @@
             android:id="@+id/descriptionEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:hint="@string/input_text_label_station_description" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,6 +45,7 @@
             android:id="@+id/linkEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:hint="@string/input_text_label_station_link" />
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

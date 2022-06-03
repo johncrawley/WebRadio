@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment;
 
 import static com.jcrawley.webradio.fragment.FragmentUtils.disableButtonWhenAnyEmptyInputs;
 import static com.jcrawley.webradio.fragment.FragmentUtils.getTextOf;
+import static com.jcrawley.webradio.fragment.FragmentUtils.setupTitle;
 
 public class AddStationFragment extends DialogFragment {
 
@@ -50,10 +51,13 @@ public class AddStationFragment extends DialogFragment {
         }
 
         saveButton = view.findViewById(R.id.save_button);
+        setupTitle(activity, view, R.string.add_station_title);
         setupViews(view);
         setupSaveButton();
         setupCancelButton(view);
+        FragmentUtils.setupDimensions(view, activity);
     }
+
 
 
     private void setupViews(View parentView){

@@ -1,34 +1,64 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.WebRadio" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.WebRadio" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/app_bar</item>
+        <item name="colorPrimaryVariant">@color/notification_bar</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+
+        <item name="android:actionBarTheme">@style/MyActionBar</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <item name="android:dialogTheme">@style/CustomDialog</item>
+       <!-- <item name="android:dialogTheme">@style/CustomDialog2</item>-->
     </style>
 
 
-    <style name="CustomDialog" parent="@style/Theme.AppCompat.Light.Dialog">
+    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#C1000E</item>
+        <item name="android:titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+    </style>
+
+    <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/purple_500</item>
+    </style>
+
+
+    <style name="CustomDialog" parent="@style/MaterialAlertDialog.Material3">
         <item name="android:windowNoTitle">false</item>
+
         <item name="android:windowTitleStyle">@style/dialog_title_style</item>
         <item name="colorAccent">#3949AB</item>
-        <item name="colorPrimary">@color/dark_toolbar</item>
-        <item name="colorSecondary">@color/dark_toolbar</item>
+        <item name="colorPrimary">@color/app_bar</item>
+        <item name="colorSecondary">@color/app_bar</item>
         <item name="android:textColor">@color/dark_text_color</item>
-        <item name="android:editTextColor">@color/dark_edit_text_color</item>
-        <item name="android:background">@color/dialog_background_dark</item>
 
 <!--
         <item name="android:buttonBarButtonStyle">@style/custom_dark_button_bar_button_style</item>
 -->
     </style>
+
+
+
+
+    <style name="CustomDialog2" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowTitleStyle">@style/dialog_title_style2</item>
+        <item name="colorAccent">#3949AB</item>
+        <item name="colorPrimary">#ff11ff</item>
+    </style>
+
+
+    <style name="dialog_title_style2" parent="android:Widget.TextView">
+        <item name="android:background">@android:color/holo_green_dark</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+
 
 <!--
     <style name="custom_dark_button_bar_button_style" parent="android:Widget.Material.ButtonBar">
@@ -37,8 +67,20 @@
     </style>
 -->
 
-    <style name="dialog_title_style" parent="android:Widget.TextView">
-        <item name="android:background">@color/dark_toolbar</item>
+    <style name="dialog_title_style_old" parent="android:Widget.TextView">
+        <item name="android:background">@color/app_bar</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    <style name="dialog_title_style_cant_get_color_working" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:background">@color/app_bar</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    <style name="dialog_title_style" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:color">@color/app_bar</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textStyle">bold</item>
         <item name="android:padding">10dp</item>

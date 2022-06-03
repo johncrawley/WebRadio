@@ -7,8 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="dark_toolbar">#772C02</color>
+    <color name="notification_bar">#552002</color>
+    <color name="app_bar">#772C02</color>
     <color name="dark_text_color">#772C02</color>
+    <color name="dark_color_primary">#BD6C06</color>
     <color name="dark_edit_text_color">#E6E1DD</color>
     <color name="dialog_background_dark">#00191919</color>
 </resources>
