@@ -6,7 +6,13 @@
     <item
         android:id="@+id/action_add_station"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/add_station_menu_item_title"
+        android:title="@string/menu_item_add_station"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction" />
+
+    <item
+        android:id="@+id/action_about"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="@string/menu_item_about"
+        app:showAsAction="ifRoom" />
 </menu>

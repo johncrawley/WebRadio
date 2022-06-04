@@ -78,6 +78,16 @@ public class ListAdapterHelper {
     }
 
 
+    public void setSelectedIndex(int selectedIndex){
+        this.selectedIndex = Math.min(arrayAdapter.getCount()-1, selectedIndex);
+    }
+
+
+    public int getSelectedIndex(){
+        return selectedIndex;
+    }
+
+
     private StationEntity createEmptyStation(){
         return new StationEntity("","");
     }

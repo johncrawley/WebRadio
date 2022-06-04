@@ -49,6 +49,9 @@ public class FragmentUtils {
 
     static void setupTitle(Activity activity, View rootView, int strId ){
         TextView titleText = rootView.findViewById(R.id.fragmentTitleText);
+        if(titleText == null){
+            return;
+        }
         titleText.setText(activity.getString(strId));
     }
 

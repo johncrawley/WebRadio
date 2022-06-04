@@ -18,6 +18,7 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.jcrawley.webradio.fragment.EditStationFragment;
@@ -30,6 +31,9 @@ import com.jcrawley.webradio.service.MediaPlayerService;
 
 import java.util.List;
 
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_PLAY;
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_STOP;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_NEXT_STATION;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_PREVIOUS_STATION;
 
@@ -44,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private final String PREF_PREVIOUS_STATION_NAME = "previous_station_name";
     private final String PREF_PREVIOUS_STATION_URL = "previous_station_url";
-    private TextView stationNameTextView;
+    private final String PREF_PREVIOUS_STATION_LIST_INDEX = "previous_station_list_index";
+    private TextView stationNameTextView, statusTextView;
+    private Button playButton, stopButton;
+    private boolean isConnectionErrorShowing = false;
 
 
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
@@ -61,6 +68,27 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+    private final BroadcastReceiver serviceReceiverForNotifyStop = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateStatusViewOnStop();
+        }
+    };
+
+    private final BroadcastReceiver serviceReceiverForNotifyPlay = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateStatusViewOnPlay();
+        }
+    };
+
+    private final BroadcastReceiver serviceReceiverForNotifyError = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateStatusViewOnError();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,12 +117,17 @@ public class MainActivity extends AppCompatActivity {
         unbindService();
     }
 
+
     @Override
     protected  void onDestroy(){
         super.onDestroy();
         unregisterReceiver(serviceReceiverForPreviousStation);
         unregisterReceiver(serviceReceiverForNextStation);
+        unregisterReceiver(serviceReceiverForNotifyStop);
+        unregisterReceiver(serviceReceiverForNotifyPlay);
+        unregisterReceiver(serviceReceiverForNotifyError);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -136,20 +169,54 @@ public class MainActivity extends AppCompatActivity {
     private void setupBroadcastReceivers(){
         registerReceiver(serviceReceiverForPreviousStation, new IntentFilter(ACTION_SELECT_PREVIOUS_STATION));
         registerReceiver(serviceReceiverForNextStation, new IntentFilter(ACTION_SELECT_NEXT_STATION));
+        registerReceiver(serviceReceiverForNotifyStop, new IntentFilter(ACTION_NOTIFY_VIEW_OF_STOP));
+        registerReceiver(serviceReceiverForNotifyPlay, new IntentFilter(ACTION_NOTIFY_VIEW_OF_PLAY));
+        registerReceiver(serviceReceiverForNotifyError, new IntentFilter(ACTION_NOTIFY_VIEW_OF_ERROR));
     }
 
 
     private void setupViews(){
-        findViewById(R.id.playPauseButton).setOnClickListener((View view)-> sendStartBroadcast());
+        findViewById(R.id.playButton).setOnClickListener((View view)-> sendStartBroadcast());
         findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
         setupNameTextView();
+        statusTextView = findViewById(R.id.playStatusTextView);
+        playButton = findViewById(R.id.playButton);
+        stopButton = findViewById(R.id.stopButton);
     }
+
 
     private void setupNameTextView(){
         stationNameTextView = findViewById(R.id.stationNameTextView);
         if(isStationListEmpty()){
             stationNameTextView.setText("");
         }
+    }
+
+
+    private void updateStatusViewOnStop(){
+        hideStopButtonShowPlayButton();
+        statusTextView.setText(R.string.status_ready);
+    }
+
+
+    private void updateStatusViewOnError(){
+        hideStopButtonShowPlayButton();
+        isConnectionErrorShowing = true;
+        statusTextView.setText(R.string.status_error);
+    }
+
+
+    private void updateStatusViewOnPlay(){
+        stopButton.setVisibility(View.VISIBLE);
+        playButton.setVisibility(View.GONE);
+        statusTextView.setText(R.string.status_playing);
+        isConnectionErrorShowing = false;
+    }
+
+
+    private void hideStopButtonShowPlayButton(){
+        playButton.setVisibility(View.VISIBLE);
+        stopButton.setVisibility(View.GONE);
     }
 
 
@@ -172,8 +239,16 @@ public class MainActivity extends AppCompatActivity {
         stationNameTextView.setText(currentStationName);
         saveCurrentStationPreference();
         sendChangeStationBroadcast();
+        changeConnectionErrorStatus();
     }
 
+
+    private void changeConnectionErrorStatus(){
+        if(isConnectionErrorShowing){
+            isConnectionErrorShowing = false;
+            statusTextView.setText(getString(R.string.status_ready));
+        }
+    }
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName className, IBinder service) { isServiceBound = true; }
@@ -280,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_PREVIOUS_STATION_NAME, currentStationName);
         editor.putString(PREF_PREVIOUS_STATION_URL, currentURL);
+        editor.putInt(PREF_PREVIOUS_STATION_LIST_INDEX, listAdapterHelper.getSelectedIndex());
         editor.apply();
     }
 
@@ -292,6 +368,9 @@ public class MainActivity extends AppCompatActivity {
         String name = sharedPreferences.getString(PREF_PREVIOUS_STATION_NAME, "");
         String url = sharedPreferences.getString(PREF_PREVIOUS_STATION_URL, "");
         StationEntity station = new StationEntity(name, url);
+        int selectedIndex = sharedPreferences.getInt(PREF_PREVIOUS_STATION_LIST_INDEX, 0);
+        listAdapterHelper.setSelectedIndex(selectedIndex);
+        updateStatusViewOnStop();
 
         new Handler(Looper.getMainLooper()).postDelayed(()->{
             sendUpdateStationCountBroadcast();

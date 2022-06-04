@@ -9,37 +9,55 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:paddingTop="@dimen/current_station_padding_top"
+        android:paddingBottom="@dimen/current_station_padding_bottom"
         android:text="@string/default_station_name_text_view"
         android:textSize="@dimen/current_station_text_size"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/button_layout"
+        app:layout_constraintBottom_toTopOf="@+id/station_detail_button_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.16" />
 
 
+    <TextView
+        android:id="@+id/playStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/status_nothing_selected"
+        android:paddingBottom="@dimen/current_status_padding_bottom"
+        android:textSize="@dimen/current_status_text_size"
+        app:layout_constraintTop_toBottomOf="@+id/stationNameTextView"
+        app:layout_constraintBottom_toTopOf="@+id/station_detail_button_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
     <LinearLayout
-        android:id="@+id/button_layout"
+        android:id="@+id/station_detail_button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        app:layout_constraintTop_toBottomOf="@id/stationNameTextView"
+        app:layout_constraintTop_toBottomOf="@id/playStatusTextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/playPauseButton"
+            android:id="@+id/playButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/play_button_text"
+            android:visibility="gone"
             style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/stopButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="@string/stop_button_text"
             style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>

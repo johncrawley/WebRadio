@@ -30,6 +30,9 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_PLAY_CURRENT = "com.jcrawley.webradio.playCurrent";
     public static final String ACTION_SELECT_PREVIOUS_STATION = "com.jcrawley.webradio.selectPreviousStation";
     public static final String ACTION_SELECT_NEXT_STATION = "com.jcrawley.webradio.selectNextStation";
+    public static final String ACTION_NOTIFY_VIEW_OF_STOP = "com.jcrawley.webradio.notifyViewOfStop";
+    public static final String ACTION_NOTIFY_VIEW_OF_PLAY = "com.jcrawley.webradio.notifyViewOfPlay";
+    public static final String ACTION_NOTIFY_VIEW_OF_ERROR = "com.jcrawley.webradio.notifyViewOfError";
     public static final String TAG_STATION_URL = "station_url";
     public static final String TAG_STATION_NAME = "station_name";
     public static final String TAG_STATION_COUNT = "station_count";
@@ -213,14 +216,18 @@ public class MediaPlayerService extends Service {
 
     private void addPlayButtonTo(NotificationCompat.Builder notification){
         if(!isPlaying && !currentUrl.isEmpty()){
-            notification.addAction(R.drawable.play_button_background, "play", createPendingIntentFor(ACTION_PLAY_CURRENT));
+            notification.addAction(R.drawable.play_button_background,
+                    getString(R.string.notification_button_title_play),
+                    createPendingIntentFor(ACTION_PLAY_CURRENT));
         }
     }
 
 
     private void addStopButtonTo(NotificationCompat.Builder notification){
         if(isPlaying){
-            notification.addAction(R.drawable.ic_launcher_background, "stop", createPendingIntentFor(ACTION_STOP_PLAYER));
+            notification.addAction(R.drawable.ic_launcher_background,
+                    getString(R.string.notification_button_title_stop),
+                    createPendingIntentFor(ACTION_STOP_PLAYER));
         }
     }
 
@@ -229,7 +236,9 @@ public class MediaPlayerService extends Service {
         if(stationCount < 2) {
             return;
         }
-        notification.addAction(R.drawable.ic_launcher_background, "Previous", createPendingIntentFor(ACTION_SELECT_PREVIOUS_STATION));
+        notification.addAction(R.drawable.ic_launcher_background,
+                getString(R.string.notification_button_title_previous),
+                createPendingIntentFor(ACTION_SELECT_PREVIOUS_STATION));
     }
 
 
@@ -237,7 +246,9 @@ public class MediaPlayerService extends Service {
         if(stationCount < 2) {
             return;
         }
-        notification.addAction(R.drawable.ic_launcher_background, "Next", createPendingIntentFor(ACTION_SELECT_NEXT_STATION));
+        notification.addAction(R.drawable.ic_launcher_background,
+                getString(R.string.notification_button_title_next),
+                createPendingIntentFor(ACTION_SELECT_NEXT_STATION));
     }
 
 
@@ -288,6 +299,7 @@ public class MediaPlayerService extends Service {
             mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
             mediaPlayer.prepareAsync();
             setupOnErrorListener();
+            sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAY);
             mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {
             stopPlayer();
@@ -301,6 +313,7 @@ public class MediaPlayerService extends Service {
             stopPlayer();
             hasEncounteredError = true;
             updateNotification();
+            sendBroadcast(ACTION_NOTIFY_VIEW_OF_ERROR);
             return false;
         });
     }
@@ -314,6 +327,12 @@ public class MediaPlayerService extends Service {
         }
         isPlaying = false;
         updateNotification();
+        sendBroadcast(ACTION_NOTIFY_VIEW_OF_STOP);
+    }
+
+
+    private void sendBroadcast(String action){
+        sendBroadcast(new Intent(action));
     }
 
 }

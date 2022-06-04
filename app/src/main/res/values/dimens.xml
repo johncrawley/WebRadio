@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="current_station_text_size">32sp</dimen>
+    <dimen name="current_status_text_size">16sp</dimen>
     <dimen name="dialog_edit_text_horizontal_padding">12dp</dimen>
+    <dimen name="current_station_padding_top">12dp</dimen>
+    <dimen name="current_station_padding_bottom">8dp</dimen>
+    <dimen name="current_status_padding_bottom">8dp</dimen>
 
 </resources>

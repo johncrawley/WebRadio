@@ -10,13 +10,19 @@
     <string name="add_station_title">Add Station</string>
     <string name="add_station_cancel_button">Cancel</string>
     <string name="add_station_save_button">Save</string>
-    <string name="add_station_menu_item_title">Add Station</string>
+    <string name="menu_item_add_station">Add Station</string>
+    <string name="menu_item_about">About</string>
     <string name="update_station_delete_button">Remove</string>
     <string name="update_station_update_button">Update</string>
     <string name="update_station_dialog_title">Edit Station Details</string>
     <string name="notification_title">WebRadio</string>
     <string name="status_ready">Ready</string>
+    <string name="status_nothing_selected">Select A Track</string>
     <string name="status_playing">Playing</string>
     <string name="status_error">Unable To Connect</string>
     <string name="default_station_name_text_view">Select a Station</string>
+    <string name="notification_button_title_play">Play</string>
+    <string name="notification_button_title_stop">Stop</string>
+    <string name="notification_button_title_previous">Previous</string>
+    <string name="notification_button_title_next">Next</string>
 </resources>
