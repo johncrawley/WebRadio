@@ -50,15 +50,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/play_button_text"
-            android:visibility="gone"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/stopButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:text="@string/stop_button_text"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:text="@string/stop_button_text"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
