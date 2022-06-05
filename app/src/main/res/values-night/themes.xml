@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.WebRadio" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="Theme.WebRadio" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/app_bar</item>
         <item name="colorPrimaryVariant">@color/notification_bar</item>
