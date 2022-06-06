@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.jcrawley.webradio.fragment.AboutAppFragment;
 import com.jcrawley.webradio.fragment.EditStationFragment;
 import com.jcrawley.webradio.fragment.AddStationFragment;
 import com.jcrawley.webradio.list.ListAdapterHelper;
@@ -141,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if(id == R.id.action_add_station){
             startAddStationFragment();
+        }
+        else if(id == R.id.action_about){
+            startAboutAppFragment();
         }
         return true;
     }
@@ -280,11 +284,7 @@ public class MainActivity extends AppCompatActivity {
     private void startAddStationFragment(){
         String tag = "add_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag(tag);
-        if (prev != null) {
-            fragmentTransaction.remove(prev);
-        }
-        fragmentTransaction.addToBackStack(null);
+        removePreviousFragmentTransaction(tag, fragmentTransaction);
         AddStationFragment stationDetailFragment = AddStationFragment.newInstance();
         stationDetailFragment.show(fragmentTransaction, tag);
     }
@@ -293,11 +293,7 @@ public class MainActivity extends AppCompatActivity {
     private void startEditStationFragment(StationEntity station){
         String tag = "edit_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag(tag);
-        if (prev != null) {
-            fragmentTransaction.remove(prev);
-        }
-        fragmentTransaction.addToBackStack(null);
+        removePreviousFragmentTransaction(tag, fragmentTransaction);
         Bundle bundle = new Bundle();
         bundle.putLong(EditStationFragment.BUNDLE_STATION_ID, station.getId());
         bundle.putString(EditStationFragment.BUNDLE_STATION_NAME, station.getName());
@@ -307,6 +303,23 @@ public class MainActivity extends AppCompatActivity {
         EditStationFragment editStationFragment = EditStationFragment.newInstance();
         editStationFragment.setArguments(bundle);
         editStationFragment.show(fragmentTransaction, tag);
+    }
+
+
+    private void startAboutAppFragment(){
+        String tag = "about_app";
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        removePreviousFragmentTransaction(tag, fragmentTransaction);
+        AboutAppFragment.newInstance().show(fragmentTransaction, tag);
+    }
+
+
+    private void removePreviousFragmentTransaction(String tag, FragmentTransaction fragmentTransaction){
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(tag);
+        if (prev != null) {
+            fragmentTransaction.remove(prev);
+        }
+        fragmentTransaction.addToBackStack(null);
     }
 
 

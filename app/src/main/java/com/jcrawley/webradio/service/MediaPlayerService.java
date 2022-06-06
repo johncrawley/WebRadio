@@ -200,11 +200,12 @@ public class MediaPlayerService extends Service {
                 .setContentTitle(heading)
                 .setContentText(channelName)
                 .setSilent(true)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.notification_icon)
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE)
                 .setNumber(-1)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
+                .setShowWhen(false)
                 .setOngoing(true);
         addPreviousButtonTo(notification);
         addPlayButtonTo(notification);
@@ -216,7 +217,7 @@ public class MediaPlayerService extends Service {
 
     private void addPlayButtonTo(NotificationCompat.Builder notification){
         if(!isPlaying && !currentUrl.isEmpty()){
-            notification.addAction(R.drawable.play_button_background,
+            notification.addAction(android.R.drawable.ic_media_play,
                     getString(R.string.notification_button_title_play),
                     createPendingIntentFor(ACTION_PLAY_CURRENT));
         }
@@ -225,7 +226,7 @@ public class MediaPlayerService extends Service {
 
     private void addStopButtonTo(NotificationCompat.Builder notification){
         if(isPlaying){
-            notification.addAction(R.drawable.ic_launcher_background,
+            notification.addAction(android.R.drawable.ic_media_pause,
                     getString(R.string.notification_button_title_stop),
                     createPendingIntentFor(ACTION_STOP_PLAYER));
         }
@@ -233,22 +234,27 @@ public class MediaPlayerService extends Service {
 
 
     private void addPreviousButtonTo(NotificationCompat.Builder notification){
-        if(stationCount < 2) {
+        if(isThereLessThanTwoStations()) {
             return;
         }
-        notification.addAction(R.drawable.ic_launcher_background,
+        notification.addAction(android.R.drawable.ic_media_previous,
                 getString(R.string.notification_button_title_previous),
                 createPendingIntentFor(ACTION_SELECT_PREVIOUS_STATION));
     }
 
 
     private void addNextButtonTo(NotificationCompat.Builder notification){
-        if(stationCount < 2) {
+        if(isThereLessThanTwoStations()) {
             return;
         }
-        notification.addAction(R.drawable.ic_launcher_background,
+        notification.addAction(android.R.drawable.ic_media_next,
                 getString(R.string.notification_button_title_next),
                 createPendingIntentFor(ACTION_SELECT_NEXT_STATION));
+    }
+
+
+    private boolean isThereLessThanTwoStations(){
+        return stationCount < 2;
     }
 
 

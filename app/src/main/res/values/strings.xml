@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">WebRadio</string>
+    <string name="about_app_name_and_version">WebRadio v1.0</string>
+    <string name="about_created_by">Created by John Crawley, 2022</string>
     <string name="no_stations_text">No Stations Saved</string>
     <string name="play_button_text">Play</string>
     <string name="stop_button_text">Stop</string>
