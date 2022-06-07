@@ -23,7 +23,7 @@ import static com.jcrawley.webradio.fragment.FragmentUtils.setupTitle;
 public class AddStationFragment extends DialogFragment {
 
     private MainActivity activity;
-    private EditText stationNameEditText, stationUrlEditText, descriptionEditText, linkEditText;
+    private EditText stationNameEditText, stationUrlEditText, linkEditText;
     private Button saveButton;
 
 
@@ -63,7 +63,6 @@ public class AddStationFragment extends DialogFragment {
     private void setupViews(View parentView){
         stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
-        descriptionEditText = parentView.findViewById(R.id.descriptionEditText);
         linkEditText = parentView.findViewById(R.id.linkEditText);
         disableButtonWhenAnyEmptyInputs(saveButton, stationNameEditText, stationUrlEditText);
     }
@@ -77,7 +76,6 @@ public class AddStationFragment extends DialogFragment {
             StationEntity station = StationEntity.Builder.newInstance()
                     .name(getTextOf(stationNameEditText))
                     .url(getTextOf(stationUrlEditText))
-                    .description(getTextOf(descriptionEditText))
                     .link(getTextOf(linkEditText))
                     .build();
             activity.saveStation(station);

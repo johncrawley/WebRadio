@@ -8,7 +8,7 @@
     <string name="input_text_label_station_name">Name</string>
     <string name="input_text_label_station_url">URL</string>
     <string name="input_text_label_station_description">Description</string>
-    <string name="input_text_label_station_link">Link</string>
+    <string name="input_text_label_station_link">Website Link</string>
     <string name="add_station_title">Add Station</string>
     <string name="add_station_cancel_button">Cancel</string>
     <string name="add_station_save_button">Save</string>
@@ -20,6 +20,7 @@
     <string name="notification_title">WebRadio</string>
     <string name="status_ready">Ready</string>
     <string name="status_nothing_selected">Select A Track</string>
+    <string name="status_connecting">Connecting</string>
     <string name="status_playing">Playing</string>
     <string name="status_error">Unable To Connect</string>
     <string name="default_station_name_text_view">Select a Station</string>

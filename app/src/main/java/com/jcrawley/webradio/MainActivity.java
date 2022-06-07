@@ -33,7 +33,8 @@ import com.jcrawley.webradio.service.MediaPlayerService;
 import java.util.List;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
-import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_PLAY;
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;
+import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_PLAYING;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_STOP;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_NEXT_STATION;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_PREVIOUS_STATION;
@@ -77,10 +78,17 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private final BroadcastReceiver serviceReceiverForNotifyPlay = new BroadcastReceiver() {
+    private final BroadcastReceiver serviceReceiverForNotifyConnecting = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateStatusViewOnPlay();
+            updateStatusViewOnConnecting();
+        }
+    };
+
+    private final BroadcastReceiver serviceReceiverForNotifyPlaying = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateStatusViewOnPlaying();
         }
     };
 
@@ -125,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(serviceReceiverForPreviousStation);
         unregisterReceiver(serviceReceiverForNextStation);
         unregisterReceiver(serviceReceiverForNotifyStop);
-        unregisterReceiver(serviceReceiverForNotifyPlay);
+        unregisterReceiver(serviceReceiverForNotifyConnecting);
+        unregisterReceiver(serviceReceiverForNotifyPlaying);
         unregisterReceiver(serviceReceiverForNotifyError);
     }
 
@@ -171,11 +180,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setupBroadcastReceivers(){
-        registerReceiver(serviceReceiverForPreviousStation, new IntentFilter(ACTION_SELECT_PREVIOUS_STATION));
-        registerReceiver(serviceReceiverForNextStation, new IntentFilter(ACTION_SELECT_NEXT_STATION));
-        registerReceiver(serviceReceiverForNotifyStop, new IntentFilter(ACTION_NOTIFY_VIEW_OF_STOP));
-        registerReceiver(serviceReceiverForNotifyPlay, new IntentFilter(ACTION_NOTIFY_VIEW_OF_PLAY));
-        registerReceiver(serviceReceiverForNotifyError, new IntentFilter(ACTION_NOTIFY_VIEW_OF_ERROR));
+        register(serviceReceiverForPreviousStation, ACTION_SELECT_PREVIOUS_STATION);
+        register(serviceReceiverForNextStation, ACTION_SELECT_NEXT_STATION);
+        register(serviceReceiverForNotifyStop, ACTION_NOTIFY_VIEW_OF_STOP);
+        register(serviceReceiverForNotifyConnecting, ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        register(serviceReceiverForNotifyPlaying, ACTION_NOTIFY_VIEW_OF_PLAYING);
+        register(serviceReceiverForNotifyError, ACTION_NOTIFY_VIEW_OF_ERROR);
+    }
+
+    private void register(BroadcastReceiver receiver, String action){
+        registerReceiver(receiver, new IntentFilter(action));
     }
 
 
@@ -210,7 +224,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void updateStatusViewOnPlay(){
+    private void updateStatusViewOnConnecting(){
+        stopButton.setVisibility(View.VISIBLE);
+        playButton.setVisibility(View.GONE);
+        statusTextView.setText(R.string.status_connecting);
+        isConnectionErrorShowing = false;
+    }
+
+
+    private void updateStatusViewOnPlaying(){
         stopButton.setVisibility(View.VISIBLE);
         playButton.setVisibility(View.GONE);
         statusTextView.setText(R.string.status_playing);

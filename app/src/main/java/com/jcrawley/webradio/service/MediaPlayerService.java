@@ -31,7 +31,8 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_SELECT_PREVIOUS_STATION = "com.jcrawley.webradio.selectPreviousStation";
     public static final String ACTION_SELECT_NEXT_STATION = "com.jcrawley.webradio.selectNextStation";
     public static final String ACTION_NOTIFY_VIEW_OF_STOP = "com.jcrawley.webradio.notifyViewOfStop";
-    public static final String ACTION_NOTIFY_VIEW_OF_PLAY = "com.jcrawley.webradio.notifyViewOfPlay";
+    public static final String ACTION_NOTIFY_VIEW_OF_CONNECTING = "com.jcrawley.webradio.notifyViewOfPlay";
+    public static final String ACTION_NOTIFY_VIEW_OF_PLAYING = "com.jcrawley.webradio.notifyViewOfPlayInfo";
     public static final String ACTION_NOTIFY_VIEW_OF_ERROR = "com.jcrawley.webradio.notifyViewOfError";
     public static final String TAG_STATION_URL = "station_url";
     public static final String TAG_STATION_NAME = "station_name";
@@ -45,6 +46,7 @@ public class MediaPlayerService extends Service {
     private String currentStationName  = "";
     private String currentUrl = "";
     private int stationCount;
+    boolean wasInfoFound = false;
 
 
     public MediaPlayerService() {
@@ -169,7 +171,13 @@ public class MediaPlayerService extends Service {
 
 
     private String getCurrentStatus(){
-        int resId = hasEncounteredError ? R.string.status_error : isPlaying ? R.string.status_playing : R.string.status_ready;
+        int resId = R.string.status_ready;
+        if(hasEncounteredError){
+            resId = R.string.status_error;
+        }
+        else if(isPlaying){
+            resId = wasInfoFound ? R.string.status_playing : R.string.status_connecting;
+        }
         return getApplicationContext().getString(resId);
     }
 
@@ -304,13 +312,26 @@ public class MediaPlayerService extends Service {
             assert mediaPlayer != null;
             mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
             mediaPlayer.prepareAsync();
+            setupOnInfoListener();
             setupOnErrorListener();
-            sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAY);
+            sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
             mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {
             stopPlayer();
             hasEncounteredError = true;
         }
+    }
+
+
+    private void setupOnInfoListener(){
+        mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
+            if(!wasInfoFound){
+                sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
+                updateNotification();
+                wasInfoFound = true;
+            }
+            return false;
+        });
     }
 
 
@@ -332,6 +353,7 @@ public class MediaPlayerService extends Service {
             mediaPlayer = null;
         }
         isPlaying = false;
+        wasInfoFound = false;
         updateNotification();
         sendBroadcast(ACTION_NOTIFY_VIEW_OF_STOP);
     }

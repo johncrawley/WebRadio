@@ -57,7 +57,6 @@ public class EditStationFragment extends DialogFragment {
             stationId = bundle.getLong(BUNDLE_STATION_ID, -1);
             assignText(R.id.stationNameEditText, rootView, BUNDLE_STATION_NAME);
             assignText(R.id.stationUrlEditText, rootView, BUNDLE_STATION_URL);
-            assignText(R.id.descriptionEditText, rootView, BUNDLE_STATION_DESCRIPTION);
             assignText(R.id.linkEditText, rootView, BUNDLE_STATION_LINK);
         }
     }
