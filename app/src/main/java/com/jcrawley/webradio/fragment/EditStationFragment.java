@@ -1,6 +1,8 @@
 package com.jcrawley.webradio.fragment;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +27,7 @@ import static com.jcrawley.webradio.fragment.FragmentUtils.setupTitle;
 public class EditStationFragment extends DialogFragment {
 
     private MainActivity activity;
-    private EditText stationNameEditText, stationUrlEditText, descriptionEditText, linkEditText;
+    private EditText stationNameEditText, stationUrlEditText, linkEditText;
     public static final String BUNDLE_STATION_ID = "STATION_ID";
     public static final String BUNDLE_STATION_NAME = "STATION_NAME";
     public static final String BUNDLE_STATION_URL = "STATION_URL";
@@ -33,6 +35,7 @@ public class EditStationFragment extends DialogFragment {
     public static final String BUNDLE_STATION_LINK = "STATION_LINK";
     public long stationId;
     private Button updateButton;
+    private AlertDialog.Builder deleteConfirmationDialog;
 
 
     public static EditStationFragment newInstance() {
@@ -82,7 +85,7 @@ public class EditStationFragment extends DialogFragment {
         if(dialog != null){
             dialog.setTitle(activity.getString(R.string.update_station_dialog_title));
         }
-
+        setupDeleteConfirmationDialog();
         setupTitle(activity, view, R.string.update_station_dialog_title);
         setupViews(view);
         FragmentUtils.setupDimensions(view, activity);
@@ -93,7 +96,6 @@ public class EditStationFragment extends DialogFragment {
         updateButton = rootView.findViewById(R.id.update_button);
         stationNameEditText = rootView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = rootView.findViewById(R.id.stationUrlEditText);
-        descriptionEditText = rootView.findViewById(R.id.descriptionEditText);
         linkEditText = rootView.findViewById(R.id.linkEditText);
         disableButtonWhenAnyEmptyInputs(updateButton, stationNameEditText, stationUrlEditText);
         setupUpdateButton();
@@ -109,7 +111,6 @@ public class EditStationFragment extends DialogFragment {
                     .id(stationId)
                     .name(getTextOf(stationNameEditText))
                     .url(getTextOf(stationUrlEditText))
-                    .description(getTextOf(descriptionEditText))
                     .link(getTextOf(linkEditText))
                     .build();
             if(activity != null){
@@ -128,14 +129,36 @@ public class EditStationFragment extends DialogFragment {
 
 
     private void setupDeleteButton(View parentView){
-        Button deleteButton = parentView.findViewById(R.id.delete_button);
+        View deleteButton = parentView.findViewById(R.id.titleBarDeleteButton);
+        deleteButton.setVisibility(View.VISIBLE);
         deleteButton.setOnClickListener((View v) -> {
             if(activity == null){
                 return;
             }
-            activity.deleteStation(stationId);
-            dismiss();
+            deleteConfirmationDialog.show();
         });
+    }
+
+
+    private void setupDeleteConfirmationDialog(){
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                   activity.deleteStation(stationId);
+                    dismiss();
+                    dialog.dismiss();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    dialog.dismiss();
+                    break;
+            }
+        };
+
+        deleteConfirmationDialog = new AlertDialog.Builder(activity);
+        deleteConfirmationDialog.setMessage(getString(R.string.delete_station_confirmation_dialog_text))
+                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener);
     }
 
 

@@ -17,6 +17,7 @@
         android:textStyle="bold" />
 
     <ImageButton
+        android:id="@+id/titleBarDeleteButton"
         android:layout_width="wrap_content"
         android:contentDescription="@string/content_description_delete_button"
         android:padding="8dp"
