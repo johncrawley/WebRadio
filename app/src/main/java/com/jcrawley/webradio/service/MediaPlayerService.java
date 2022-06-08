@@ -327,8 +327,8 @@ public class MediaPlayerService extends Service {
         mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
             if(!wasInfoFound){
                 sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
-                updateNotification();
                 wasInfoFound = true;
+                updateNotification();
             }
             return false;
         });

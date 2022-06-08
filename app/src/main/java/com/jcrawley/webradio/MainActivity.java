@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
         register(serviceReceiverForNotifyError, ACTION_NOTIFY_VIEW_OF_ERROR);
     }
 
+
     private void register(BroadcastReceiver receiver, String action){
         registerReceiver(receiver, new IntentFilter(action));
     }

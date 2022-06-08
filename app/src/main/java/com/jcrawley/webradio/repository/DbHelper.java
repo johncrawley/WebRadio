@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.List;
+
 import static com.jcrawley.webradio.repository.DbContract.StationsEntry;
 
 
@@ -38,6 +40,7 @@ public class DbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
     public static DbHelper getInstance(Context context){
         if(instance == null){
             instance = new DbHelper(context);
@@ -48,6 +51,15 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_STATIONS_TABLE);
+        addInitialStations(db);
+    }
+
+
+    private void addInitialStations(SQLiteDatabase  db){
+        List<StationEntity> stations = InitialStationsLoader.get();
+        for(StationEntity station : stations){
+            DbUtils.createStation(db, station);
+        }
     }
 
 

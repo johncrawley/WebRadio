@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.jcrawley.webradio.repository.DbContract.StationsEntry;
 
+import static com.jcrawley.webradio.repository.DbUtils.addValuesToTable;
+
 public class StationsRepositoryImpl implements StationsRepository{
 
 
@@ -24,12 +26,7 @@ public class StationsRepositoryImpl implements StationsRepository{
 
     @Override
     public void createStation(StationEntity stationEntity) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(StationsEntry.COL_STATION_NAME, stationEntity.getName());
-            contentValues.put(StationsEntry.COL_URL, stationEntity.getUrl());
-            contentValues.put(StationsEntry.COL_LINK, stationEntity.getLink());
-            contentValues.put(StationsEntry.COL_DESCRIPTION, stationEntity.getDescription());
-            addValuesToTable(db, contentValues);
+        DbUtils.createStation(db, stationEntity);
     }
 
 
@@ -86,18 +83,6 @@ public class StationsRepositoryImpl implements StationsRepository{
         catch(SQLException e){
             e.printStackTrace();
         }
-    }
-
-
-    static void addValuesToTable(SQLiteDatabase db, ContentValues contentValues){
-        db.beginTransaction();
-        try {
-            db.insertOrThrow(StationsEntry.TABLE_NAME, null, contentValues);
-            db.setTransactionSuccessful();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        db.endTransaction();
     }
 
 
