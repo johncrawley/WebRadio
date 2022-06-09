@@ -1,25 +1,21 @@
 package com.jcrawley.webradio.service;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioAttributes;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
-
-import com.jcrawley.webradio.MainActivity;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
 
-import androidx.core.app.NotificationCompat;
+import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATION_ID;
 
 public class MediaPlayerService extends Service {
 
@@ -38,16 +34,14 @@ public class MediaPlayerService extends Service {
     public static final String TAG_STATION_NAME = "station_name";
     public static final String TAG_STATION_COUNT = "station_count";
     private MediaPlayer mediaPlayer;
-    private final int NOTIFICATION_ID = 1001;
-    final String NOTIFICATION_CHANNEL_ID = "com.jcrawley.webradio-notification";
-    private PendingIntent pendingIntent;
     public boolean hasEncounteredError;
     private boolean isPlaying;
     private String currentStationName  = "";
     private String currentUrl = "";
     private int stationCount;
     boolean wasInfoFound = false;
-
+    private MediaMetadataRetriever metaRetriever;
+    private MediaNotificationManager mediaNotificationManager;
 
     public MediaPlayerService() {
     }
@@ -85,7 +79,7 @@ public class MediaPlayerService extends Service {
             int oldStationCount = stationCount;
             stationCount = intent.getIntExtra(TAG_STATION_COUNT, 0);
             if(stationCount != oldStationCount){
-                updateNotification();
+                mediaNotificationManager.updateNotification();
             }
         }
     };
@@ -101,7 +95,7 @@ public class MediaPlayerService extends Service {
                 play();
             }
             hasEncounteredError = false;
-            updateNotification();
+            mediaNotificationManager.updateNotification();
         }
     };
 
@@ -112,6 +106,9 @@ public class MediaPlayerService extends Service {
         return null;
     }
 
+    boolean isPlaying(){
+        return isPlaying;
+    }
 
     @Override
     public void onCreate() {
@@ -121,6 +118,7 @@ public class MediaPlayerService extends Service {
         registerReceiver(serviceReceiverForChangeStation, new IntentFilter(ACTION_CHANGE_STATION));
         registerReceiver(serviceReceiverForPlayCurrent, new IntentFilter(ACTION_PLAY_CURRENT));
         registerReceiver(serviceReceiverForUpdateStationCount, new IntentFilter(ACTION_UPDATE_STATION_COUNT));
+        mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
         moveToForeground();
     }
 
@@ -139,7 +137,7 @@ public class MediaPlayerService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        dismissNotification();
+        mediaNotificationManager.dismissNotification();
         this.stopSelf();
     }
 
@@ -156,21 +154,13 @@ public class MediaPlayerService extends Service {
 
 
     private void moveToForeground(){
-        setupNotificationChannel();
-        setupNotificationClickForActivity();
-        Notification notification = createNotification(getCurrentStatus(), "");
+        mediaNotificationManager.init();
+        Notification notification = mediaNotificationManager.createNotification(getCurrentStatus(), "");
         startForeground(NOTIFICATION_ID, notification);
     }
 
 
-    private void updateNotification() {
-        Notification notification = createNotification(getCurrentStatus(), currentStationName);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
-
-    private String getCurrentStatus(){
+    String getCurrentStatus(){
         int resId = R.string.status_ready;
         if(hasEncounteredError){
             resId = R.string.status_error;
@@ -182,101 +172,18 @@ public class MediaPlayerService extends Service {
     }
 
 
-    private void setupNotificationClickForActivity(){
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        resultIntent.setAction(Intent.ACTION_MAIN);
-        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_IMMUTABLE);
+    String getCurrentStationName(){
+        return currentStationName;
     }
 
 
-    private void setupNotificationChannel(){
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                "webradio-notification-channel",
-                NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setSound(null, null);
-        channel.setShowBadge(false);
-        notificationManager.createNotificationChannel(channel);
+    String getCurrentUrl(){
+        return currentUrl;
     }
 
 
-    private Notification createNotification(String heading, String channelName){
-
-
-        final NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle(heading)
-                .setContentText(channelName)
-                .setSilent(true)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE)
-                .setNumber(-1)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(pendingIntent)
-                .setShowWhen(false)
-                .setOngoing(true);
-        addPreviousButtonTo(notification);
-        addPlayButtonTo(notification);
-        addStopButtonTo(notification);
-        addNextButtonTo(notification);
-        return notification.build();
-    }
-
-
-    private void addPlayButtonTo(NotificationCompat.Builder notification){
-        if(!isPlaying && !currentUrl.isEmpty()){
-            notification.addAction(android.R.drawable.ic_media_play,
-                    getString(R.string.notification_button_title_play),
-                    createPendingIntentFor(ACTION_PLAY_CURRENT));
-        }
-    }
-
-
-    private void addStopButtonTo(NotificationCompat.Builder notification){
-        if(isPlaying){
-            notification.addAction(android.R.drawable.ic_media_pause,
-                    getString(R.string.notification_button_title_stop),
-                    createPendingIntentFor(ACTION_STOP_PLAYER));
-        }
-    }
-
-
-    private void addPreviousButtonTo(NotificationCompat.Builder notification){
-        if(isThereLessThanTwoStations()) {
-            return;
-        }
-        notification.addAction(android.R.drawable.ic_media_previous,
-                getString(R.string.notification_button_title_previous),
-                createPendingIntentFor(ACTION_SELECT_PREVIOUS_STATION));
-    }
-
-
-    private void addNextButtonTo(NotificationCompat.Builder notification){
-        if(isThereLessThanTwoStations()) {
-            return;
-        }
-        notification.addAction(android.R.drawable.ic_media_next,
-                getString(R.string.notification_button_title_next),
-                createPendingIntentFor(ACTION_SELECT_NEXT_STATION));
-    }
-
-
-    private boolean isThereLessThanTwoStations(){
-        return stationCount < 2;
-    }
-
-
-    private PendingIntent createPendingIntentFor(String action){
-       return PendingIntent.getBroadcast(this,
-               0,
-               new Intent(action),
-               PendingIntent.FLAG_IMMUTABLE);
-    }
-
-
-    private void dismissNotification(){
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
+    int getStationCount(){
+        return stationCount;
     }
 
 
@@ -294,7 +201,7 @@ public class MediaPlayerService extends Service {
         }
         createNewMediaPlayer();
         prepareAndPlay();
-        updateNotification();
+        mediaNotificationManager.updateNotification();
     }
 
 
@@ -328,7 +235,7 @@ public class MediaPlayerService extends Service {
             if(!wasInfoFound){
                 sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
                 wasInfoFound = true;
-                updateNotification();
+                mediaNotificationManager.updateNotification();
             }
             return false;
         });
@@ -339,7 +246,7 @@ public class MediaPlayerService extends Service {
         mediaPlayer.setOnErrorListener((mediaPlayer, i, i1) -> {
             stopPlayer();
             hasEncounteredError = true;
-            updateNotification();
+            mediaNotificationManager.updateNotification();
             sendBroadcast(ACTION_NOTIFY_VIEW_OF_ERROR);
             return false;
         });
@@ -354,7 +261,7 @@ public class MediaPlayerService extends Service {
         }
         isPlaying = false;
         wasInfoFound = false;
-        updateNotification();
+        mediaNotificationManager.updateNotification();
         sendBroadcast(ACTION_NOTIFY_VIEW_OF_STOP);
     }
 
