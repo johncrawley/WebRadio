@@ -222,6 +222,7 @@ public class MediaPlayerService extends Service {
             setupOnInfoListener();
             setupOnErrorListener();
             sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+            initMetaDataRetriever();
             mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {
             stopPlayer();
@@ -229,16 +230,48 @@ public class MediaPlayerService extends Service {
         }
     }
 
+    private void initMetaDataRetriever(){
+        metaRetriever = new MediaMetadataRetriever();
+        metaRetriever.setDataSource(currentUrl);
+        System.out.println("metadataretriever info: " + metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+    }
+
+
+    private int metadataCounter = 0;
+
+
+    private void updateMetadata(){
+        int metadataRetrievalInterval = 1;
+        metadataCounter++;
+        if(metadataCounter >= metadataRetrievalInterval){
+            metadataCounter = 0;
+            String artist =  metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String title = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String other = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
+            String other2 = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER);
+            String other3 = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR);
+            String other4 = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);
+
+            System.out.println("Artist: " + artist + " title: " + title + " albumArtist: " + other + " composer: "+ other2 + " author: "+  other3 + " bitrate: " + other4);
+        }
+    }
+
 
     private void setupOnInfoListener(){
         mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
-            if(!wasInfoFound){
-                sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
-                wasInfoFound = true;
-                mediaNotificationManager.updateNotification();
-            }
+            updateStatusFromConnectingToPlaying();
+            updateMetadata();
             return false;
         });
+    }
+
+
+    private void updateStatusFromConnectingToPlaying(){
+        if(!wasInfoFound){
+            sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
+            wasInfoFound = true;
+            mediaNotificationManager.updateNotification();
+        }
     }
 
 
