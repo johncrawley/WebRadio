@@ -7,7 +7,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/edit_text_padding_top">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/stationNameEditText"
             android:layout_width="match_parent"
@@ -18,7 +19,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/edit_text_padding_top">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/stationUrlEditText"
             android:layout_width="match_parent"
@@ -42,7 +44,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/edit_text_padding_top">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/linkEditText"
             android:layout_width="match_parent"

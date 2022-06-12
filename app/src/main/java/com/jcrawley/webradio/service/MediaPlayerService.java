@@ -14,6 +14,7 @@ import android.os.IBinder;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATION_ID;
 
@@ -42,6 +43,7 @@ public class MediaPlayerService extends Service {
     boolean wasInfoFound = false;
     private MediaMetadataRetriever metaRetriever;
     private MediaNotificationManager mediaNotificationManager;
+    private ExecutorService executorService;
 
     public MediaPlayerService() {
     }
@@ -217,11 +219,11 @@ public class MediaPlayerService extends Service {
     private void prepareAndPlay(){
         try {
             assert mediaPlayer != null;
+            sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
             mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
             mediaPlayer.prepareAsync();
             setupOnInfoListener();
             setupOnErrorListener();
-            sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
             initMetaDataRetriever();
             mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {
@@ -260,7 +262,7 @@ public class MediaPlayerService extends Service {
     private void setupOnInfoListener(){
         mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
             updateStatusFromConnectingToPlaying();
-            updateMetadata();
+            //updateMetadata();
             return false;
         });
     }

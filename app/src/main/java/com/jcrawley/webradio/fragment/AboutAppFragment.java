@@ -16,8 +16,6 @@ import androidx.fragment.app.DialogFragment;
 
 public class AboutAppFragment extends DialogFragment {
 
-    private MainActivity activity;
-
 
     public static AboutAppFragment newInstance() {
         return new AboutAppFragment();
@@ -34,26 +32,16 @@ public class AboutAppFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Dialog dialog =  getDialog();
-        activity = (MainActivity)getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         if(activity == null){
             return;
         }
         if(dialog != null){
             dialog.setTitle(activity.getString(R.string.add_station_title));
         }
-
-        //setupTitle(activity, view, R.string.add_station_title);
-        setupViews(view);
         setupOkButton(view);
         FragmentUtils.setupDimensions(view, activity);
     }
-
-
-
-    private void setupViews(View parentView){
-
-    }
-
 
 
     private void setupOkButton(View parentView){
