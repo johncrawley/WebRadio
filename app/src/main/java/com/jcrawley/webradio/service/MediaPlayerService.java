@@ -15,6 +15,7 @@ import com.jcrawley.webradio.R;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATION_ID;
 
@@ -43,9 +44,11 @@ public class MediaPlayerService extends Service {
     boolean wasInfoFound = false;
     private MediaMetadataRetriever metaRetriever;
     private MediaNotificationManager mediaNotificationManager;
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
+    private int metadataCounter = 0;
 
     public MediaPlayerService() {
+        executorService = Executors.newFixedThreadPool(1);
     }
 
 
@@ -217,29 +220,36 @@ public class MediaPlayerService extends Service {
 
 
     private void prepareAndPlay(){
-        try {
-            assert mediaPlayer != null;
-            sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
-            mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
-            mediaPlayer.prepareAsync();
-            setupOnInfoListener();
-            setupOnErrorListener();
-            initMetaDataRetriever();
-            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
-        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
-            stopPlayer();
-            hasEncounteredError = true;
-        }
+        sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        executorService.execute(()-> {
+            try {
+                assert mediaPlayer != null;
+                mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
+                mediaPlayer.prepareAsync();
+                setupOnInfoListener();
+                setupOnErrorListener();
+                initMetaDataRetriever();
+                mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
+            } catch (IllegalArgumentException | IllegalStateException | IOException e) {
+                stopPlayer();
+                hasEncounteredError = true;
+            }
+        });
     }
 
     private void initMetaDataRetriever(){
         metaRetriever = new MediaMetadataRetriever();
         metaRetriever.setDataSource(currentUrl);
-        System.out.println("metadataretriever info: " + metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
     }
 
 
-    private int metadataCounter = 0;
+    private void setupOnInfoListener(){
+        mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
+            updateStatusFromConnectingToPlaying();
+            updateMetadata();
+            return false;
+        });
+    }
 
 
     private void updateMetadata(){
@@ -256,15 +266,6 @@ public class MediaPlayerService extends Service {
 
             System.out.println("Artist: " + artist + " title: " + title + " albumArtist: " + other + " composer: "+ other2 + " author: "+  other3 + " bitrate: " + other4);
         }
-    }
-
-
-    private void setupOnInfoListener(){
-        mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
-            updateStatusFromConnectingToPlaying();
-            //updateMetadata();
-            return false;
-        });
     }
 
 
