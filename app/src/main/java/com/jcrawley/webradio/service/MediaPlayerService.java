@@ -16,6 +16,8 @@ import com.jcrawley.webradio.R;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATION_ID;
 
@@ -45,10 +47,12 @@ public class MediaPlayerService extends Service {
     private MediaMetadataRetriever metaRetriever;
     private MediaNotificationManager mediaNotificationManager;
     private final ExecutorService executorService;
+    private final ScheduledExecutorService timeoutServiceExecutor;
     private int metadataCounter = 0;
 
     public MediaPlayerService() {
-        executorService = Executors.newFixedThreadPool(1);
+        executorService = Executors.newFixedThreadPool(3);
+        timeoutServiceExecutor = Executors.newScheduledThreadPool(1);
     }
 
 
@@ -105,15 +109,16 @@ public class MediaPlayerService extends Service {
     };
 
 
-
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
 
+
     boolean isPlaying(){
         return isPlaying;
     }
+
 
     @Override
     public void onCreate() {
@@ -230,12 +235,22 @@ public class MediaPlayerService extends Service {
                 setupOnErrorListener();
                 initMetaDataRetriever();
                 mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
-            } catch (IllegalArgumentException | IllegalStateException | IOException e) {
+            } catch (IOException | RuntimeException e) {
                 stopPlayer();
                 hasEncounteredError = true;
             }
         });
+        timeoutServiceExecutor.schedule(()->{
+            if(!mediaPlayer.isPlaying()){
+                System.out.println("releasing media player!");
+                System.out.flush();
+                mediaPlayer.reset();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+        },5, TimeUnit.SECONDS);
     }
+
 
     private void initMetaDataRetriever(){
         metaRetriever = new MediaMetadataRetriever();
