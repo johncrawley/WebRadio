@@ -14,7 +14,9 @@ import android.os.IBinder;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,13 +48,11 @@ public class MediaPlayerService extends Service {
     boolean wasInfoFound = false;
     private MediaMetadataRetriever metaRetriever;
     private MediaNotificationManager mediaNotificationManager;
-    private final ExecutorService executorService;
-    private final ScheduledExecutorService timeoutServiceExecutor;
+    private final ScheduledExecutorService executorService;
     private int metadataCounter = 0;
 
     public MediaPlayerService() {
-        executorService = Executors.newFixedThreadPool(3);
-        timeoutServiceExecutor = Executors.newScheduledThreadPool(1);
+        executorService = Executors.newScheduledThreadPool(3);
     }
 
 
@@ -141,6 +141,10 @@ public class MediaPlayerService extends Service {
         unregisterReceiver(serviceReceiverForChangeStation);
         unregisterReceiver(serviceReceiverForUpdateStationCount);
         unregisterReceiver(serviceReceiverForPlayCurrent);
+
+        if (mediaPlayer != null){
+            mediaPlayer.release();
+        }
     }
 
 
@@ -198,20 +202,50 @@ public class MediaPlayerService extends Service {
 
 
     public void play() {
+        sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
         if(mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        isPlaying = true;
-        hasEncounteredError = false;
-        if(currentUrl == null) {
-            stopPlayer();
+        executorService.schedule(this::testUrlAndThenConnectWithMediaPlayer, 1, TimeUnit.MILLISECONDS);
+    }
+
+
+    private void testUrlAndThenConnectWithMediaPlayer(){
+        if(isCurrentUrlReachable()){
             hasEncounteredError = true;
-            return;
+            isPlaying = true;
+            hasEncounteredError = false;
+            if(currentUrl == null) {
+                stopPlayer();
+                hasEncounteredError = true;
+                return;
+            }
+            createNewMediaPlayer();
+            prepareAndPlay();
         }
-        createNewMediaPlayer();
-        prepareAndPlay();
         mediaNotificationManager.updateNotification();
+    }
+
+
+    private boolean isCurrentUrlReachable(){
+            URL url;
+            try {
+                url = new URL(currentUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(2500);
+                connection.setReadTimeout(1000);
+                int responseCode = connection.getResponseCode();
+                connection.disconnect();
+                if(responseCode == 200){
+                    return true;
+                }
+            } catch (IOException  e){
+                e.printStackTrace();
+            }
+            handleConnectionError();
+            return false;
     }
 
 
@@ -225,36 +259,24 @@ public class MediaPlayerService extends Service {
 
 
     private void prepareAndPlay(){
-        sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
-        executorService.execute(()-> {
-            try {
-                assert mediaPlayer != null;
-                mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
-                mediaPlayer.prepareAsync();
-                setupOnInfoListener();
-                setupOnErrorListener();
-                initMetaDataRetriever();
-                mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
-            } catch (IOException | RuntimeException e) {
-                stopPlayer();
-                hasEncounteredError = true;
-            }
-        });
-        timeoutServiceExecutor.schedule(()->{
-            if(!mediaPlayer.isPlaying()){
-                System.out.println("releasing media player!");
-                System.out.flush();
-                mediaPlayer.reset();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
-        },5, TimeUnit.SECONDS);
+        try {
+            assert mediaPlayer != null;
+            initMetaDataRetriever();
+            mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
+            mediaPlayer.prepareAsync();
+            setupOnInfoListener();
+            setupOnErrorListener();
+            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());
+        } catch (IOException | RuntimeException e) {
+            stopPlayer();
+            hasEncounteredError = true;
+        }
     }
 
 
     private void initMetaDataRetriever(){
         metaRetriever = new MediaMetadataRetriever();
-        metaRetriever.setDataSource(currentUrl);
+        metaRetriever.setDataSource(currentUrl, new HashMap<>());
     }
 
 
@@ -296,11 +318,16 @@ public class MediaPlayerService extends Service {
     private void setupOnErrorListener(){
         mediaPlayer.setOnErrorListener((mediaPlayer, i, i1) -> {
             stopPlayer();
-            hasEncounteredError = true;
-            mediaNotificationManager.updateNotification();
-            sendBroadcast(ACTION_NOTIFY_VIEW_OF_ERROR);
+            handleConnectionError();
             return false;
         });
+    }
+
+
+    private void handleConnectionError(){
+        hasEncounteredError = true;
+        mediaNotificationManager.updateNotification();
+        sendBroadcast(ACTION_NOTIFY_VIEW_OF_ERROR);
     }
 
 
