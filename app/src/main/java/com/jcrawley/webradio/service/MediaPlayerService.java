@@ -10,7 +10,10 @@ import android.media.AudioAttributes;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
+import android.os.PowerManager;
+
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
@@ -50,9 +53,13 @@ public class MediaPlayerService extends Service {
     private MediaNotificationManager mediaNotificationManager;
     private final ScheduledExecutorService executorService;
     private int metadataCounter = 0;
+    private final WifiManager.WifiLock wifiLock;
 
     public MediaPlayerService() {
         executorService = Executors.newScheduledThreadPool(3);
+        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "jcrawley.webRadio.wifiWakeLock");
+
     }
 
 
@@ -142,11 +149,13 @@ public class MediaPlayerService extends Service {
         unregisterReceiver(serviceReceiverForUpdateStationCount);
         unregisterReceiver(serviceReceiverForPlayCurrent);
 
-        if (mediaPlayer != null){
+        if (mediaPlayer != null) {
             mediaPlayer.release();
         }
+        if (wifiLock.isHeld()) {
+            wifiLock.release();
+        }
     }
-
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
@@ -203,6 +212,7 @@ public class MediaPlayerService extends Service {
 
     public void play() {
         sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        wifiLock.acquire();
         if(mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -255,6 +265,7 @@ public class MediaPlayerService extends Service {
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
+        mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
     }
 
 
@@ -336,6 +347,7 @@ public class MediaPlayerService extends Service {
             mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;
+            wifiLock.release();
         }
         isPlaying = false;
         wasInfoFound = false;
