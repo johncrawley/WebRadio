@@ -2,6 +2,7 @@
     <string name="app_name">Radioyo</string>
     <string name="about_app_name_and_version">Radioyo v1.0, 2022</string>
     <string name="about_created_by">Created by John Crawley</string>
+    <string name="radioyo_graphic">Radio-yo title graphic</string>
     <string name="no_stations_text">No Stations Saved</string>
     <string name="play_button_text">Play</string>
     <string name="stop_button_text">Stop</string>

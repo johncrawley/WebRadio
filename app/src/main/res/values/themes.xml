@@ -1,16 +1,75 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Theme.WebRadio" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryVariant">@color/notification_bar</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="feature_graphic">@drawable/radioyo_feature_graphic_bright</item>
+
         <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+
+        <!-- Color for material edit text backgrounds and influences hint color -->
+        <item name="colorOnSurface">#7683A3</item>
+
+        <!-- EditText hint font-->
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.App.Subtitle1</item>
+
+        <!--helper text font-->
+        <item name="textAppearanceCaption">@style/TextAppearance.App.Caption</item>
+
+        <!-- material components shape-->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+
     </style>
+
+    <style name="TextAppearance.App.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <!--this changes the font face of the hint text-->
+        <item name="fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <!--this changes the font face of the helper text-->
+        <item name="fontFamily">sans-serif-black</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+    </style>
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+
+    <style name="stationDetail" parent="Base.CardView">
+        <item name="android:background">@color/station_detail_background</item>
+    </style>
+
+
+    <style name="stationList" parent="Base.CardView">
+        <item name="android:background">@color/station_list_background</item>
+    </style>
+
+
+    <style name="generalDialog" parent="Base.CardView">
+        <item name="android:background">@color/station_list_background</item>
+    </style>
+
+
+    <style name="fragmentTitle" parent="Base.CardView">
+        <item name="android:background">@color/primary_color</item>
+        <item name="android:textColor">@color/notification_bar_text</item>
+    </style>
+
+
+    <style name="dialog_title_style" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:color">@color/primary_color</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
 </resources>

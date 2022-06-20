@@ -1,11 +1,13 @@
 package com.jcrawley.webradio.service;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -53,13 +55,10 @@ public class MediaPlayerService extends Service {
     private MediaNotificationManager mediaNotificationManager;
     private final ScheduledExecutorService executorService;
     private int metadataCounter = 0;
-    private final WifiManager.WifiLock wifiLock;
+    private WifiManager.WifiLock wifiLock;
 
     public MediaPlayerService() {
         executorService = Executors.newScheduledThreadPool(3);
-        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "jcrawley.webRadio.wifiWakeLock");
-
     }
 
 
@@ -130,13 +129,25 @@ public class MediaPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        initWifiLock();
+        registerBroadcastReceivers();
+        mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
+        moveToForeground();
+    }
+
+
+    private void initWifiLock(){
+        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "jcrawley.webRadio.wifiWakeLock");
+    }
+
+
+    private void registerBroadcastReceivers(){
         registerReceiver(serviceReceiverForStopPlayer, new IntentFilter(ACTION_STOP_PLAYER));
         registerReceiver(serviceReceiverForStartPlayer, new IntentFilter(ACTION_START_PLAYER));
         registerReceiver(serviceReceiverForChangeStation, new IntentFilter(ACTION_CHANGE_STATION));
         registerReceiver(serviceReceiverForPlayCurrent, new IntentFilter(ACTION_PLAY_CURRENT));
         registerReceiver(serviceReceiverForUpdateStationCount, new IntentFilter(ACTION_UPDATE_STATION_COUNT));
-        mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
-        moveToForeground();
     }
 
 
@@ -259,15 +270,16 @@ public class MediaPlayerService extends Service {
     }
 
 
-    private void createNewMediaPlayer(){
+    private void createNewMediaPlayer() {
         mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioAttributes( new AudioAttributes.Builder()
+        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
-        mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        if (checkSelfPermission(Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED) {
+            mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        }
     }
-
 
     private void prepareAndPlay(){
         try {
