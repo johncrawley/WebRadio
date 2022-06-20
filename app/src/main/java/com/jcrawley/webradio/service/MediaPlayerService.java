@@ -136,6 +136,28 @@ public class MediaPlayerService extends Service {
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterBroadcastReceivers();
+        releaseMediaPlayerAndLocks();
+    }
+
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        mediaNotificationManager.dismissNotification();
+        this.stopSelf();
+    }
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+        return Service.START_NOT_STICKY; // service is not restarted when terminated
+    }
+
+
     private void initWifiLock(){
         wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "jcrawley.webRadio.wifiWakeLock");
@@ -151,39 +173,22 @@ public class MediaPlayerService extends Service {
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    private void unregisterBroadcastReceivers(){
         unregisterReceiver(serviceReceiverForStartPlayer);
         unregisterReceiver(serviceReceiverForStopPlayer);
         unregisterReceiver(serviceReceiverForChangeStation);
         unregisterReceiver(serviceReceiverForUpdateStationCount);
         unregisterReceiver(serviceReceiverForPlayCurrent);
+    }
 
+
+    private void releaseMediaPlayerAndLocks(){
         if (mediaPlayer != null) {
             mediaPlayer.release();
         }
         if (wifiLock.isHeld()) {
             wifiLock.release();
         }
-    }
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        mediaNotificationManager.dismissNotification();
-        this.stopSelf();
-    }
-
-
-    /*
-        Service.START_STICKY - service is restarted if terminated, intent passed in has null value
-        Service.START_NOT_STICKY - service is not restarted
-        Service.START_REDELIVER_INTENT - service is restarted if terminated, original intent is passed in
-     */
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
-        return Service.START_NOT_STICKY;
     }
 
 
@@ -222,13 +227,26 @@ public class MediaPlayerService extends Service {
 
 
     public void play() {
-        sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        updateViewsForConnecting();
         wifiLock.acquire();
+        stopRunningMediaPlayer();
+        executorService.schedule(this::testUrlAndThenConnectWithMediaPlayer, 1, TimeUnit.MILLISECONDS);
+    }
+
+
+    private void stopRunningMediaPlayer(){
         if(mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        executorService.schedule(this::testUrlAndThenConnectWithMediaPlayer, 1, TimeUnit.MILLISECONDS);
+    }
+
+
+    private void updateViewsForConnecting(){
+        sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        isPlaying = true;
+        wasInfoFound = false;
+        mediaNotificationManager.updateNotification();
     }
 
 
@@ -276,10 +294,16 @@ public class MediaPlayerService extends Service {
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
+        setCpuWakeLock();
+    }
+
+
+    private void setCpuWakeLock(){
         if (checkSelfPermission(Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED) {
             mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         }
     }
+
 
     private void prepareAndPlay(){
         try {
