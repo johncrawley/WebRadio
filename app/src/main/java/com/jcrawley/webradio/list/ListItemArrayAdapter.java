@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.jcrawley.webradio.R;
 import com.jcrawley.webradio.repository.StationEntity;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class ListItemArrayAdapter extends ArrayAdapter<StationEntity> {
     public View getView(int position, View view, @NonNull ViewGroup parent){
         if(view == null){
             LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = vi.inflate(android.R.layout.simple_list_item_1,null);
+            view = vi.inflate(R.layout.station_list_item,null);
         }
 
         StationEntity item = items.get(position);

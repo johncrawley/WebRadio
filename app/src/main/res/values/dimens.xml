@@ -13,6 +13,8 @@
     <dimen name="about_text_size">18sp</dimen>
     <dimen name="edit_text_padding_top">8dp</dimen>
     <dimen name="station_detail_button_layout_padding">16dp</dimen>
+    <dimen name="station_list_item_text_size">16sp</dimen>
+    <dimen name="station_list_item_vertical_padding">8dp</dimen>
 
 
 </resources>

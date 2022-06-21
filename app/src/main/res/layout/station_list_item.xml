@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/textview"
+    android:textColor="?attr/station_list_item_text_color"
+    android:paddingVertical="@dimen/station_list_item_vertical_padding"
+    android:textSize="@dimen/station_list_item_text_size"
+    android:layout_width="fill_parent"
+    android:singleLine="false"
+    android:gravity="center"
+    android:layout_height="fill_parent"/>

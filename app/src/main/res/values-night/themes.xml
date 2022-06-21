@@ -1,19 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.WebRadio_old" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/dark_edit_text_color</item>
-        <item name="colorPrimaryVariant">@color/notification_bar_dark</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="feature_graphic">@drawable/radioyo_feature_graphic</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-    </style>
-
     <style name="Theme.WebRadio" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/color_primary_dark</item>
         <item name="colorPrimaryVariant">@color/notification_bar_dark</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="feature_graphic">@drawable/radioyo_feature_graphic</item>
+        <item name="station_detail_button_text_color">@color/station_detail_button_text_color_dark</item>
+        <item name="station_list_item_text_color">@color/station_list_item_text_color_dark</item>
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
     </style>
@@ -26,6 +19,7 @@
 
     <style name="stationList" parent="Base.CardView">
         <item name="android:background">@color/station_list_background_dark</item>
+        <item name="android:color">@color/teal_200</item>
     </style>
 
 
