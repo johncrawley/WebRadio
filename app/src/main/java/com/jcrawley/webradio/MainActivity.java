@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -50,10 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private final String PREF_PREVIOUS_STATION_NAME = "previous_station_name";
     private final String PREF_PREVIOUS_STATION_URL = "previous_station_url";
+    private final String PREF_PREVIOUS_STATION_WEBSITE_LINK = "previous_station_website_link";
     private final String PREF_PREVIOUS_STATION_LIST_INDEX = "previous_station_list_index";
     private TextView stationNameTextView, statusTextView;
     private Button playButton, stopButton;
     private boolean isConnectionErrorShowing = false;
+    private String stationWebsite;
+
 
 
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
@@ -241,6 +245,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void onClick(){
+        if(stationWebsite == null){
+            return;
+        }
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(stationWebsite));
+        startActivity(browserIntent);
+    }
+
+
     private void hideStopButtonShowPlayButton(){
         playButton.setVisibility(View.VISIBLE);
         stopButton.setVisibility(View.GONE);
@@ -263,10 +276,18 @@ public class MainActivity extends AppCompatActivity {
     private void select(StationEntity station){
         currentURL = station.getUrl();
         currentStationName = station.getName();
+        stationWebsite = station.getLink();
         stationNameTextView.setText(currentStationName);
         saveCurrentStationPreference();
         sendChangeStationBroadcast();
         changeConnectionErrorStatus();
+        setWebsiteLinkVisibility();
+    }
+
+
+    private void setWebsiteLinkVisibility(){
+
+
     }
 
 
@@ -368,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(intent);
     }
 
+
     private boolean isStationListEmpty(){
         return listAdapterHelper.getCount() == 0;
     }
@@ -391,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_PREVIOUS_STATION_NAME, currentStationName);
         editor.putString(PREF_PREVIOUS_STATION_URL, currentURL);
+        editor.putString(PREF_PREVIOUS_STATION_WEBSITE_LINK, stationWebsite);
         editor.putInt(PREF_PREVIOUS_STATION_LIST_INDEX, listAdapterHelper.getSelectedIndex());
         editor.apply();
     }
@@ -401,17 +424,36 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         sharedPreferences = getSharedPreferences("webRadioEditor", MODE_PRIVATE);
-        String name = sharedPreferences.getString(PREF_PREVIOUS_STATION_NAME, "");
-        String url = sharedPreferences.getString(PREF_PREVIOUS_STATION_URL, "");
-        StationEntity station = new StationEntity(name, url);
-        int selectedIndex = sharedPreferences.getInt(PREF_PREVIOUS_STATION_LIST_INDEX, 0);
-        listAdapterHelper.setSelectedIndex(selectedIndex);
+        StationEntity station = buildStationFromPrefs();
+        listAdapterHelper.setSelectedIndex(getPreviousStationIndex());
         updateStatusViewOnStop();
+        selectStationAfterDelay(station);
+    }
 
+
+    private StationEntity buildStationFromPrefs(){
+        return StationEntity.Builder.newInstance()
+                .url(getPrefStr(PREF_PREVIOUS_STATION_URL))
+                .name(getPrefStr(PREF_PREVIOUS_STATION_NAME))
+                .link(getPrefStr(PREF_PREVIOUS_STATION_WEBSITE_LINK))
+                .build();
+    }
+
+
+    private void selectStationAfterDelay(StationEntity station){
         new Handler(Looper.getMainLooper()).postDelayed(()->{
             sendUpdateStationCountBroadcast();
             select(station);
         } , 500);
+    }
+
+
+    private String getPrefStr(String key){
+       return sharedPreferences.getString(key, "");
+    }
+
+    private int getPreviousStationIndex(){
+        return sharedPreferences.getInt(PREF_PREVIOUS_STATION_LIST_INDEX, 0);
     }
 
 }

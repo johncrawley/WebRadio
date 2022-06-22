@@ -21,6 +21,7 @@
     <string name="notification_title">WebRadio</string>
     <string name="status_ready">Ready</string>
     <string name="status_nothing_selected">Select A Track</string>
+    <string name="website_link">Website</string>
     <string name="status_connecting">Connecting</string>
     <string name="status_playing">Playing</string>
     <string name="status_error">Unable To Connect</string>

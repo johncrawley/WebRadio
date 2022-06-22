@@ -23,6 +23,21 @@
 
 
     <TextView
+        android:id="@+id/websiteLinkTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingBottom="@dimen/current_status_padding_bottom"
+        android:text="@string/website_link"
+        android:textColor="@color/website_link"
+        android:textSize="@dimen/current_status_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/playStatusTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stationNameTextView" />
+
+    <TextView
         android:id="@+id/playStatusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,7 +45,7 @@
         android:text="@string/status_nothing_selected"
         android:paddingBottom="@dimen/current_status_padding_bottom"
         android:textSize="@dimen/current_status_text_size"
-        app:layout_constraintTop_toBottomOf="@+id/stationNameTextView"
+        app:layout_constraintTop_toBottomOf="@+id/websiteLinkTextView"
         app:layout_constraintBottom_toTopOf="@+id/station_detail_button_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

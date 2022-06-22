@@ -19,8 +19,6 @@ import android.os.PowerManager;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -251,41 +249,27 @@ public class MediaPlayerService extends Service {
 
 
     private void testUrlAndThenConnectWithMediaPlayer(){
-        if(isCurrentUrlReachable()){
-            hasEncounteredError = true;
-            isPlaying = true;
-            hasEncounteredError = false;
-            if(currentUrl == null) {
-                stopPlayer();
-                hasEncounteredError = true;
-                return;
-            }
-            createNewMediaPlayer();
-            prepareAndPlay();
+        if(UrlChecker.isCurrentUrlReachable(currentUrl)) {
+            connectWithMediaPlayer();
+            return;
         }
+        handleConnectionError();
+    }
+
+
+    private void connectWithMediaPlayer(){
+        isPlaying = true;
+        hasEncounteredError = false;
+        if(currentUrl == null) {
+            stopPlayer();
+            hasEncounteredError = true;
+            return;
+        }
+        createNewMediaPlayer();
+        prepareAndPlay();
         mediaNotificationManager.updateNotification();
     }
 
-
-    private boolean isCurrentUrlReachable(){
-            URL url;
-            try {
-                url = new URL(currentUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setConnectTimeout(2500);
-                connection.setReadTimeout(1000);
-                int responseCode = connection.getResponseCode();
-                connection.disconnect();
-                if(responseCode == 200){
-                    return true;
-                }
-            } catch (IOException  e){
-                e.printStackTrace();
-            }
-            handleConnectionError();
-            return false;
-    }
 
 
     private void createNewMediaPlayer() {
@@ -320,16 +304,19 @@ public class MediaPlayerService extends Service {
         }
     }
 
+    private HashMap<String, String> metadataMap;
 
     private void initMetaDataRetriever(){
+        metadataMap = new HashMap<>();
         metaRetriever = new MediaMetadataRetriever();
-        metaRetriever.setDataSource(currentUrl, new HashMap<>());
+        metaRetriever.setDataSource(currentUrl, metadataMap);
     }
 
 
     private void setupOnInfoListener(){
         mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
             updateStatusFromConnectingToPlaying();
+            executorService.schedule(this::updateMetadata, 2000, TimeUnit.MILLISECONDS);
             updateMetadata();
             return false;
         });
@@ -339,16 +326,25 @@ public class MediaPlayerService extends Service {
     private void updateMetadata(){
         int metadataRetrievalInterval = 1;
         metadataCounter++;
+        for(String key : metadataMap.keySet()){
+            System.out.println("metadata: " + key + " : "  + metadataMap.get(key));
+        }
+
         if(metadataCounter >= metadataRetrievalInterval){
             metadataCounter = 0;
             String artist =  metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             String title = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String other = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
-            String other2 = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER);
-            String other3 = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR);
-            String other4 = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);
+            String albumArtist = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
+            String composer = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER);
+            String author = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR);
+            String bitrate = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);
 
-            System.out.println("Artist: " + artist + " title: " + title + " albumArtist: " + other + " composer: "+ other2 + " author: "+  other3 + " bitrate: " + other4);
+            System.out.println("Artist: " + artist
+                    + " title: " + title
+                    + " albumArtist: " + albumArtist
+                    + " composer: " + composer
+                    + " author: " +  author
+                    + " bitrate: " + bitrate);
         }
     }
 

@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="website_link">#71B1FF</color>
+
 
     <color name="notification_bar_dark">#411602</color>
     <color name="notification_bar_text_dark">#A8A49F</color>
