@@ -2,6 +2,9 @@ package com.jcrawley.webradio.fragment;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,10 @@ import android.widget.EditText;
 import com.jcrawley.webradio.MainActivity;
 import com.jcrawley.webradio.R;
 import com.jcrawley.webradio.repository.StationEntity;
+import com.jcrawley.webradio.service.UrlChecker;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +32,7 @@ public class AddStationFragment extends DialogFragment {
     private MainActivity activity;
     private EditText stationNameEditText, stationUrlEditText, linkEditText;
     private Button saveButton;
+    private ExecutorService executorService;
 
 
     public static AddStationFragment newInstance() {
@@ -34,6 +42,7 @@ public class AddStationFragment extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        executorService = Executors.newFixedThreadPool(1);
         return inflater.inflate(R.layout.fragment_add_station, container, false);
     }
 
@@ -59,12 +68,37 @@ public class AddStationFragment extends DialogFragment {
     }
 
 
+    private void setupMetaDataRetrievalKeyListener(){
+        stationUrlEditText.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                executorService.execute(()->{
+                    StationEntity stationEntity = UrlChecker.getMetadata(stationUrlEditText.getText().toString().trim());
+                    if(stationEntity != null) {
+                        updateEditTextsWithValuesFrom(stationEntity);
+                    }
+                });
+               // Toast.makeText(AddStationFragment.this, "asf", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
+        });
+    }
+
+
+    private void updateEditTextsWithValuesFrom(StationEntity stationEntity){
+        new Handler(Looper.getMainLooper()).post(() ->{
+            stationNameEditText.setText(stationEntity.getName());
+            linkEditText.setText(stationEntity.getLink());
+        });
+    }
+
 
     private void setupViews(View parentView){
         stationNameEditText = parentView.findViewById(R.id.stationNameEditText);
         stationUrlEditText = parentView.findViewById(R.id.stationUrlEditText);
         linkEditText = parentView.findViewById(R.id.linkEditText);
         disableButtonWhenAnyEmptyInputs(saveButton, stationNameEditText, stationUrlEditText);
+        setupMetaDataRetrievalKeyListener();
     }
 
 

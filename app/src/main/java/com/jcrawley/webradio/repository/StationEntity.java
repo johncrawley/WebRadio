@@ -4,8 +4,19 @@ public class StationEntity {
     private String name, url, link, description;
     private final Long id;
 
+    public StationEntity(String url){
+        this(-1L, url);
+    }
+
+
     public StationEntity(String name, String url){
         this(-1L, name, url);
+    }
+
+
+    private StationEntity(Long id, String url){
+        this.id = id;
+        this.url = url;
     }
 
 
