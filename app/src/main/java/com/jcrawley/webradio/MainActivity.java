@@ -114,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
         startMediaPlayerService();
         loadCurrentStationPreference();
         setupBroadcastReceivers();
+        Intent intent = getIntent();
+        if(intent !=null) {
+          Uri data =  intent.getData();
+          if(data != null) {
+              System.out.println("data: " + data.getPath());
+          }
+        }
     }
 
 

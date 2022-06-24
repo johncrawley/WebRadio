@@ -140,8 +140,8 @@ public class EditStationFragment extends DialogFragment {
 
 
     private void setupDeleteConfirmationDialog(){
-        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
-            switch (which){
+        DialogInterface.OnClickListener dialogClickListener = (dialog, buttonChoice) -> {
+            switch (buttonChoice){
                 case DialogInterface.BUTTON_POSITIVE:
                    activity.deleteStation(stationId);
                     dismiss();

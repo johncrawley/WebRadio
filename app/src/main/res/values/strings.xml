@@ -25,6 +25,7 @@
     <string name="status_connecting">Connecting</string>
     <string name="status_playing">Playing</string>
     <string name="status_error">Unable To Connect</string>
+    <string name="status_error_loading_file">Unable To Get Url From File</string>
     <string name="default_station_name_text_view">Select a Station</string>
     <string name="notification_button_title_play">Play</string>
     <string name="notification_button_title_stop">Stop</string>
