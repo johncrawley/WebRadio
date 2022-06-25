@@ -114,12 +114,19 @@ public class MainActivity extends AppCompatActivity {
         startMediaPlayerService();
         loadCurrentStationPreference();
         setupBroadcastReceivers();
+        setupWebsiteLink();
+        setupIncomingIntentActions();
+        setInitialStatus();
+    }
+
+
+    private void setupIncomingIntentActions(){
         Intent intent = getIntent();
         if(intent !=null) {
-          Uri data =  intent.getData();
-          if(data != null) {
-              System.out.println("data: " + data.getPath());
-          }
+            Uri data =  intent.getData();
+            if(data != null) {
+                System.out.println("data: " + data.getPath());
+            }
         }
     }
 
@@ -252,12 +259,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void onClick(){
-        if(stationWebsite == null){
-            return;
-        }
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(stationWebsite));
-        startActivity(browserIntent);
+    private void setupWebsiteLink(){
+        View websiteLinkTextView = findViewById(R.id.websiteLinkTextView);
+        websiteLinkTextView.setOnClickListener((View v)->{
+            if(stationWebsite == null || stationWebsite.trim().isEmpty()){
+                return;
+            }
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(stationWebsite));
+            startActivity(browserIntent);
+        });
     }
 
 
@@ -281,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void select(StationEntity station){
+        playButton.setVisibility(View.VISIBLE);
         currentURL = station.getUrl();
         currentStationName = station.getName();
         stationWebsite = station.getLink();
@@ -293,8 +304,26 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setWebsiteLinkVisibility(){
+        TextView websiteLinkTextView = findViewById(R.id.websiteLinkTextView);
+        int visibility = stationWebsite == null || stationWebsite.trim().isEmpty() ?
+                View.INVISIBLE :
+                View.VISIBLE;
+            websiteLinkTextView.setVisibility(visibility);
+    }
 
 
+    private void setInitialStatus(){
+        setWebsiteLinkVisibility();
+        if(currentURL == null){
+            int statusId = listAdapterHelper.getCount() == 0 ?
+                    R.string.status_add_a_station_to_begin
+                    : R.string.status_nothing_selected;
+            statusTextView.setText(statusId);
+            playButton.setVisibility(View.INVISIBLE);
+            return;
+        }
+        playButton.setVisibility(View.VISIBLE);
+        statusTextView.setText(R.string.status_ready);
     }
 
 

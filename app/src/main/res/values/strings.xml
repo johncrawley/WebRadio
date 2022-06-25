@@ -20,7 +20,8 @@
     <string name="update_station_dialog_title">Edit Station Details</string>
     <string name="notification_title">WebRadio</string>
     <string name="status_ready">Ready</string>
-    <string name="status_nothing_selected">Select A Track</string>
+    <string name="status_nothing_selected">Select A Station</string>
+    <string name="status_add_a_station_to_begin">Add A Station To Begin</string>
     <string name="website_link">Website</string>
     <string name="status_connecting">Connecting</string>
     <string name="status_playing">Playing</string>

@@ -21,6 +21,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.OPEN_DOCUMENT" />
+                <data android:scheme="file" />
+                <data android:pathPattern=".*\\.m3u" />
+                <data android:host="*"/>
+                <data android:mimeType="audio/x-mpegurl" />
+            </intent-filter>
         </activity>
         <service
             android:name=".service.MediaPlayerService"

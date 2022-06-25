@@ -92,9 +92,7 @@ public class AddStationFragment extends DialogFragment {
         Drawable openIcon = AppCompatResources.getDrawable(activity,R.mipmap.ic_action_collection);
         openButton.setBackground(openIcon);
         openButton.setVisibility(View.VISIBLE);
-        openButton.setOnClickListener((View v) -> {
-            startOpenDocumentActivity();
-        });
+        openButton.setOnClickListener((View v) -> startOpenDocumentActivity());
     }
 
 
