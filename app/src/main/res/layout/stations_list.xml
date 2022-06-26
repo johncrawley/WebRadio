@@ -7,6 +7,7 @@
     android:orientation="vertical">
     <ListView
         android:id="@+id/stationsList"
+        android:visibility="gone"
         android:isScrollContainer="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,17 +20,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
-    <TextView
-        android:id="@+id/noResultsFoundText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/no_stations_text"
-        android:textAlignment="center"
+
+    <LinearLayout
+        android:id="@+id/noResultsFoundLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/stationsList"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <ImageView
+            android:id="@+id/addStationBigButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:drawable/ic_menu_add"
+            android:contentDescription="@string/add_station_big_button_content_description"
+            android:scaleX="2"
+            android:scaleY="2" />
+
+    </LinearLayout>
+
 
 </LinearLayout>

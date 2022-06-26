@@ -23,6 +23,7 @@
     <string name="status_nothing_selected">Select A Station</string>
     <string name="status_add_a_station_to_begin">Add A Station To Begin</string>
     <string name="website_link">Website</string>
+    <string name="add_station_big_button_content_description">Add A Station</string>
     <string name="status_connecting">Connecting</string>
     <string name="status_playing">Playing</string>
     <string name="status_error">Unable To Connect</string>

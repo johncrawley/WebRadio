@@ -181,6 +181,15 @@ public class MainActivity extends AppCompatActivity {
         listAdapterHelper.addToList(stationEntity);
         stationsRepository.createStation(stationEntity);
         sendUpdateStationCountBroadcast();
+        updateStatusAfterListChange();
+        selectStationIfItsTheOnlyOne();
+    }
+
+
+    private void selectStationIfItsTheOnlyOne(){
+        if(listAdapterHelper.getCount() == 1){
+            listAdapterHelper.clickFirstItem();
+        }
     }
 
 
@@ -213,12 +222,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setupViews(){
-        findViewById(R.id.playButton).setOnClickListener((View view)-> sendStartBroadcast());
-        findViewById(R.id.stopButton).setOnClickListener((View view) -> sendStopBroadcast());
         setupNameTextView();
+        setupButtons();
         statusTextView = findViewById(R.id.playStatusTextView);
-        playButton = findViewById(R.id.playButton);
-        stopButton = findViewById(R.id.stopButton);
+    }
+
+
+
+    private void setupButtons(){
+        playButton = (Button)setupButton(R.id.playButton, this::sendStartBroadcast);
+        stopButton = (Button)setupButton(R.id.stopButton, this::sendStopBroadcast);
+        setupButton(R.id.addStationBigButton, this::startAddStationFragment);
+    }
+
+
+    private View setupButton(int viewId, Runnable runnable){
+        View view = findViewById(viewId);
+        view.setOnClickListener((View v)-> runnable.run());
+        return view;
     }
 
 
@@ -291,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void select(StationEntity station){
-        playButton.setVisibility(View.VISIBLE);
+        setReadyStatus();
         currentURL = station.getUrl();
         currentStationName = station.getName();
         stationWebsite = station.getLink();
@@ -300,6 +321,13 @@ public class MainActivity extends AppCompatActivity {
         sendChangeStationBroadcast();
         changeConnectionErrorStatus();
         setWebsiteLinkVisibility();
+    }
+
+
+    private void setReadyStatus(){
+        statusTextView.setText(R.string.status_ready);
+        playButton.setVisibility(View.VISIBLE);
+        isConnectionErrorShowing = false;
     }
 
 
@@ -315,15 +343,22 @@ public class MainActivity extends AppCompatActivity {
     private void setInitialStatus(){
         setWebsiteLinkVisibility();
         if(currentURL == null){
-            int statusId = listAdapterHelper.getCount() == 0 ?
-                    R.string.status_add_a_station_to_begin
-                    : R.string.status_nothing_selected;
-            statusTextView.setText(statusId);
+            updateStatusAfterListChange();
             playButton.setVisibility(View.INVISIBLE);
             return;
         }
         playButton.setVisibility(View.VISIBLE);
         statusTextView.setText(R.string.status_ready);
+    }
+
+
+    private void updateStatusAfterListChange(){
+        if(currentURL == null){
+            int statusId = listAdapterHelper.getCount() == 0 ?
+                    R.string.status_add_a_station_to_begin
+                    : R.string.status_nothing_selected;
+            statusTextView.setText(statusId);
+        }
     }
 
 
@@ -441,11 +476,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAll();
-        listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundText));
+        listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
     }
 
 
     private void saveCurrentStationPreference(){
+        sharedPreferences = getRecentStationPreferences();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_PREVIOUS_STATION_NAME, currentStationName);
         editor.putString(PREF_PREVIOUS_STATION_URL, currentURL);
@@ -459,11 +495,16 @@ public class MainActivity extends AppCompatActivity {
         if(isStationListEmpty()){
             return;
         }
-        sharedPreferences = getSharedPreferences("webRadioEditor", MODE_PRIVATE);
+        sharedPreferences = getRecentStationPreferences();
         StationEntity station = buildStationFromPrefs();
         listAdapterHelper.setSelectedIndex(getPreviousStationIndex());
         updateStatusViewOnStop();
         selectStationAfterDelay(station);
+    }
+
+
+    private SharedPreferences getRecentStationPreferences(){
+        return getSharedPreferences("webRadioEditor", MODE_PRIVATE);
     }
 
 

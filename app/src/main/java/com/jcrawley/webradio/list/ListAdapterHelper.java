@@ -54,6 +54,11 @@ public class ListAdapterHelper {
     }
 
 
+    public void clickFirstItem(){
+        clickConsumer.accept(arrayAdapter.getItem(0));
+    }
+
+
     public StationEntity getNextStation(){
         if(arrayAdapter.getCount() == 0){
             return createEmptyStation();

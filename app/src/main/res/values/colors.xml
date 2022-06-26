@@ -8,6 +8,17 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+
+    <color name="background_bright">#FAFFEC</color>
+    <color name="primary_color">#728FA8</color>
+    <color name="primary_color_lighter">#CEDDEA</color>
+    <color name="notification_bar">#53687A</color>
+    <color name="notification_bar_text">#FFFFFF</color>
+    <color name="station_detail_background">#FFFBE3</color>
+    <color name="station_list_background">#FFFEEC</color>
+    <color name="default_background">#FAFFF6</color>
+    <color name="station_detail_button_text_color">#F8F7F7</color>
+    <color name="station_list_item_text_color">#887E61</color>
     <color name="website_link">#1565C0</color>
 
 
@@ -22,15 +33,4 @@
     <color name="general_dialog_background_dark">#11161A</color>
     <color name="station_detail_button_text_color_dark">#2B2B2B</color>
     <color name="station_list_item_text_color_dark">#F8F7F7</color>
-
-    <color name="background_bright">#FAFFEC</color>
-    <color name="primary_color">#BAC9D6</color>
-    <color name="primary_color_lighter">#CEDDEA</color>
-    <color name="notification_bar">#A6BAC9</color>
-    <color name="notification_bar_text">#FFFFFF</color>
-    <color name="station_detail_background">#F8F1CF</color>
-    <color name="station_list_background">#FFFEEC</color>
-    <color name="default_background">#FAFFF6</color>
-    <color name="station_detail_button_text_color">#F8F7F7</color>
-    <color name="station_list_item_text_color">#887E61</color>
 </resources>
