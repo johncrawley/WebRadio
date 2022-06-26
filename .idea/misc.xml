@@ -9,10 +9,12 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23822463768115942" />
         <entry key="app/src/main/res/layout/current_station_detail.xml" value="0.25" />
         <entry key="app/src/main/res/layout/current_track_detail.xml" value="1.09375" />
+        <entry key="app/src/main/res/layout/faq_list_item.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/layout/fragment_about_app.xml" value="0.26145833333333335" />
         <entry key="app/src/main/res/layout/fragment_add_station.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_edit_station.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_edit_texts.xml" value="0.1734375" />
+        <entry key="app/src/main/res/layout/fragment_faq.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_station_detail.xml" value="0.161231884057971" />
         <entry key="app/src/main/res/layout/fragment_title.xml" value="0.11041666666666666" />
         <entry key="app/src/main/res/layout/station_list_item.xml" value="0.23697916666666666" />

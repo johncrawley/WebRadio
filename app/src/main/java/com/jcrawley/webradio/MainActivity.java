@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.jcrawley.webradio.fragment.AboutAppFragment;
 import com.jcrawley.webradio.fragment.EditStationFragment;
 import com.jcrawley.webradio.fragment.AddStationFragment;
+import com.jcrawley.webradio.fragment.FaqDialogFragment;
 import com.jcrawley.webradio.list.ListAdapterHelper;
 import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             updateStatusViewOnError();
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -369,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName className, IBinder service) { isServiceBound = true; }
         @Override public void onServiceDisconnected(ComponentName arg0) {
@@ -426,6 +429,19 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
         AboutAppFragment.newInstance().show(fragmentTransaction, tag);
+    }
+
+
+    public void startFaqFragment(){
+        String tag = "faq_dialog";
+        View mainLayout = findViewById(R.id.mainLayout);
+        Bundle bundle = new Bundle();
+        bundle.putInt(FaqDialogFragment.BUNDLE_TOTAL_HEIGHT, mainLayout.getMeasuredHeight());
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        removePreviousFragmentTransaction(tag, fragmentTransaction);
+        FaqDialogFragment faqDialogFragment = FaqDialogFragment.newInstance();
+        faqDialogFragment.setArguments(bundle);
+        faqDialogFragment.show(fragmentTransaction, tag);
     }
 
 

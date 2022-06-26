@@ -3,6 +3,7 @@
     <string name="about_app_name_and_version">Radioyo v1.0, 2022</string>
     <string name="about_created_by">Created by John Crawley</string>
     <string name="radioyo_graphic">Radio-yo title graphic</string>
+    <string name="about_app_ok_button_text">Done</string>
     <string name="no_stations_text">No Stations Saved</string>
     <string name="play_button_text">Play</string>
     <string name="stop_button_text">Stop</string>
@@ -35,4 +36,13 @@
     <string name="notification_button_title_next">Next</string>
     <string name="content_description_delete_button">Remove Station</string>
     <string name="delete_station_confirmation_dialog_text">Are you sure you want to remove this station?</string>
+    <string name="faq_dialog_title">FAQ</string>
+    <string name="faq_button_text">Frequently Asked Questions</string>
+    <string name="faq_question_1">How do I edit or remove stations?</string>
+    <string name="faq_answer_1">To open the edit dialog for a station, press and hold the corresponding item in the stations list.</string>
+    <string name="faq_question_2">Where can I find more radio stations?</string>
+    <string name="faq_answer_2">www.internet-radio.com has lots of stations featuring different genres.</string>
+    <string name="faq_question_3">Can I get station information from playlist files?</string>
+    <string name="faq_answer_3">In the "Add Station" dialog, you can browse for, and open, a file with the .m3u or .txt extension from your device\'s file system. Only the first line will be processed.</string>
+
 </resources>

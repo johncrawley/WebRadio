@@ -22,7 +22,7 @@
     <color name="website_link">#1565C0</color>
 
 
-    <color name="notification_bar_dark">#411602</color>
+    <color name="notification_bar_dark">#2C0F01</color>
     <color name="notification_bar_text_dark">#A8A49F</color>
     <color name="dark_text_color">#772C02</color>
     <color name="color_primary_dark">#A8A49F</color>
@@ -30,7 +30,7 @@
     <color name="dialog_background_dark">#00191919</color>
     <color name="station_detail_background_dark">#151A1E</color>
     <color name="station_list_background_dark">#11161A</color>
-    <color name="general_dialog_background_dark">#11161A</color>
+    <color name="general_dialog_background_dark">#262B2E</color>
     <color name="station_detail_button_text_color_dark">#2B2B2B</color>
-    <color name="station_list_item_text_color_dark">#F8F7F7</color>
+    <color name="station_list_item_text_color_dark">#B5B5B5</color>
 </resources>

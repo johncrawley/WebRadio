@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/aboutImage"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_margin="@dimen/about_dialog_image_margin"
         android:adjustViewBounds="true"
         android:contentDescription="@string/radioyo_graphic"
@@ -33,6 +33,14 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/about_text_size"
         android:text="@string/about_created_by" />
+    <Button
+        android:id="@+id/openFaqButton"
+        android:textColor="?attr/station_detail_button_text_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/about_dialog_ok_button_padding"
+        android:layout_margin="@dimen/about_dialog_ok_button_padding"
+        android:text="@string/faq_button_text" />
 
     <Button
         android:id="@+id/okButton"
@@ -41,5 +49,5 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/about_dialog_ok_button_padding"
         android:layout_margin="@dimen/about_dialog_ok_button_padding"
-        android:text="@android:string/ok" />
+        android:text="@string/about_app_ok_button_text" />
 </LinearLayout>

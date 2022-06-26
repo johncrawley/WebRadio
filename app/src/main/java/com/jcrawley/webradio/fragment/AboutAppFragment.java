@@ -1,6 +1,5 @@
 package com.jcrawley.webradio.fragment;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,15 +30,12 @@ public class AboutAppFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Dialog dialog =  getDialog();
         MainActivity activity = (MainActivity) getActivity();
         if(activity == null){
             return;
         }
-        if(dialog != null){
-            dialog.setTitle(activity.getString(R.string.add_station_title));
-        }
         setupOkButton(view);
+        setupFaqButton(view, activity);
         FragmentUtils.setupDimensions(view, activity);
     }
 
@@ -47,6 +43,15 @@ public class AboutAppFragment extends DialogFragment {
     private void setupOkButton(View parentView){
         Button okButton = parentView.findViewById(R.id.okButton);
         okButton.setOnClickListener((View v)-> dismiss());
+    }
+
+
+    private void setupFaqButton(View parentView, MainActivity activity){
+        Button okButton = parentView.findViewById(R.id.openFaqButton);
+        okButton.setOnClickListener((View v)-> {
+            dismiss();
+            activity.startFaqFragment();
+        });
     }
 
 }

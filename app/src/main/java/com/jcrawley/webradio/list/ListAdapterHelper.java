@@ -32,20 +32,6 @@ public class ListAdapterHelper {
     }
 
 
-    public boolean contains(String str){
-        for(int i=0; i < arrayAdapter.getCount(); i++){
-            StationEntity item = arrayAdapter.getItem(i);
-            if(item == null){
-                continue;
-            }
-            if(item.getName().equals(str)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public int getCount(){
         if(arrayAdapter == null){
             return 0;
@@ -123,16 +109,10 @@ public class ListAdapterHelper {
 
         list.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         list.setAdapter(arrayAdapter);
-       // list.setSelector(R.color.select_list_item_hidden);
         setupEmptyView(noResultsFoundView);
         list.setOnItemLongClickListener(longClickListener);
         list.setOnItemClickListener(clickListener);
 
-    }
-
-
-    public void notifyChanges(){
-        arrayAdapter.notifyDataSetChanged();
     }
 
 
@@ -152,14 +132,6 @@ public class ListAdapterHelper {
     }
 
 
-    public void updateSelectedItem(String contents){
-        StationEntity selectedItem = arrayAdapter.getItem(selectedIndex);
-        if(selectedItem != null){
-            selectedItem.setName(contents);
-        }
-    }
-
-
     public boolean contains(StationEntity item) {
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             StationEntity item1 = arrayAdapter.getItem(i);
@@ -172,11 +144,6 @@ public class ListAdapterHelper {
             }
         }
         return false;
-    }
-
-
-    public void deleteFromList(StationEntity listItem){
-        arrayAdapter.remove(listItem);
     }
 
 
@@ -193,17 +160,5 @@ public class ListAdapterHelper {
         }
     }
 
-
-    public void clearSelection(){
-        list.clearChoices();
-        list.clearFocus();
-        list.refreshDrawableState();
-        arrayAdapter.notifyDataSetChanged();
-    }
-
-
-    public ListItem getSelectedItem(){
-        return (ListItem)list.getSelectedItem();
-    }
 
 }
