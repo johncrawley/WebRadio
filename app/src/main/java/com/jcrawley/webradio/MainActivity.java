@@ -26,6 +26,7 @@ import com.jcrawley.webradio.fragment.AboutAppFragment;
 import com.jcrawley.webradio.fragment.EditStationFragment;
 import com.jcrawley.webradio.fragment.AddStationFragment;
 import com.jcrawley.webradio.fragment.FaqDialogFragment;
+import com.jcrawley.webradio.fragment.StationLibraryFragment;
 import com.jcrawley.webradio.list.ListAdapterHelper;
 import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
@@ -174,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(id == R.id.action_about){
             startAboutAppFragment();
+        }
+        else if(id == R.id.action_library){
+            startLibraryFragment();
         }
         return true;
     }
@@ -442,6 +446,19 @@ public class MainActivity extends AppCompatActivity {
         FaqDialogFragment faqDialogFragment = FaqDialogFragment.newInstance();
         faqDialogFragment.setArguments(bundle);
         faqDialogFragment.show(fragmentTransaction, tag);
+    }
+
+
+    public void startLibraryFragment(){
+        String tag = "library";
+   //     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+     //   removePreviousFragmentTransaction(tag, fragmentTransaction);
+       // StationLibraryFragment.newInstance().sta(fragmentTransaction, tag);
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.action_library, StationLibraryFragment.class, null)
+                .commit();
+
     }
 
 
