@@ -6,15 +6,17 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DbUtils {
 
-    static void addValuesToTable(SQLiteDatabase db, ContentValues contentValues){
+    static long addValuesToTable(SQLiteDatabase db, String tableName, ContentValues contentValues){
         db.beginTransaction();
+        long id = -1;
         try {
-            db.insertOrThrow(DbContract.StationsEntry.TABLE_NAME, null, contentValues);
+            id = db.insertOrThrow(tableName, null, contentValues);
             db.setTransactionSuccessful();
         }catch(SQLException e){
             e.printStackTrace();
         }
         db.endTransaction();
+        return id;
     }
 
 
@@ -24,6 +26,12 @@ public class DbUtils {
         contentValues.put(DbContract.StationsEntry.COL_URL, stationEntity.getUrl());
         contentValues.put(DbContract.StationsEntry.COL_LINK, stationEntity.getLink());
         contentValues.put(DbContract.StationsEntry.COL_DESCRIPTION, stationEntity.getDescription());
-        addValuesToTable(db, contentValues);
+        addValuesToTable(db, DbContract.StationsEntry.TABLE_NAME, contentValues);
+    }
+
+    static void createGenre(SQLiteDatabase db, StationEntity stationEntity){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbContract.StationsEntry.COL_STATION_NAME, stationEntity.getGenre() );
+        addValuesToTable(db, DbContract.GenresEntry.TABLE_NAME, contentValues);
     }
 }

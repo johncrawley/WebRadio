@@ -451,14 +451,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void startLibraryFragment(){
         String tag = "library";
-   //     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-     //   removePreviousFragmentTransaction(tag, fragmentTransaction);
-       // StationLibraryFragment.newInstance().sta(fragmentTransaction, tag);
-        getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .add(R.id.action_library, StationLibraryFragment.class, null)
-                .commit();
-
+        View mainLayout = findViewById(R.id.mainLayout);
+        Bundle bundle = new Bundle();
+        bundle.putInt(FaqDialogFragment.BUNDLE_TOTAL_HEIGHT, mainLayout.getMeasuredHeight());
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        removePreviousFragmentTransaction(tag, fragmentTransaction);
+        StationLibraryFragment stationLibraryFragment = StationLibraryFragment.newInstance();
+        stationLibraryFragment.setArguments(bundle);
+        stationLibraryFragment.show(fragmentTransaction, tag);
     }
 
 
@@ -508,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void refreshListFromDb(){
-        List<StationEntity> items = stationsRepository.getAll();
+        List<StationEntity> items = stationsRepository.getAllForStationsList();
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
     }
 

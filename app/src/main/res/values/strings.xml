@@ -36,6 +36,7 @@
     <string name="notification_button_title_previous">Previous</string>
     <string name="notification_button_title_next">Next</string>
     <string name="content_description_delete_button">Remove Station</string>
+    <string name="genre_spinner_label">Genre</string>
     <string name="delete_station_confirmation_dialog_text">Are you sure you want to remove this station?</string>
     <string name="faq_dialog_title">FAQ</string>
     <string name="faq_button_text">FAQ</string>

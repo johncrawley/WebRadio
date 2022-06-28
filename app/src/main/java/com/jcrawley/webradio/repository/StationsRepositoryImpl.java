@@ -44,12 +44,32 @@ public class StationsRepositoryImpl implements StationsRepository{
                 new String[]{String.valueOf(stationEntity.getId())});
     }
 
+    @Override
+    public List<String> getAllGenres(){
+        List<String> genres = new ArrayList<>();
+        Cursor cursor;
+        String query = "SELECT * FROM " + GenresEntry.TABLE_NAME;
+        try {
+            cursor = db.rawQuery(query, null);
+            while(cursor.moveToNext()){
+                genres.add(getString(cursor, GenresEntry.COL_GENRE_NAME));
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return genres;
+        }
+        cursor.close();
+        return genres;
+    }
+
 
     @Override
-    public List<StationEntity> getAll() {
+    public List<StationEntity> getAllForStationsList() {
        List<StationEntity> list = new ArrayList<>();
         Cursor cursor;
-        String query = "SELECT * FROM " + StationsEntry.TABLE_NAME;
+        String query = "SELECT * FROM " + StationsEntry.TABLE_NAME
+                + " WHERE " + StationsEntry.IS_LIBRARY_ENTRY + " = 0;";
 
         try {
             cursor = db.rawQuery(query, null);
@@ -72,9 +92,11 @@ public class StationsRepositoryImpl implements StationsRepository{
         return list;
     }
 
+
     @Override
     public List<StationEntity> getAllLibrary() {
-        String query = "SELECT * FROM " + StationsEntry.TABLE_NAME;
+        String query = "SELECT * FROM " + StationsEntry.TABLE_NAME
+                + " WHERE " + StationsEntry.IS_LIBRARY_ENTRY + " = 1;";
         return getStationsForQuery(query);
     }
 
@@ -104,6 +126,7 @@ public class StationsRepositoryImpl implements StationsRepository{
                         .url(getString(cursor, StationsEntry.COL_URL))
                         .description(getString(cursor, StationsEntry.COL_DESCRIPTION))
                         .link(getString(cursor, StationsEntry.COL_LINK))
+                        .setAsLibraryEntry(getLong(cursor, StationsEntry.IS_LIBRARY_ENTRY) == 1)
                         .build();
                 list.add(station);
             }

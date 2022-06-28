@@ -3,6 +3,9 @@ package com.jcrawley.webradio.repository;
 public class StationEntity {
     private String name, url, link, description;
     private final Long id;
+    private boolean isLibraryEntry;
+    private String genre;
+
 
     public StationEntity(String url){
         this(-1L, url);
@@ -33,19 +36,29 @@ public class StationEntity {
         this.url = builder.url;
         this.link = builder.link;
         this.description = builder.description;
+        this.isLibraryEntry = builder.isLibraryEntry;
+        this.genre = builder.genre;
     }
 
     public String getName(){
         return name;
     }
 
+
     public String getUrl(){
         return url;
     }
 
+
     public String getLink(){ return link;}
 
+
     public String getDescription(){ return description;}
+
+
+    public boolean isLibraryEntry(){
+        return this.isLibraryEntry;
+    }
 
     public Long getId(){
         return id;
@@ -53,6 +66,11 @@ public class StationEntity {
 
     public void setName(String name){
         this.name = name;}
+
+
+    public String getGenre(){
+        return genre;
+    }
 
     public void setLink(String link){
         this.link = link;
@@ -66,9 +84,13 @@ public class StationEntity {
         this.url = url;
     }
 
+
+
     public static class Builder{
         private String name, url, link, description;
         private long id;
+        private boolean isLibraryEntry;
+        private String genre;
 
         public static Builder newInstance(){
             return new Builder();
@@ -99,6 +121,18 @@ public class StationEntity {
 
         public Builder link(String link){
             this.link = link;
+            return this;
+        }
+
+
+        public Builder genre(String genre){
+            this.genre = genre;
+            return this;
+        }
+
+
+        public Builder setAsLibraryEntry(boolean isLibraryEntry){
+            this.isLibraryEntry = isLibraryEntry;
             return this;
         }
 

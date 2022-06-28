@@ -12,8 +12,8 @@ public final class DbContract {
         static final String COL_STATION_NAME = "name";
         static final String COL_URL = "url";
         static final String COL_LINK = "link";
-        static final String COL_IS_INCLUDED = "is_included";
         static final String COL_DESCRIPTION = "description";
+        static final String IS_LIBRARY_ENTRY = "is_library_entry";
     }
 
 
