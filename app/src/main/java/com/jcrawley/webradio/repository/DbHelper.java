@@ -35,8 +35,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     + StationsEntry.COL_STATION_NAME + TEXT + COMMA
                     + StationsEntry.COL_URL + TEXT + COMMA
                     + StationsEntry.COL_LINK + TEXT + COMMA
-                    + StationsEntry.COL_DESCRIPTION + TEXT
-                    + StationsEntry.IS_LIBRARY_ENTRY + INTEGER
+                    + StationsEntry.COL_DESCRIPTION + TEXT + COMMA
+                    + StationsEntry.IS_FAVOURITE + INTEGER
                     + CLOSING_BRACKET;
 
     private static final String SQL_CREATE_GENRES_TABLE =

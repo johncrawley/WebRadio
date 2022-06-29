@@ -3,7 +3,7 @@ package com.jcrawley.webradio.repository;
 public class StationEntity {
     private String name, url, link, description;
     private final Long id;
-    private boolean isLibraryEntry;
+    private boolean isFavourite;
     private String genre;
 
 
@@ -36,7 +36,7 @@ public class StationEntity {
         this.url = builder.url;
         this.link = builder.link;
         this.description = builder.description;
-        this.isLibraryEntry = builder.isLibraryEntry;
+        this.isFavourite = builder.isFavourite;
         this.genre = builder.genre;
     }
 
@@ -56,8 +56,8 @@ public class StationEntity {
     public String getDescription(){ return description;}
 
 
-    public boolean isLibraryEntry(){
-        return this.isLibraryEntry;
+    public boolean isFavourite(){
+        return this.isFavourite;
     }
 
     public Long getId(){
@@ -89,7 +89,7 @@ public class StationEntity {
     public static class Builder{
         private String name, url, link, description;
         private long id;
-        private boolean isLibraryEntry;
+        private boolean isFavourite;
         private String genre;
 
         public static Builder newInstance(){
@@ -131,8 +131,8 @@ public class StationEntity {
         }
 
 
-        public Builder setAsLibraryEntry(boolean isLibraryEntry){
-            this.isLibraryEntry = isLibraryEntry;
+        public Builder setFavourite(boolean isFavourite){
+            this.isFavourite = isFavourite;
             return this;
         }
 

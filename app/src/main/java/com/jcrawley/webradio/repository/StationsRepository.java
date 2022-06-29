@@ -10,6 +10,7 @@ public interface StationsRepository {
     List<StationEntity> getFromLibraryWithGenre(String genre);
     void delete(long id);
     void update(StationEntity stationEntity);
+    void setAsFavourite(StationEntity stationEntity);
     List<String> getAllGenres();
 
 

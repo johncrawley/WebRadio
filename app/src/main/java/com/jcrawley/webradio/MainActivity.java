@@ -309,6 +309,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public StationsRepository getStationRepository(){
+        return stationsRepository;
+    }
+
+
     private void setupStationList(){
         listAdapterHelper = new ListAdapterHelper(this,
                 findViewById(R.id.stationsList),
@@ -507,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void refreshListFromDb(){
+    public void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAllForStationsList();
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
     }

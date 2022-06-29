@@ -25,7 +25,7 @@
     </LinearLayout>
 
     <ListView
-        android:id="@+id/stationsList"
+        android:id="@+id/stationsLibraryList"
         android:visibility="visible"
         android:isScrollContainer="false"
         android:layout_width="match_parent"

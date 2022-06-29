@@ -17,16 +17,16 @@ public class ListAdapterHelper {
 
     private final Context context;
     private ListItemArrayAdapter arrayAdapter;
-    private final ListView list;
+    private final ListView listView;
     private final Consumer<StationEntity> clickConsumer;
     private final Consumer<StationEntity> longClickConsumer;
     private int selectedIndex;
 
-    public ListAdapterHelper(Context context, ListView list,
+    public ListAdapterHelper(Context context, ListView listView,
                              Consumer<StationEntity> clickConsumer,
                              Consumer<StationEntity> longClickConsumer){
         this.context = context;
-        this.list = list;
+        this.listView = listView;
         this.clickConsumer = clickConsumer;
         this.longClickConsumer = longClickConsumer;
     }
@@ -84,11 +84,10 @@ public class ListAdapterHelper {
     }
 
     public void setupList(final List<StationEntity> items, int layoutRes, View noResultsFoundView){
-        if(list == null){
+        if(listView == null){
             return;
         }
         arrayAdapter = new ListItemArrayAdapter(context, layoutRes, items);
-
         AdapterView.OnItemLongClickListener longClickListener = (parent, view, position, id) -> {
             if(position < items.size()){
                 StationEntity item = items.get(position);
@@ -106,13 +105,11 @@ public class ListAdapterHelper {
             selectedIndex = position;
             clickConsumer.accept(items.get(position));
         };
-
-        list.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        list.setAdapter(arrayAdapter);
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(arrayAdapter);
         setupEmptyView(noResultsFoundView);
-        list.setOnItemLongClickListener(longClickListener);
-        list.setOnItemClickListener(clickListener);
-
+        listView.setOnItemLongClickListener(longClickListener);
+        listView.setOnItemClickListener(clickListener);
     }
 
 
@@ -120,7 +117,7 @@ public class ListAdapterHelper {
         if(noResultsFoundView == null){
             return;
         }
-        list.setEmptyView(noResultsFoundView);
+        listView.setEmptyView(noResultsFoundView);
     }
 
 
@@ -158,6 +155,10 @@ public class ListAdapterHelper {
         if(indexToDelete > -1){
            arrayAdapter.remove(arrayAdapter.getItem(indexToDelete));
         }
+    }
+
+    public void clear(){
+        arrayAdapter.clear();
     }
 
 

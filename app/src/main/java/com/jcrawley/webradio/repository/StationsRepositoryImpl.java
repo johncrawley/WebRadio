@@ -26,7 +26,7 @@ public class StationsRepositoryImpl implements StationsRepository{
 
     @Override
     public void createStation(StationEntity stationEntity) {
-        DbUtils.createStation(db, stationEntity);
+      DbUtils.createStation(db, stationEntity);
     }
 
 
@@ -43,6 +43,7 @@ public class StationsRepositoryImpl implements StationsRepository{
                 "_id=?",
                 new String[]{String.valueOf(stationEntity.getId())});
     }
+
 
     @Override
     public List<String> getAllGenres(){
@@ -65,11 +66,20 @@ public class StationsRepositoryImpl implements StationsRepository{
 
 
     @Override
+    public void setAsFavourite(StationEntity station){
+        String query = "UPDATE " + StationsEntry.TABLE_NAME
+                + " SET " + StationsEntry.IS_FAVOURITE + " = 1 "
+                + " WHERE " + StationsEntry._ID + " = " + station.getId() + ";";
+        db.execSQL(query);
+    }
+
+
+    @Override
     public List<StationEntity> getAllForStationsList() {
        List<StationEntity> list = new ArrayList<>();
         Cursor cursor;
         String query = "SELECT * FROM " + StationsEntry.TABLE_NAME
-                + " WHERE " + StationsEntry.IS_LIBRARY_ENTRY + " = 0;";
+                + " WHERE " + StationsEntry.IS_FAVOURITE + " = 1;";
 
         try {
             cursor = db.rawQuery(query, null);
@@ -96,7 +106,7 @@ public class StationsRepositoryImpl implements StationsRepository{
     @Override
     public List<StationEntity> getAllLibrary() {
         String query = "SELECT * FROM " + StationsEntry.TABLE_NAME
-                + " WHERE " + StationsEntry.IS_LIBRARY_ENTRY + " = 1;";
+                + " WHERE " + StationsEntry.IS_FAVOURITE + " = 1;";
         return getStationsForQuery(query);
     }
 
@@ -106,13 +116,14 @@ public class StationsRepositoryImpl implements StationsRepository{
         String query1 = "SELECT * FROM " +
                 " ( SELECT * FROM "  + StationsEntry.TABLE_NAME
                 +  " INNER JOIN " + StationsGenresEntry.TABLE_NAME
-                + " ON " + StationsEntry._ID + " = " + StationsGenresEntry.COL_STATION_ID
+                + " ON " + StationsEntry.TABLE_NAME + "." + StationsEntry._ID + " = " + StationsGenresEntry.COL_STATION_ID
                 + " INNER JOIN " + GenresEntry.TABLE_NAME
-                + " ON "  + StationsGenresEntry.COL_GENRE_ID + " = " + GenresEntry._ID
-                + " WHERE " + GenresEntry.COL_GENRE_NAME +  " = '?');";
+                + " ON "  + StationsGenresEntry.COL_GENRE_ID + " = " + GenresEntry.TABLE_NAME + "." + GenresEntry._ID + ") "
+                + " WHERE " + GenresEntry.COL_GENRE_NAME +  " = '" + genre + "';";
 
         return getStationsForQuery(query1);
     }
+
 
     private List<StationEntity> getStationsForQuery(String query){
         List<StationEntity> list = new ArrayList<>();
@@ -126,7 +137,7 @@ public class StationsRepositoryImpl implements StationsRepository{
                         .url(getString(cursor, StationsEntry.COL_URL))
                         .description(getString(cursor, StationsEntry.COL_DESCRIPTION))
                         .link(getString(cursor, StationsEntry.COL_LINK))
-                        .setAsLibraryEntry(getLong(cursor, StationsEntry.IS_LIBRARY_ENTRY) == 1)
+                        .setFavourite(getLong(cursor, StationsEntry.IS_FAVOURITE) == 1)
                         .build();
                 list.add(station);
             }
