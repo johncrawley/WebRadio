@@ -66,9 +66,10 @@ public class StationsRepositoryImpl implements StationsRepository{
 
 
     @Override
-    public void setAsFavourite(StationEntity station){
+    public void setAsFavourite(StationEntity station, boolean isFavourite){
+        int favouriteValue = isFavourite ? 1 : 0;
         String query = "UPDATE " + StationsEntry.TABLE_NAME
-                + " SET " + StationsEntry.IS_FAVOURITE + " = 1 "
+                + " SET " + StationsEntry.IS_FAVOURITE + " = " + favouriteValue
                 + " WHERE " + StationsEntry._ID + " = " + station.getId() + ";";
         db.execSQL(query);
     }

@@ -4,8 +4,11 @@ import android.content.Context;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 
+import com.jcrawley.webradio.R;
 import com.jcrawley.webradio.repository.StationEntity;
 
 import java.util.List;
@@ -16,7 +19,7 @@ import androidx.core.util.Consumer;
 public class ListAdapterHelper {
 
     private final Context context;
-    private ListItemArrayAdapter arrayAdapter;
+    private ArrayAdapter<StationEntity> arrayAdapter;
     private final ListView listView;
     private final Consumer<StationEntity> clickConsumer;
     private final Consumer<StationEntity> longClickConsumer;
@@ -83,33 +86,71 @@ public class ListAdapterHelper {
         return new StationEntity("","");
     }
 
+    public void setupList(final List<StationEntity> stations, boolean hasCheckBox, View noResultsFoundView){
+        ArrayAdapter<StationEntity> adapter = hasCheckBox
+                ? new CheckedListItemArrayAdapter(context, R.layout.checked_list_item, stations)
+                : new ListItemArrayAdapter(context, R.layout.station_list_item, stations);
+
+        setupList(stations, adapter, noResultsFoundView);
+    }
+
+    public void setupList(final List<StationEntity> items,
+                          ArrayAdapter<StationEntity> arrayAdapter,
+                          View noResultsFoundView){
+        if(listView == null){
+            return;
+        }
+        this.arrayAdapter = arrayAdapter;
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(arrayAdapter);
+        setupEmptyView(noResultsFoundView);
+        listView.setOnItemClickListener(createClickListener(items));
+        listView.setOnItemLongClickListener(createLongClickListener(items));
+    }
+
+
     public void setupList(final List<StationEntity> items, int layoutRes, View noResultsFoundView){
         if(listView == null){
             return;
         }
         arrayAdapter = new ListItemArrayAdapter(context, layoutRes, items);
-        AdapterView.OnItemLongClickListener longClickListener = (parent, view, position, id) -> {
-            if(position < items.size()){
-                StationEntity item = items.get(position);
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(arrayAdapter);
+        setupEmptyView(noResultsFoundView);
+        listView.setOnItemClickListener(createClickListener(items));
+        listView.setOnItemLongClickListener(createLongClickListener(items));
+    }
+
+
+    private AdapterView.OnItemClickListener createClickListener(List<StationEntity> stations){
+        return (parent, view, position, id) -> {
+            if(position >= stations.size()){
+                return;
+            }
+            selectedIndex = position;
+            clickConsumer.accept(stations.get(position));
+            toggleCheckbox(view);
+        };
+    }
+
+
+    private AdapterView.OnItemLongClickListener createLongClickListener(List<StationEntity> stations){
+        return (parent, view, position, id) -> {
+            if(position < stations.size()){
+                StationEntity item = stations.get(position);
                 longClickConsumer.accept(item);
                 return true;
             }
             return false;
         };
+    }
 
 
-        AdapterView.OnItemClickListener clickListener = (parent, view, position, id) -> {
-            if(position >= items.size()){
-                return;
-            }
-            selectedIndex = position;
-            clickConsumer.accept(items.get(position));
-        };
-        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        listView.setAdapter(arrayAdapter);
-        setupEmptyView(noResultsFoundView);
-        listView.setOnItemLongClickListener(longClickListener);
-        listView.setOnItemClickListener(clickListener);
+    private void toggleCheckbox(View listElement){
+        CheckedTextView checkbox = listElement.findViewById(R.id.checkedTextView);
+        if(checkbox != null){
+            checkbox.toggle();
+        }
     }
 
 

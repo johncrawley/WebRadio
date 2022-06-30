@@ -27,6 +27,7 @@ public class StationLibraryFragment extends DialogFragment {
     private StationsRepository stationsRepository;
     private ListView stationsList;
     private ListAdapterHelper listAdapterHelper;
+    private MainActivity activity;
 
     public static StationLibraryFragment newInstance() {
         return new StationLibraryFragment();
@@ -42,7 +43,7 @@ public class StationLibraryFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MainActivity activity = (MainActivity) getActivity();
+        activity = (MainActivity) getActivity();
         if(activity == null){
             return;
         }
@@ -64,12 +65,8 @@ public class StationLibraryFragment extends DialogFragment {
 
 
     private void selectStation(StationEntity station){
-        stationsRepository.setAsFavourite(station);
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if(mainActivity != null){
-            mainActivity.refreshListFromDb();
-        }
-
+        station.toggleFavouriteStatus();
+        stationsRepository.setAsFavourite(station, station.isFavourite());
     }
 
 
@@ -77,19 +74,17 @@ public class StationLibraryFragment extends DialogFragment {
 
     }
 
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        activity.refreshListFromDb();
+    }
+
 
     private void setupCloseButton(View parentView){
         Button okButton = parentView.findViewById(R.id.closebutton);
         okButton.setOnClickListener((View v)-> dismiss());
     }
-
-
-    private void setupAddButton(View parentView){
-        Button okButton = parentView.findViewById(R.id.openFaqButton);
-        okButton.setOnClickListener((View v)-> dismiss());
-    }
-
-
 
 
     private void setupSpinner(View rootView, List<String> genres){
@@ -116,6 +111,7 @@ public class StationLibraryFragment extends DialogFragment {
 
     private void setupListFor(String genre){
         List<StationEntity> stations = stationsRepository.getFromLibraryWithGenre(genre);
-        listAdapterHelper.setupList(stations, android.R.layout.simple_list_item_1, null);
+        //listAdapterHelper.setupList(stations, android.R.layout.simple_list_item_1, null);
+        listAdapterHelper.setupList(stations, true, null);
     }
 }
