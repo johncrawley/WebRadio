@@ -1,2 +1,2 @@
-ROCK FM!!!,http://www.my_rock_example_website.com:9876,http://www.my_rock.org.com",Rock
+ROCK FM!!!,http://www.my_rock_example_website.com:9876,http://www.my_rock.org.com,Rock
 Jazzy FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_jazz.org.com,Jazz

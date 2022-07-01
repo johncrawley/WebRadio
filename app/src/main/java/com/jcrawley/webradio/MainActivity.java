@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private final String PREF_PREVIOUS_STATION_URL = "previous_station_url";
     private final String PREF_PREVIOUS_STATION_WEBSITE_LINK = "previous_station_website_link";
     private final String PREF_PREVIOUS_STATION_LIST_INDEX = "previous_station_list_index";
-    private TextView stationNameTextView, statusTextView;
+    private TextView stationNameTextView, statusTextView, websiteLinkTextView;
     private Button playButton, stopButton;
     private boolean isConnectionErrorShowing = false;
     private String stationWebsite;
@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         setupNameTextView();
         setupButtons();
         statusTextView = findViewById(R.id.playStatusTextView);
+        websiteLinkTextView = findViewById(R.id.websiteLinkTextView);
     }
 
 
@@ -331,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
         currentStationName = station.getName();
         stationWebsite = station.getLink();
         stationNameTextView.setText(currentStationName);
+        websiteLinkTextView.setText(stationWebsite);
         saveCurrentStationPreference();
         sendChangeStationBroadcast();
         changeConnectionErrorStatus();
@@ -518,6 +520,7 @@ public class MainActivity extends AppCompatActivity {
     public void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAllForStationsList();
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
+        updateStatusAfterListChange();
     }
 
 
