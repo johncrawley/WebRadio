@@ -16,6 +16,7 @@
     <color name="notification_bar_text">#FFFFFF</color>
     <color name="station_detail_background">#FFFBE3</color>
     <color name="station_list_background">#FFFEEC</color>
+    <color name="general_dialog_background">#FFFDDC</color>
     <color name="default_background">#FAFFF6</color>
     <color name="station_detail_button_text_color">#F8F7F7</color>
     <color name="station_list_item_text_color">#887E61</color>

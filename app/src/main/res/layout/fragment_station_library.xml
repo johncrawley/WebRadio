@@ -2,9 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:layout_height="match_parent">
+    style="@style/generalDialog">
+
+    <include layout="@layout/fragment_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
 
     <LinearLayout
         android:id="@+id/genreSpinnerLayout"
@@ -34,13 +41,16 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        style="@style/stationList"
         />
 
     <Button
-        android:id="@+id/closebutton"
+        android:id="@+id/doneButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Close"
-        tools:layout_editor_absoluteX="138dp"
-        tools:layout_editor_absoluteY="329dp" />
+        android:paddingVertical="@dimen/dialog_button_padding_vertical"
+        android:layout_marginBottom="@dimen/dialog_button_margin_bottom"
+        android:text="@string/library_done_button"
+        android:textColor="?attr/station_detail_button_text_color"
+       />
 </LinearLayout>

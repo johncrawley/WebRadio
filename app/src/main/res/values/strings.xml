@@ -12,6 +12,7 @@
     <string name="input_text_label_station_description">Description</string>
     <string name="input_text_label_station_link">Website Link</string>
     <string name="add_station_title">Add Station</string>
+    <string name="station_library_title">Station Library</string>
     <string name="add_station_cancel_button">Cancel</string>
     <string name="add_station_save_button">Save</string>
     <string name="menu_item_add_station">Add Station</string>
@@ -37,6 +38,7 @@
     <string name="notification_button_title_next">Next</string>
     <string name="content_description_delete_button">Remove Station</string>
     <string name="genre_spinner_label">Genre</string>
+    <string name="library_done_button">Done</string>
     <string name="delete_station_confirmation_dialog_text">Are you sure you want to remove this station?</string>
     <string name="faq_dialog_title">FAQ</string>
     <string name="faq_button_text">FAQ</string>
@@ -46,5 +48,5 @@
     <string name="faq_answer_2">www.internet-radio.com has lots of stations featuring different genres.</string>
     <string name="faq_question_3">Can I get station information from playlist files?</string>
     <string name="faq_answer_3">In the "Add Station" dialog, you can browse for, and open, a file with the .m3u or .txt extension from your device\'s file system. Only the first line will be processed.</string>
-
+    <string name="genre_user_label">User</string>
 </resources>

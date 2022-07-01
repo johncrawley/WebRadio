@@ -6,6 +6,7 @@
         <entry key="../../.gradle/caches/transforms-3/a911bf5df232e3fd12bbd44240a4fea2/transformed/material-1.6.0/res/layout/mtrl_alert_dialog.xml" value="0.1625" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1325" />
         <entry key="app/src/main/res/layout-land/activity_main.xml" value="0.18562610229276896" />
+        <entry key="app/src/main/res/layout-land/fragment_station_library.xml" value="0.1917989417989418" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23822463768115942" />
         <entry key="app/src/main/res/layout/checked_list_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/current_station_detail.xml" value="0.25" />

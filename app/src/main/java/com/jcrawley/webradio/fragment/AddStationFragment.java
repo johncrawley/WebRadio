@@ -67,7 +67,6 @@ public class AddStationFragment extends DialogFragment {
         if(activity == null){
             return;
         }
-        setDialogTitle();
         saveButton = view.findViewById(R.id.save_button);
         setupTitle(activity, view, R.string.add_station_title);
         setupViews(view);
@@ -76,14 +75,6 @@ public class AddStationFragment extends DialogFragment {
         FragmentUtils.setupDimensions(view, activity);
         setupOpenPlaylistButton(view);
         initLoadFileResultLauncher();
-    }
-
-
-    private void setDialogTitle(){
-        Dialog dialog =  getDialog();
-        if(dialog != null){
-            dialog.setTitle(activity.getString(R.string.add_station_title));
-        }
     }
 
 
@@ -193,6 +184,8 @@ public class AddStationFragment extends DialogFragment {
                     .name(getTextOf(stationNameEditText))
                     .url(getTextOf(stationUrlEditText))
                     .link(getTextOf(linkEditText))
+                    .genre("User")
+                    .setFavourite(true)
                     .build();
             activity.saveStation(station);
             dismiss();

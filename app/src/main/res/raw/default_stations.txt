@@ -1,2 +1,15 @@
 ROCK FM!!!,http://www.my_rock_example_website.com:9876,http://www.my_rock.org.com,Rock
 Jazzy FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_jazz.org.com,Jazz
+Country FM!!!,http://www.country_example_website.com:9876,http://www.my_country.org.com,Country
+Blues FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_blues.org.com,Blues
+Metal FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_metal.org.com,Metal
+Soul FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_soul.org.com,Soul
+User FM!!!,http://www.blah_example_website.com:9876,http://www.my_blah.org.com,User
+R&B FM!!!,http://www.rb_example_website.com:9876,http://www.my_rb.org.com,R&B
+Classical FM!!!,http://www.classical_example_website.com:9876,http://www.my_classicz.org.com,Classical
+Pop FM!!!,http://www.pop_example_website.com:9876,http://www.my_pop.org.com,Pop
+House FM!!!,http://www.house_example_website.com:9876,http://www.my_house.org.com,House
+Trance FM!!!,http://www.trance_example_website.com:9876,http://www.my_trance.org.com,Trance
+Punk FM!!!,http://www.punk_example_website.com:9876,http://www.my_punk.org.com,Punk
+Dance FM!!!,http://www.dance_example_website.com:9876,http://www.my_dance.org.com,Dance
+Bluegrass FM!!!,http://www.bluegrass_example_website.com:9876,http://www.my_bluegrass.org.com,Bluegrass

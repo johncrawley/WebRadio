@@ -174,13 +174,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.action_add_station){
-            startAddStationFragment();
+            startLibraryFragment();
         }
         else if(id == R.id.action_about){
             startAboutAppFragment();
-        }
-        else if(id == R.id.action_library){
-            startLibraryFragment();
         }
         return true;
     }
@@ -242,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupButtons(){
         playButton = (Button)setupButton(R.id.playButton, this::sendStartBroadcast);
         stopButton = (Button)setupButton(R.id.stopButton, this::sendStopBroadcast);
-        setupButton(R.id.addStationBigButton, this::startAddStationFragment);
+        setupButton(R.id.addStationBigButton, this::startLibraryFragment);
     }
 
 
@@ -413,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void startAddStationFragment(){
+    public void startAddStationFragment(){
         String tag = "add_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);

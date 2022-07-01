@@ -13,7 +13,8 @@
     <dimen name="faq_text_padding_horizontal">6dp</dimen>
     <dimen name="faq_text_question_padding_top">8dp</dimen>
     <dimen name="faq_text_answer_padding_bottom">12dp</dimen>
-    <dimen name="about_dialog_ok_button_padding">12dp</dimen>
+    <dimen name="dialog_button_padding_vertical">12dp</dimen>
+    <dimen name="dialog_button_margin_bottom">12dp</dimen>
     <dimen name="about_dialog_image_margin">12dp</dimen>
     <dimen name="about_text_size">18sp</dimen>
     <dimen name="faq_question_text_size">14sp</dimen>

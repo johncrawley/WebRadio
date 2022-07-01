@@ -58,7 +58,7 @@
 
 
     <style name="generalDialog" parent="Base.CardView">
-        <item name="android:background">@color/station_list_background</item>
+        <item name="android:background">@color/general_dialog_background</item>
     </style>
 
 
