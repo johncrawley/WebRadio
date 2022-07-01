@@ -14,10 +14,12 @@ import static com.jcrawley.webradio.repository.DbContract.StationsGenresEntry;
 public class DbHelper extends SQLiteOpenHelper {
 
     private static DbHelper instance;
+
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 1;
 
     private static final String DATABASE_NAME = "WebRadioStations.db";
+
 
     private static final String OPENING_BRACKET = " (";
     private static final String CLOSING_BRACKET = " );";
@@ -73,16 +75,8 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_STATIONS_TABLE);
         db.execSQL(SQL_CREATE_GENRES_TABLE);
         db.execSQL(SQL_CREATE_STATIONS_GENRES_TABLE);
-        addInitialStations(db);
     }
 
-
-    private void addInitialStations(SQLiteDatabase  db){
-        List<StationEntity> stations = InitialStationsLoader.get();
-        for(StationEntity station : stations){
-            DbUtils.createStation(db, station);
-        }
-    }
 
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -28,6 +28,7 @@ import com.jcrawley.webradio.fragment.AddStationFragment;
 import com.jcrawley.webradio.fragment.FaqDialogFragment;
 import com.jcrawley.webradio.fragment.StationLibraryFragment;
 import com.jcrawley.webradio.list.ListAdapterHelper;
+import com.jcrawley.webradio.repository.InitialStationsLoader;
 import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
 import com.jcrawley.webradio.repository.StationsRepositoryImpl;
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupRepository();
+        new InitialStationsLoader(getApplicationContext(), getSharedPreferences()).load();
         setupStationList();
         setupViews();
         refreshListFromDb();
@@ -120,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         setupWebsiteLink();
         setupIncomingIntentActions();
         setInitialStatus();
+
     }
 
 
@@ -519,7 +522,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void saveCurrentStationPreference(){
-        sharedPreferences = getRecentStationPreferences();
+        sharedPreferences = getSharedPreferences();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_PREVIOUS_STATION_NAME, currentStationName);
         editor.putString(PREF_PREVIOUS_STATION_URL, currentURL);
@@ -533,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
         if(isStationListEmpty()){
             return;
         }
-        sharedPreferences = getRecentStationPreferences();
+        sharedPreferences = getSharedPreferences();
         StationEntity station = buildStationFromPrefs();
         listAdapterHelper.setSelectedIndex(getPreviousStationIndex());
         updateStatusViewOnStop();
@@ -541,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private SharedPreferences getRecentStationPreferences(){
+    private SharedPreferences getSharedPreferences(){
         return getSharedPreferences("webRadioEditor", MODE_PRIVATE);
     }
 
