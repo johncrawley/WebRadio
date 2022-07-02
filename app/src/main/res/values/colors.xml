@@ -21,6 +21,7 @@
     <color name="station_detail_button_text_color">#F8F7F7</color>
     <color name="station_list_item_text_color">#887E61</color>
     <color name="website_link">#1565C0</color>
+    <color name="selected_list_item_background_color">#F8F6CD</color>
 
 
     <color name="notification_bar_dark">#28314A</color>
@@ -33,4 +34,6 @@
     <color name="general_dialog_background_dark">#262B2E</color>
     <color name="station_detail_button_text_color_dark">#2B2B2B</color>
     <color name="station_list_item_text_color_dark">#BFBFBF</color>
+    <color name="website_link_dark">#3E7DC5</color>
+    <color name="selected_list_item_background_color_dark">#303943</color>
 </resources>

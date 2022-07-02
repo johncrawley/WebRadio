@@ -5,4 +5,6 @@
     <attr name="station_list_item_text_color" format="reference"/>
     <attr name="station_list_item_selected_icon" format="reference"/>
     <attr name="station_list_item_unselected_icon" format="reference"/>
+    <attr name="selected_list_item_background_color" format="reference"/>
+    <attr name="website_link_color" format="reference"/>
 </resources>

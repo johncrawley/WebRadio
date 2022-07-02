@@ -1,5 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-
+<resources>
     <style name="Theme.WebRadio" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/color_primary_dark</item>
         <item name="colorPrimaryVariant">@color/notification_bar_dark</item>
@@ -10,7 +9,9 @@
         <item name="station_detail_button_text_color">@color/station_detail_button_text_color_dark</item>
         <item name="station_list_item_text_color">@color/station_list_item_text_color_dark</item>
         <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="website_link_color">@color/website_link_dark</item>
+        <item name="selected_list_item_background_color">@color/selected_list_item_background_color_dark</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
 
 

@@ -29,7 +29,7 @@
         android:gravity="center_horizontal"
         android:paddingBottom="@dimen/website_link_padding_bottom"
         android:text="@string/website_link"
-        android:textColor="@color/website_link"
+        android:textColor="?attr/website_link_color"
         android:textSize="@dimen/website_link_text_size"
         app:layout_constraintBottom_toTopOf="@+id/playStatusTextView"
         app:layout_constraintEnd_toEndOf="parent"

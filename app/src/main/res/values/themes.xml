@@ -9,8 +9,10 @@
         <item name="station_list_item_unselected_icon">@mipmap/station_unselected</item>
         <item name="station_detail_button_text_color">@color/station_detail_button_text_color</item>
         <item name="station_list_item_text_color">@color/station_list_item_text_color</item>
+        <item name="website_link_color">@color/website_link</item>
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="selected_list_item_background_color">@color/selected_list_item_background_color</item>
         <!-- <item name="colorOnSecondary">@color/black</item> -->
         <item name="colorOnSecondary">@color/teal_200</item>
 

@@ -149,7 +149,11 @@ public class ListAdapterHelper {
 
 
     private void toggleCheckbox(View listElement, StationEntity station){
-        listElement.findViewById(R.id.selected_status_icon).setVisibility(station.isFavourite() ? View.VISIBLE : View.GONE);
+        View selectedStatusIcon = listElement.findViewById(R.id.selected_status_icon);
+        if( selectedStatusIcon == null){
+            return;
+        }
+        selectedStatusIcon.setVisibility(station.isFavourite() ? View.VISIBLE : View.GONE);
         listElement.findViewById(R.id.unselected_status_icon).setVisibility(station.isFavourite()? View.GONE : View.VISIBLE);
     }
 
