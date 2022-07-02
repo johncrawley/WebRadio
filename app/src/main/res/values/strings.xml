@@ -49,4 +49,6 @@
     <string name="faq_question_3">Can I get station information from playlist files?</string>
     <string name="faq_answer_3">In the "Add Station" dialog, you can browse for, and open, a file with the .m3u or .txt extension from your device\'s file system. Only the first line will be processed.</string>
     <string name="genre_user_label">User</string>
+    <string name="selected_station_list_item_content_description">selected</string>
+    <string name="unselected_station_list_item_content_description">unselected</string>
 </resources>

@@ -1,11 +1,16 @@
 package com.jcrawley.webradio.list;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.opengl.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jcrawley.webradio.R;
@@ -39,8 +44,9 @@ public class CheckedListItemArrayAdapter extends ArrayAdapter<StationEntity> {
         if (station == null || station.getName().isEmpty()) {
             return view;
         }
-        CheckedTextView checkedTextView = view.findViewById(R.id.checkedTextView);
-        checkedTextView.setChecked(station.isFavourite());
+
+       view.findViewById(R.id.selected_status_icon).setVisibility(station.isFavourite() ? View.VISIBLE : View.GONE);
+        view.findViewById(R.id.unselected_status_icon).setVisibility(station.isFavourite()? View.GONE : View.VISIBLE);
         TextView textView = view.findViewById(R.id.stationNameTextView);
         textView.setText(station.getName());
         return view;

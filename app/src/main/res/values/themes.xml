@@ -5,6 +5,8 @@
         <item name="colorPrimaryVariant">@color/notification_bar</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="feature_graphic">@drawable/radioyo_feature_graphic_bright</item>
+        <item name="station_list_item_selected_icon">@mipmap/station_selected</item>
+        <item name="station_list_item_unselected_icon">@mipmap/station_unselected</item>
         <item name="station_detail_button_text_color">@color/station_detail_button_text_color</item>
         <item name="station_list_item_text_color">@color/station_list_item_text_color</item>
         <item name="colorSecondary">@color/teal_200</item>

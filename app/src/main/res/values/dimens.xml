@@ -23,6 +23,11 @@
     <dimen name="station_detail_button_layout_padding">16dp</dimen>
     <dimen name="station_list_item_text_size">16sp</dimen>
     <dimen name="station_list_item_vertical_padding">8dp</dimen>
+    <dimen name="list_status_icon_padding">12dp</dimen>
+    <dimen name="station_library_list_item_padding_vertical">6dp</dimen>
+    <dimen name="station_library_list_item_padding_horizontal">6dp</dimen>
+    <dimen name="station_list_item_text_padding_start">8dp</dimen>
+    <dimen name="station_list_item_text_padding_end">0dp</dimen>
 
 
 </resources>

@@ -6,6 +6,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.jcrawley.webradio.R;
@@ -128,8 +129,9 @@ public class ListAdapterHelper {
                 return;
             }
             selectedIndex = position;
-            clickConsumer.accept(stations.get(position));
-            toggleCheckbox(view);
+            StationEntity station = stations.get(position);
+            clickConsumer.accept(station);
+            toggleCheckbox(view, station);
         };
     }
 
@@ -146,11 +148,9 @@ public class ListAdapterHelper {
     }
 
 
-    private void toggleCheckbox(View listElement){
-        CheckedTextView checkbox = listElement.findViewById(R.id.checkedTextView);
-        if(checkbox != null){
-            checkbox.toggle();
-        }
+    private void toggleCheckbox(View listElement, StationEntity station){
+        listElement.findViewById(R.id.selected_status_icon).setVisibility(station.isFavourite() ? View.VISIBLE : View.GONE);
+        listElement.findViewById(R.id.unselected_status_icon).setVisibility(station.isFavourite()? View.GONE : View.VISIBLE);
     }
 
 

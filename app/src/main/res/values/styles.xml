@@ -3,4 +3,6 @@
     <attr name="feature_graphic" format="reference"/>
     <attr name="station_detail_button_text_color" format="reference"/>
     <attr name="station_list_item_text_color" format="reference"/>
+    <attr name="station_list_item_selected_icon" format="reference"/>
+    <attr name="station_list_item_unselected_icon" format="reference"/>
 </resources>
