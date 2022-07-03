@@ -11,14 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InitialStationsLoader {
 
     private final SQLiteDatabase db;
     private final SharedPreferences sharedPreferences;
     private final Context context;
+    private String genre;
 
     public InitialStationsLoader(Context context, SharedPreferences sharedPreferences){
         this.context = context;
@@ -45,6 +44,7 @@ public class InitialStationsLoader {
             String line = bufferedReader.readLine();
             while(line != null){
                 if(line.startsWith("#")){
+                    genre = line.substring(1);
                     continue;
                 }
                 DbUtils.createStation(db, parseLine(line));
@@ -56,13 +56,13 @@ public class InitialStationsLoader {
     }
 
 
-    private static StationEntity parseLine(String line){
+    private StationEntity parseLine(String line){
         String[] strArray = line.split(",");
         return StationEntity.Builder.newInstance()
                 .name(strArray[0])
                 .url(strArray[1])
                 .link(strArray[2])
-                .genre(strArray[3])
+                .genre(genre)
                 .setFavourite(false)
                 .build();
     }
