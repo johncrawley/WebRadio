@@ -188,6 +188,7 @@ public class AddStationFragment extends DialogFragment {
                     .setFavourite(true)
                     .build();
             activity.saveStation(station);
+            activity.refreshListFromDb();
             dismiss();
         });
     }

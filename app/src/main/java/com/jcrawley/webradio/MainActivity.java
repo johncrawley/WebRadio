@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private Button playButton, stopButton;
     private boolean isConnectionErrorShowing = false;
     private String stationWebsite;
+    private StationLibraryFragment stationLibraryFragment;
+
 
 
 
@@ -319,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         listAdapterHelper = new ListAdapterHelper(this,
                 findViewById(R.id.stationsList),
                 this::select,
-                this::startEditStationFragment);
+                (StationEntity station)->{});
     }
 
 
@@ -419,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void startEditStationFragment(StationEntity station){
+    public void startEditStationFragment(StationEntity station){
         String tag = "edit_station";
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
@@ -463,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt(FaqDialogFragment.BUNDLE_TOTAL_HEIGHT, mainLayout.getMeasuredHeight());
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
-        StationLibraryFragment stationLibraryFragment = StationLibraryFragment.newInstance();
+        stationLibraryFragment = StationLibraryFragment.newInstance();
         stationLibraryFragment.setArguments(bundle);
         stationLibraryFragment.show(fragmentTransaction, tag);
     }
@@ -518,6 +520,9 @@ public class MainActivity extends AppCompatActivity {
         List<StationEntity> items = stationsRepository.getAllForStationsList();
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
         updateStatusAfterListChange();
+        if(stationLibraryFragment!= null){
+            stationLibraryFragment.refreshList();
+        }
     }
 
 

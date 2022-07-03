@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.jcrawley.webradio.MainActivity;
@@ -30,9 +29,10 @@ import static com.jcrawley.webradio.fragment.FragmentUtils.setupTitle;
 public class StationLibraryFragment extends DialogFragment {
 
     private StationsRepository stationsRepository;
-    private ListView stationsList;
     private ListAdapterHelper listAdapterHelper;
     private MainActivity activity;
+    private Spinner genreSpinner;
+
 
     public static StationLibraryFragment newInstance() {
         return new StationLibraryFragment();
@@ -77,7 +77,7 @@ public class StationLibraryFragment extends DialogFragment {
         listAdapterHelper = new ListAdapterHelper(activity,
                 parentView.findViewById(R.id.stationsLibraryList),
                 this::selectStation,
-                this::doNothing);
+                this::startEditStationFragment);
     }
 
 
@@ -87,9 +87,10 @@ public class StationLibraryFragment extends DialogFragment {
     }
 
 
-    private void doNothing(StationEntity station){
-
+    private void startEditStationFragment(StationEntity station){
+        activity.startEditStationFragment(station);
     }
+
 
     @Override
     public void dismiss(){
@@ -104,8 +105,16 @@ public class StationLibraryFragment extends DialogFragment {
     }
 
 
+    public void refreshList(){
+        if(genreSpinner == null){
+            return;
+        }
+        setupListFor((String)genreSpinner.getSelectedItem());
+    }
+
+
     private void setupSpinner(View rootView, List<String> genres){
-        Spinner spinner = rootView.findViewById(R.id.genreSpinner);
+        genreSpinner = rootView.findViewById(R.id.genreSpinner);
         sortGenres(genres);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(rootView.getContext(),
                 android.R.layout.simple_spinner_dropdown_item, genres);
@@ -120,9 +129,9 @@ public class StationLibraryFragment extends DialogFragment {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         };
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(itemSelectedListener);
-        setupListFor((String)spinner.getSelectedItem());
+        genreSpinner.setAdapter(adapter);
+        genreSpinner.setOnItemSelectedListener(itemSelectedListener);
+        refreshList();
     }
 
 
@@ -140,7 +149,6 @@ public class StationLibraryFragment extends DialogFragment {
 
     private void setupListFor(String genre){
         List<StationEntity> stations = stationsRepository.getFromLibraryWithGenre(genre);
-        //listAdapterHelper.setupList(stations, android.R.layout.simple_list_item_1, null);
         listAdapterHelper.setupList(stations, true, null);
     }
 }
