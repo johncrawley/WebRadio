@@ -14,6 +14,7 @@
             android:id="@+id/stationUrlEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textImeMultiLine"
             android:maxLines="1"
             android:imeOptions="actionDone"
             android:hint="@string/input_text_label_station_url" />
@@ -28,22 +29,12 @@
             android:id="@+id/stationNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:inputType="textImeMultiLine"
+            android:maxLength="32"
             android:maxLines="1"
             android:hint="@string/input_text_label_station_name" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <!--
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/descriptionEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:hint="@string/input_text_label_station_description" />
-    </com.google.android.material.textfield.TextInputLayout>
-    -->
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -53,6 +44,9 @@
             android:id="@+id/linkEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:maxLength="64"
+            android:inputType="textImeMultiLine"
             android:maxLines="1"
             android:hint="@string/input_text_label_station_link" />
     </com.google.android.material.textfield.TextInputLayout>
