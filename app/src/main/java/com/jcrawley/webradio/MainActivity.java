@@ -35,6 +35,8 @@ import com.jcrawley.webradio.repository.StationsRepositoryImpl;
 import com.jcrawley.webradio.service.MediaPlayerService;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;
@@ -114,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupRepository();
-        new InitialStationsLoader(getApplicationContext(), getSharedPreferences()).load();
         setupStationList();
         setupViews();
         refreshListFromDb();
@@ -124,7 +125,12 @@ public class MainActivity extends AppCompatActivity {
         setupWebsiteLink();
         setupIncomingIntentActions();
         setInitialStatus();
+        loadInitialStations();
+    }
 
+
+    private void loadInitialStations(){
+        new InitialStationsLoader(MainActivity.this, getSharedPreferences()).load();
     }
 
 

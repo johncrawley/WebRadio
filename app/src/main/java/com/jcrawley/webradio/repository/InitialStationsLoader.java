@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class InitialStationsLoader {
 
@@ -26,28 +28,30 @@ public class InitialStationsLoader {
         this.sharedPreferences = sharedPreferences;
     }
 
+
     public void load(){
         String isFirstRunKey = "isFirstRun";
         if(sharedPreferences.getBoolean(isFirstRunKey, false)){
             return;
         }
         sharedPreferences.edit().putBoolean(isFirstRunKey, true).apply();
-        parseLines();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(this::parseLines);
     }
 
 
     private void parseLines(){
-        InputStream is = context.getResources().openRawResource(R.raw.default_stations);
-
-        Reader reader = new InputStreamReader(is);
-        try(BufferedReader bufferedReader = new BufferedReader(reader)){
+        try(InputStream is = context.getResources().openRawResource(R.raw.default_stations);
+            Reader reader = new InputStreamReader(is);
+            BufferedReader bufferedReader = new BufferedReader(reader)){
             String line = bufferedReader.readLine();
             while(line != null){
                 if(line.startsWith("#")){
                     genre = line.substring(1);
-                    continue;
                 }
-                DbUtils.createStation(db, parseLine(line));
+                else {
+                    DbUtils.createStation(db, parseLine(line));
+                }
                 line = bufferedReader.readLine();
             }
         }catch (IOException e){
@@ -58,12 +62,15 @@ public class InitialStationsLoader {
 
     private StationEntity parseLine(String line){
         String[] strArray = line.split(",");
-        return StationEntity.Builder.newInstance()
-                .name(strArray[0])
-                .url(strArray[1])
-                .link(strArray[2])
+        StationEntity.Builder stationEntity = StationEntity.Builder.newInstance()
+                .name(strArray[1])
+                .url(strArray[0])
                 .genre(genre)
-                .setFavourite(false)
-                .build();
+                .setFavourite(false);
+
+                if(strArray.length==3){
+                    stationEntity.link(strArray[2]);
+                }
+                return stationEntity.build();
     }
 }
