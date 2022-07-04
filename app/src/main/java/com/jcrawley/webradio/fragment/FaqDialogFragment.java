@@ -78,7 +78,8 @@ public class FaqDialogFragment extends DialogFragment {
         List<FaqListItem> faqItems = Arrays.asList(
                 new FaqListItem(R.string.faq_question_1, R.string.faq_answer_1),
                 new FaqListItem(R.string.faq_question_2, R.string.faq_answer_2),
-                new FaqListItem(R.string.faq_question_3, R.string.faq_answer_3)
+                new FaqListItem(R.string.faq_question_3, R.string.faq_answer_3),
+                new FaqListItem(R.string.faq_question_4, R.string.faq_answer_4)
         );
 
         faqListHelper = new FaqListHelper(getContext(), parentView.findViewById(R.id.faqList));

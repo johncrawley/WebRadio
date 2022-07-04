@@ -48,6 +48,8 @@
     <string name="faq_answer_2">www.internet-radio.com has lots of stations featuring different genres.</string>
     <string name="faq_question_3">Can I get station information from playlist files?</string>
     <string name="faq_answer_3">In the "Add Station" dialog, you can browse for, and open, a file with the .m3u or .txt extension from your device\'s file system. Only the first line will be processed.</string>
+    <string name="faq_question_4">I loaded a .m3u file, but when I try to play the station, nothing happens.</string>
+    <string name="faq_answer_4">Check the station URL. If it points to a .pls (playlist) file, you will need to copy the whole URL into a web browser and download the file. That should contain a URL that can be used to directly stream the audio.</string>
     <string name="genre_user_label">User</string>
     <string name="selected_station_list_item_content_description">selected</string>
     <string name="unselected_station_list_item_content_description">unselected</string>
