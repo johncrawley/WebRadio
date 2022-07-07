@@ -35,8 +35,6 @@ import com.jcrawley.webradio.repository.StationsRepositoryImpl;
 import com.jcrawley.webradio.service.MediaPlayerService;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;

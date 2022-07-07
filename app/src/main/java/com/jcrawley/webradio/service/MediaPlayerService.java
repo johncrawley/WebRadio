@@ -369,6 +369,7 @@ public class MediaPlayerService extends Service {
 
     private void handleConnectionError(){
         hasEncounteredError = true;
+        isPlaying = false;
         mediaNotificationManager.updateNotification();
         sendBroadcast(ACTION_NOTIFY_VIEW_OF_ERROR);
     }
