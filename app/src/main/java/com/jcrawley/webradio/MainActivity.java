@@ -34,7 +34,6 @@ import com.jcrawley.webradio.repository.StationsRepository;
 import com.jcrawley.webradio.repository.StationsRepositoryImpl;
 import com.jcrawley.webradio.service.MediaPlayerService;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
@@ -62,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isConnectionErrorShowing = false;
     private String stationWebsite;
     private StationLibraryFragment stationLibraryFragment;
-
-
 
 
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
@@ -555,7 +552,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private SharedPreferences getSharedPreferences(){
+    public SharedPreferences getSharedPreferences(){
         return getSharedPreferences("webRadioEditor", MODE_PRIVATE);
     }
 

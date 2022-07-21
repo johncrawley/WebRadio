@@ -1,5 +1,6 @@
 package com.jcrawley.webradio.fragment;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import static com.jcrawley.webradio.fragment.FragmentUtils.setupTitle;
 
 public class StationLibraryFragment extends DialogFragment {
 
+    private final String SPINNER_POSITION_PREF = "genre_spinner_position_pref";
     private StationsRepository stationsRepository;
     private ListAdapterHelper listAdapterHelper;
     private MainActivity activity;
@@ -124,6 +126,7 @@ public class StationLibraryFragment extends DialogFragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String item = (String)adapterView.getItemAtPosition(i);
                 setupListFor(item);
+                saveSpinnerPositionPreference(i);
             }
 
             @Override
@@ -131,7 +134,22 @@ public class StationLibraryFragment extends DialogFragment {
         };
         genreSpinner.setAdapter(adapter);
         genreSpinner.setOnItemSelectedListener(itemSelectedListener);
+        setupGenrePosition();
         refreshList();
+    }
+
+
+    private void setupGenrePosition(){
+        SharedPreferences prefs = activity.getSharedPreferences();
+        int positionIndex = prefs.getInt(SPINNER_POSITION_PREF, 0);
+        genreSpinner.setSelection(positionIndex);
+    }
+
+
+    private void saveSpinnerPositionPreference(int position){
+        SharedPreferences.Editor editor = activity.getSharedPreferences().edit();
+        editor.putInt(SPINNER_POSITION_PREF, position);
+        editor.apply();
     }
 
 
