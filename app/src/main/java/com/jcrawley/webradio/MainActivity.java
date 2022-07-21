@@ -34,6 +34,7 @@ import com.jcrawley.webradio.repository.StationsRepository;
 import com.jcrawley.webradio.repository.StationsRepositoryImpl;
 import com.jcrawley.webradio.service.MediaPlayerService;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
@@ -522,6 +523,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAllForStationsList();
+        items.sort((StationEntity a, StationEntity b) -> (int) (a.getTimeFavouriteWasEnabled() - b.getTimeFavouriteWasEnabled()));
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
         updateStatusAfterListChange();
         if(stationLibraryFragment!= null){

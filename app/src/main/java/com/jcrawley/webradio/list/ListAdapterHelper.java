@@ -5,8 +5,6 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.jcrawley.webradio.R;
@@ -87,6 +85,7 @@ public class ListAdapterHelper {
         return new StationEntity("","");
     }
 
+
     public void setupList(final List<StationEntity> stations, boolean hasCheckBox, View noResultsFoundView){
         ArrayAdapter<StationEntity> adapter = hasCheckBox
                 ? new CheckedListItemArrayAdapter(context, R.layout.checked_list_item, stations)
@@ -94,6 +93,7 @@ public class ListAdapterHelper {
 
         setupList(stations, adapter, noResultsFoundView);
     }
+
 
     public void setupList(final List<StationEntity> items,
                           ArrayAdapter<StationEntity> arrayAdapter,

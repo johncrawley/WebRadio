@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.List;
-
 import static com.jcrawley.webradio.repository.DbContract.StationsEntry;
 import static com.jcrawley.webradio.repository.DbContract.GenresEntry;
 import static com.jcrawley.webradio.repository.DbContract.StationsGenresEntry;
@@ -38,7 +36,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     + StationsEntry.COL_URL + TEXT + COMMA
                     + StationsEntry.COL_LINK + TEXT + COMMA
                     + StationsEntry.COL_DESCRIPTION + TEXT + COMMA
-                    + StationsEntry.IS_FAVOURITE + INTEGER
+                    + StationsEntry.IS_FAVOURITE + INTEGER + COMMA
+                    + StationsEntry.TIME_FAVOURITE_ENABLED + INTEGER
                     + CLOSING_BRACKET;
 
     private static final String SQL_CREATE_GENRES_TABLE =

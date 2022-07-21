@@ -1,16 +1,10 @@
 package com.jcrawley.webradio.list;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.opengl.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jcrawley.webradio.R;

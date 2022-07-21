@@ -37,6 +37,8 @@ public class StationsRepositoryImpl implements StationsRepository{
         contentValues.put(StationsEntry.COL_URL, stationEntity.getUrl());
         contentValues.put(StationsEntry.COL_DESCRIPTION, stationEntity.getDescription());
         contentValues.put(StationsEntry.COL_LINK, stationEntity.getLink());
+        contentValues.put(StationsEntry.TIME_FAVOURITE_ENABLED, "strftime('now')");
+
 
         db.update(StationsEntry.TABLE_NAME,
                 contentValues,
@@ -70,6 +72,7 @@ public class StationsRepositoryImpl implements StationsRepository{
         int favouriteValue = isFavourite ? 1 : 0;
         String query = "UPDATE " + StationsEntry.TABLE_NAME
                 + " SET " + StationsEntry.IS_FAVOURITE + " = " + favouriteValue
+                + ", " + StationsEntry.TIME_FAVOURITE_ENABLED + " = " + System.currentTimeMillis()
                 + " WHERE " + StationsEntry._ID + " = " + station.getId() + ";";
         db.execSQL(query);
     }
@@ -90,6 +93,7 @@ public class StationsRepositoryImpl implements StationsRepository{
                         .name(getString(cursor, StationsEntry.COL_STATION_NAME))
                         .url(getString(cursor, StationsEntry.COL_URL))
                         .description(getString(cursor, StationsEntry.COL_DESCRIPTION))
+                        .timeFavouriteWasEnabled(getLong(cursor, StationsEntry.TIME_FAVOURITE_ENABLED))
                         .link(getString(cursor, StationsEntry.COL_LINK))
                         .build();
                 list.add(station);

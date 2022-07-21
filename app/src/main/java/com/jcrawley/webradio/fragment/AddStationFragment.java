@@ -137,6 +137,7 @@ public class AddStationFragment extends DialogFragment {
         }
     }
 
+
     private void setupMetaDataRetrievalKeyListener(){
         stationUrlEditText.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {

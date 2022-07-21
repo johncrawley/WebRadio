@@ -1,9 +1,11 @@
 package com.jcrawley.webradio.repository;
 
 public class StationEntity {
-    private String name, url, link, description;
+    private String name, link, description;
+    private final String url;
     private final Long id;
     private boolean isFavourite;
+    private long timeFavouriteWasEnabled;
     private String genre;
 
 
@@ -38,6 +40,7 @@ public class StationEntity {
         this.description = builder.description;
         this.isFavourite = builder.isFavourite;
         this.genre = builder.genre;
+        this.timeFavouriteWasEnabled = builder.timeFavouriteWasEnabled;
     }
 
     public String getName(){
@@ -51,6 +54,11 @@ public class StationEntity {
 
 
     public String getLink(){ return link;}
+
+
+    public long getTimeFavouriteWasEnabled(){
+        return timeFavouriteWasEnabled;
+    }
 
 
     public String getDescription(){ return description;}
@@ -79,24 +87,12 @@ public class StationEntity {
         return genre;
     }
 
-    public void setLink(String link){
-        this.link = link;
-    }
-
-    public void setDescription(String description){
-        this.description = description;
-    }
-
-    public void setUrl(String url){
-        this.url = url;
-    }
-
-
 
     public static class Builder{
         private String name, url, link, description;
         private long id;
         private boolean isFavourite;
+        private long timeFavouriteWasEnabled;
         private String genre;
 
         public static Builder newInstance(){
@@ -106,25 +102,36 @@ public class StationEntity {
         private Builder(){
         }
 
+
         public Builder id(long id){
             this.id = id;
             return this;
         }
+
 
         public Builder description(String description){
             this.description = description;
             return this;
         }
 
+
         public Builder name(String name){
             this.name = name;
             return this;
         }
 
+
         public Builder url(String url){
             this.url = url;
             return this;
         }
+
+
+        public Builder timeFavouriteWasEnabled(long timeFavouriteWasEnabled){
+            this.timeFavouriteWasEnabled = timeFavouriteWasEnabled;
+            return this;
+        }
+
 
         public Builder link(String link){
             this.link = link;

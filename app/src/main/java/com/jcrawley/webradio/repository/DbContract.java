@@ -14,6 +14,7 @@ public final class DbContract {
         static final String COL_LINK = "link";
         static final String COL_DESCRIPTION = "description";
         static final String IS_FAVOURITE = "is_library_entry";
+        static final String TIME_FAVOURITE_ENABLED = "time_favourite_enabled";
     }
 
 
