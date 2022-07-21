@@ -375,7 +375,10 @@ public class MainActivity extends AppCompatActivity {
                     R.string.status_add_a_station_to_begin
                     : R.string.status_nothing_selected;
             statusTextView.setText(statusId);
+            playButton.setVisibility(View.INVISIBLE);
+            return;
         }
+        playButton.setVisibility(View.VISIBLE);
     }
 
 
