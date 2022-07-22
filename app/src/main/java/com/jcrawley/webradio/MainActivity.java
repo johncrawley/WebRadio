@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -61,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isConnectionErrorShowing = false;
     private String stationWebsite;
     private StationLibraryFragment stationLibraryFragment;
-
+    private StationEntity stationEntity;
+    private AlertDialog.Builder removeFromFavouritesConfirmationDialog;
 
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
         @Override
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         setupIncomingIntentActions();
         setInitialStatus();
         loadInitialStations();
+        setupDeleteConfirmationDialog();
     }
 
 
@@ -323,7 +327,13 @@ public class MainActivity extends AppCompatActivity {
         listAdapterHelper = new ListAdapterHelper(this,
                 findViewById(R.id.stationsList),
                 this::select,
-                (StationEntity station)->{});
+                this::showConfirmationDialog);
+    }
+
+
+    private void showConfirmationDialog(StationEntity station){
+        stationEntity = station;
+        removeFromFavouritesConfirmationDialog.show();
     }
 
 
@@ -379,6 +389,27 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         playButton.setVisibility(View.VISIBLE);
+    }
+
+
+    private void setupDeleteConfirmationDialog(){
+        DialogInterface.OnClickListener dialogClickListener = (dialog, buttonChoice) -> {
+            switch (buttonChoice){
+                case DialogInterface.BUTTON_POSITIVE:
+                    stationsRepository.setAsFavourite(stationEntity, false);
+                    refreshListFromDb();
+                    dialog.dismiss();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    break;
+            }
+        };
+
+        removeFromFavouritesConfirmationDialog = new AlertDialog.Builder(this);
+        removeFromFavouritesConfirmationDialog.setMessage(getString(R.string.remove_station_from_favourites_confirmation_dialog_text))
+                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener);
     }
 
 
