@@ -109,23 +109,16 @@ public class StationsRepositoryImpl implements StationsRepository{
 
 
     @Override
-    public List<StationEntity> getAllLibrary() {
-        String query = "SELECT * FROM " + StationsEntry.TABLE_NAME
-                + " WHERE " + StationsEntry.IS_FAVOURITE + " = 1;";
-        return getStationsForQuery(query);
-    }
-
-
-    @Override
     public List<StationEntity> getFromLibraryWithGenre(String genre) {
-        String query1 = "SELECT * FROM " +
-                " ( SELECT * FROM "  + StationsEntry.TABLE_NAME
+        String query1 = "SELECT * FROM "
+                + " ( SELECT * FROM "  + StationsEntry.TABLE_NAME
                 +  " INNER JOIN " + StationsGenresEntry.TABLE_NAME
                 + " ON " + StationsEntry.TABLE_NAME + "." + StationsEntry._ID + " = " + StationsGenresEntry.COL_STATION_ID
                 + " INNER JOIN " + GenresEntry.TABLE_NAME
-                + " ON "  + StationsGenresEntry.COL_GENRE_ID + " = " + GenresEntry.TABLE_NAME + "." + GenresEntry._ID + ") "
-                + " WHERE " + GenresEntry.COL_GENRE_NAME +  " = '" + genre + "';";
-
+                + " ON "  + StationsGenresEntry.COL_GENRE_ID + " = " + GenresEntry.TABLE_NAME + "." + GenresEntry._ID + ")"
+                + " WHERE " + GenresEntry.COL_GENRE_NAME +  " = '" + genre + "'"
+                + " ORDER BY " + StationsEntry.COL_STATION_NAME
+                + ";";
         return getStationsForQuery(query1);
     }
 
@@ -154,7 +147,6 @@ public class StationsRepositoryImpl implements StationsRepository{
         cursor.close();
         return list;
     }
-
 
 
     @Override
