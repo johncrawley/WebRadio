@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -19,7 +18,6 @@ import android.os.PowerManager;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,11 +47,10 @@ public class MediaPlayerService extends Service {
     private String currentUrl = "";
     private int stationCount;
     boolean wasInfoFound = false;
-    private MediaMetadataRetriever metaRetriever;
     private MediaNotificationManager mediaNotificationManager;
     private final ScheduledExecutorService executorService;
-    private int metadataCounter = 0;
     private WifiManager.WifiLock wifiLock;
+    private MetadataHandler metadataHandler;
 
     public MediaPlayerService() {
         executorService = Executors.newScheduledThreadPool(3);
@@ -128,6 +125,7 @@ public class MediaPlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         initWifiLock();
+        metadataHandler = new MetadataHandler();
         registerBroadcastReceivers();
         mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
         moveToForeground();
@@ -292,7 +290,7 @@ public class MediaPlayerService extends Service {
     private void prepareAndPlay(){
         try {
             assert mediaPlayer != null;
-            initMetaDataRetriever();
+            metadataHandler.initMetaDataRetriever(currentUrl);
             mediaPlayer.setDataSource(this, Uri.parse(currentUrl));
             mediaPlayer.prepareAsync();
             setupOnInfoListener();
@@ -304,48 +302,13 @@ public class MediaPlayerService extends Service {
         }
     }
 
-    private HashMap<String, String> metadataMap;
-
-    private void initMetaDataRetriever(){
-        metadataMap = new HashMap<>();
-        metaRetriever = new MediaMetadataRetriever();
-        metaRetriever.setDataSource(currentUrl, metadataMap);
-    }
-
 
     private void setupOnInfoListener(){
         mediaPlayer.setOnInfoListener((mediaPlayer, i, i1) -> {
             updateStatusFromConnectingToPlaying();
-            executorService.schedule(this::updateMetadata, 2000, TimeUnit.MILLISECONDS);
-            updateMetadata();
+            executorService.schedule(()-> metadataHandler.updateMetadata(), 2000, TimeUnit.MILLISECONDS);
             return false;
         });
-    }
-
-
-    private void updateMetadata(){
-        int metadataRetrievalInterval = 1;
-        metadataCounter++;
-        for(String key : metadataMap.keySet()){
-            System.out.println("metadata: " + key + " : "  + metadataMap.get(key));
-        }
-
-        if(metadataCounter >= metadataRetrievalInterval){
-            metadataCounter = 0;
-            String artist =  metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            String title = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String albumArtist = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
-            String composer = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER);
-            String author = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR);
-            String bitrate = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);
-
-            System.out.println("Artist: " + artist
-                    + " title: " + title
-                    + " albumArtist: " + albumArtist
-                    + " composer: " + composer
-                    + " author: " +  author
-                    + " bitrate: " + bitrate);
-        }
     }
 
 

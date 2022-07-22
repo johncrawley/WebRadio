@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
     public void saveStation(StationEntity stationEntity){
         listAdapterHelper.addToList(stationEntity);
         stationsRepository.createStation(stationEntity);
-        sendUpdateStationCountBroadcast();
         updateStatusAfterListChange();
         selectStationIfItsTheOnlyOne();
     }
@@ -216,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
     public void deleteStation(long stationId){
         listAdapterHelper.delete(stationId);
         stationsRepository.delete(stationId);
-        sendUpdateStationCountBroadcast();
     }
 
 
@@ -544,14 +542,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void sendUpdateStationCountBroadcast(){
-        Intent intent = new Intent();
-        intent.setAction(MediaPlayerService.ACTION_UPDATE_STATION_COUNT);
-        intent.putExtra(MediaPlayerService.TAG_STATION_COUNT, listAdapterHelper.getCount());
-        sendBroadcast(intent);
-    }
-
-
     public void refreshListFromDb(){
         List<StationEntity> items = stationsRepository.getAllForStationsList();
         items.sort((StationEntity a, StationEntity b) -> (int) (a.getTimeFavouriteWasEnabled() - b.getTimeFavouriteWasEnabled()));
@@ -560,6 +550,15 @@ public class MainActivity extends AppCompatActivity {
         if(stationLibraryFragment!= null){
             stationLibraryFragment.refreshList();
         }
+        sendUpdateStationCountBroadcast();
+    }
+
+
+    private void sendUpdateStationCountBroadcast(){
+        Intent intent = new Intent();
+        intent.setAction(MediaPlayerService.ACTION_UPDATE_STATION_COUNT);
+        intent.putExtra(MediaPlayerService.TAG_STATION_COUNT, listAdapterHelper.getCount());
+        sendBroadcast(intent);
     }
 
 
