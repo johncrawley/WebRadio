@@ -29,6 +29,7 @@ public class DbUtils {
         contentValues.put(DbContract.StationsEntry.COL_LINK, stationEntity.getLink());
         contentValues.put(DbContract.StationsEntry.COL_DESCRIPTION, stationEntity.getDescription());
         contentValues.put(DbContract.StationsEntry.IS_FAVOURITE, stationEntity.isFavourite() ? 1 : 0);
+        contentValues.put(DbContract.StationsEntry.TIME_FAVOURITE_ENABLED, System.currentTimeMillis());
         long stationId = DbUtils.addValuesToTable(db, DbContract.StationsEntry.TABLE_NAME, contentValues);
         addGenreData(db, stationEntity, stationId);
     }
