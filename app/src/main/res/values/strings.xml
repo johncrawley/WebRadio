@@ -44,13 +44,13 @@
     <string name="faq_dialog_title">FAQ</string>
     <string name="faq_button_text">FAQ</string>
     <string name="faq_question_1">How do I edit or remove stations?</string>
-    <string name="faq_answer_1">To open the edit dialog for a station, press and hold the corresponding item in the stations list.</string>
+    <string name="faq_answer_1">To quickly remove a station from the main list, you can click and hold on that list item. To edit station info or delete a station entry completely, open the Station Library dialog and click and hold on the corresponding item.</string>
     <string name="faq_question_2">Where can I find more radio stations?</string>
-    <string name="faq_answer_2">www.internet-radio.com has lots of stations featuring different genres.</string>
+    <string name="faq_answer_2">www.internet-radio.com and www.radiomap.eu have lots of stations featuring different genres.</string>
     <string name="faq_question_3">Can I get station information from playlist files?</string>
     <string name="faq_answer_3">In the "Add Station" dialog, you can browse for, and open, a file with the .m3u or .txt extension from your device\'s file system. Only the first line will be processed.</string>
     <string name="faq_question_4">I loaded a .m3u file, but when I try to play the station, nothing happens.</string>
-    <string name="faq_answer_4">Check the station URL. If it points to a .pls (playlist) file, you will need to copy the whole URL into a web browser and download the file. That should contain a URL that can be used to directly stream the audio.</string>
+    <string name="faq_answer_4">Check the station URL. If it points to a .pls (playlist) file, you will need to copy the whole URL into a web browser and download the file. That should contain a URL that can be used to directly stream the audio. Also keep in mind that the code for parsing the .m3u files is very rudimentary and will only read the first line.</string>
     <string name="genre_user_label">User</string>
     <string name="selected_station_list_item_content_description">selected</string>
     <string name="unselected_station_list_item_content_description">unselected</string>
