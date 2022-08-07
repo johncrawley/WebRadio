@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Radioyo</string>
-    <string name="about_app_name_and_version">Radioyo v1.0, 2022</string>
+    <string name="about_app_name_and_version">Radioyo v1.01, 2022</string>
     <string name="about_created_by">Created by John Crawley</string>
     <string name="radioyo_graphic">Radio-yo title graphic</string>
     <string name="about_app_ok_button_text">Done</string>
@@ -39,7 +39,7 @@
     <string name="content_description_delete_button">Remove Station</string>
     <string name="genre_spinner_label">Genre</string>
     <string name="library_done_button">Done</string>
-    <string name="delete_station_confirmation_dialog_text">Are you sure you want to remove this station?</string>
+    <string name="delete_station_confirmation_dialog_text">Are you sure you want to remove this station? This cannot be undone.</string>
     <string name="remove_station_from_favourites_confirmation_dialog_text">Are you sure you want to remove this station from the list?</string>
     <string name="faq_dialog_title">FAQ</string>
     <string name="faq_button_text">FAQ</string>

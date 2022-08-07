@@ -18,6 +18,8 @@ import android.os.PowerManager;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,17 +31,21 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
     public static final String ACTION_STOP_PLAYER = "com.jcrawley.webradio.stopPlayer";
     public static final String ACTION_CHANGE_STATION = "com.jcrawley.webradio.changeStation";
+    public static final String ACTION_REQUEST_STATUS = "com.jcrawley.webradio.requestStatus";
     public static final String ACTION_UPDATE_STATION_COUNT = "com.jcrawley.webradio.updateStationCount";
     public static final String ACTION_PLAY_CURRENT = "com.jcrawley.webradio.playCurrent";
+
     public static final String ACTION_SELECT_PREVIOUS_STATION = "com.jcrawley.webradio.selectPreviousStation";
     public static final String ACTION_SELECT_NEXT_STATION = "com.jcrawley.webradio.selectNextStation";
     public static final String ACTION_NOTIFY_VIEW_OF_STOP = "com.jcrawley.webradio.notifyViewOfStop";
     public static final String ACTION_NOTIFY_VIEW_OF_CONNECTING = "com.jcrawley.webradio.notifyViewOfPlay";
     public static final String ACTION_NOTIFY_VIEW_OF_PLAYING = "com.jcrawley.webradio.notifyViewOfPlayInfo";
     public static final String ACTION_NOTIFY_VIEW_OF_ERROR = "com.jcrawley.webradio.notifyViewOfError";
+
     public static final String TAG_STATION_URL = "station_url";
     public static final String TAG_STATION_NAME = "station_name";
     public static final String TAG_STATION_COUNT = "station_count";
+
     private MediaPlayer mediaPlayer;
     public boolean hasEncounteredError;
     private boolean isPlaying;
@@ -51,6 +57,7 @@ public class MediaPlayerService extends Service {
     private final ScheduledExecutorService executorService;
     private WifiManager.WifiLock wifiLock;
     private MetadataHandler metadataHandler;
+    Map<BroadcastReceiver, String> broadcastReceiverMap;
 
     public MediaPlayerService() {
         executorService = Executors.newScheduledThreadPool(3);
@@ -83,6 +90,15 @@ public class MediaPlayerService extends Service {
     };
 
 
+    private final BroadcastReceiver serviceReceiverForRequestStatus = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String broadcast = isPlaying ? ACTION_NOTIFY_VIEW_OF_PLAYING : ACTION_NOTIFY_VIEW_OF_STOP;
+            sendBroadcast(broadcast);
+        }
+    };
+
+
     private final BroadcastReceiver serviceReceiverForUpdateStationCount = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -101,7 +117,7 @@ public class MediaPlayerService extends Service {
             currentStationName = intent.getStringExtra(TAG_STATION_NAME);
             currentUrl = intent.getStringExtra(TAG_STATION_URL);
             if(isPlaying){
-                stopPlayer();
+                stopPlayer(false);
                 play();
             }
             hasEncounteredError = false;
@@ -126,7 +142,7 @@ public class MediaPlayerService extends Service {
         super.onCreate();
         initWifiLock();
         metadataHandler = new MetadataHandler();
-        registerBroadcastReceivers();
+        setupBroadcastReceivers();
         mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
         moveToForeground();
     }
@@ -160,21 +176,35 @@ public class MediaPlayerService extends Service {
     }
 
 
+    private void setupBroadcastReceivers(){
+        setupBroadcastReceiversMap();
+        registerBroadcastReceivers();
+    }
+
+
+    private void setupBroadcastReceiversMap(){
+        broadcastReceiverMap = new HashMap<>();
+        broadcastReceiverMap.put(serviceReceiverForStopPlayer,          ACTION_STOP_PLAYER);
+        broadcastReceiverMap.put(serviceReceiverForStartPlayer,         ACTION_START_PLAYER);
+        broadcastReceiverMap.put(serviceReceiverForChangeStation,       ACTION_CHANGE_STATION);
+        broadcastReceiverMap.put(serviceReceiverForPlayCurrent,         ACTION_PLAY_CURRENT);
+        broadcastReceiverMap.put(serviceReceiverForUpdateStationCount,  ACTION_UPDATE_STATION_COUNT);
+        broadcastReceiverMap.put(serviceReceiverForRequestStatus,       ACTION_REQUEST_STATUS);
+    }
+
+
     private void registerBroadcastReceivers(){
-        registerReceiver(serviceReceiverForStopPlayer, new IntentFilter(ACTION_STOP_PLAYER));
-        registerReceiver(serviceReceiverForStartPlayer, new IntentFilter(ACTION_START_PLAYER));
-        registerReceiver(serviceReceiverForChangeStation, new IntentFilter(ACTION_CHANGE_STATION));
-        registerReceiver(serviceReceiverForPlayCurrent, new IntentFilter(ACTION_PLAY_CURRENT));
-        registerReceiver(serviceReceiverForUpdateStationCount, new IntentFilter(ACTION_UPDATE_STATION_COUNT));
+        for(BroadcastReceiver bcr : broadcastReceiverMap.keySet()){
+            IntentFilter intentFilter = new IntentFilter(broadcastReceiverMap.get(bcr));
+            registerReceiver(bcr, intentFilter);
+        }
     }
 
 
     private void unregisterBroadcastReceivers(){
-        unregisterReceiver(serviceReceiverForStartPlayer);
-        unregisterReceiver(serviceReceiverForStopPlayer);
-        unregisterReceiver(serviceReceiverForChangeStation);
-        unregisterReceiver(serviceReceiverForUpdateStationCount);
-        unregisterReceiver(serviceReceiverForPlayCurrent);
+        for(BroadcastReceiver bcr : broadcastReceiverMap.keySet()){
+            unregisterReceiver(bcr);
+        }
     }
 
 
@@ -269,7 +299,6 @@ public class MediaPlayerService extends Service {
     }
 
 
-
     private void createNewMediaPlayer() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
@@ -338,17 +367,29 @@ public class MediaPlayerService extends Service {
     }
 
 
-    public void stopPlayer(){
+    private void stopPlayer(){
+        stopPlayer(true);
+    }
+
+
+    private void stopPlayer(boolean notifyView){
+        releaseAndResetMediaPlayerAndWifiLock();
+        isPlaying = false;
+        wasInfoFound = false;
+        mediaNotificationManager.updateNotification();
+        if(notifyView) {
+            sendBroadcast(ACTION_NOTIFY_VIEW_OF_STOP);
+        }
+    }
+
+
+    private void releaseAndResetMediaPlayerAndWifiLock(){
         if (mediaPlayer != null) {
             mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;
             wifiLock.release();
         }
-        isPlaying = false;
-        wasInfoFound = false;
-        mediaNotificationManager.updateNotification();
-        sendBroadcast(ACTION_NOTIFY_VIEW_OF_STOP);
     }
 
 

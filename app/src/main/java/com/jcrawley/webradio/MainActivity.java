@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         loadCurrentStationPreference();
         setupBroadcastReceivers();
         setupWebsiteLink();
-        setupIncomingIntentActions();
         setInitialStatus();
         loadInitialStations();
         setupDeleteConfirmationDialog();
@@ -131,17 +130,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadInitialStations(){
         new InitialStationsLoader(MainActivity.this, getSharedPreferences()).load();
-    }
-
-
-    private void setupIncomingIntentActions(){
-        Intent intent = getIntent();
-        if(intent !=null) {
-            Uri data =  intent.getData();
-            if(data != null) {
-                System.out.println("data: " + data.getPath());
-            }
-        }
     }
 
 
@@ -265,29 +253,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void updateStatusViewOnStop(){
-        hideStopButtonShowPlayButton();
+        hideStopShowPlay();
         statusTextView.setText(R.string.status_ready);
     }
 
 
     private void updateStatusViewOnError(){
-        hideStopButtonShowPlayButton();
+        hideStopShowPlay();
         isConnectionErrorShowing = true;
         statusTextView.setText(R.string.status_error);
     }
 
 
     private void updateStatusViewOnConnecting(){
-        stopButton.setVisibility(View.VISIBLE);
-        playButton.setVisibility(View.GONE);
+        hidePlayShowStop();
         statusTextView.setText(R.string.status_connecting);
         isConnectionErrorShowing = false;
     }
 
 
     private void updateStatusViewOnPlaying(){
-        stopButton.setVisibility(View.VISIBLE);
-        playButton.setVisibility(View.GONE);
+        hidePlayShowStop();
         statusTextView.setText(R.string.status_playing);
         isConnectionErrorShowing = false;
     }
@@ -305,9 +291,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void hideStopButtonShowPlayButton(){
-        playButton.setVisibility(View.VISIBLE);
+    private void hideStopShowPlay(){
         stopButton.setVisibility(View.GONE);
+        playButton.setVisibility(View.VISIBLE);
+    }
+
+
+    private void hidePlayShowStop(){
+        playButton.setVisibility(View.GONE);
+        stopButton.setVisibility(View.VISIBLE);
     }
 
 
@@ -351,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setReadyStatus(){
         statusTextView.setText(R.string.status_ready);
-        playButton.setVisibility(View.VISIBLE);
+        sendRequestStatusBroadcast();
         isConnectionErrorShowing = false;
     }
 
@@ -369,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         setWebsiteLinkVisibility();
         if(currentURL == null){
             updateStatusAfterListChange();
-            playButton.setVisibility(View.INVISIBLE);
+            hidePlayButton();
             return;
         }
         playButton.setVisibility(View.VISIBLE);
@@ -383,10 +375,15 @@ public class MainActivity extends AppCompatActivity {
                     R.string.status_add_a_station_to_begin
                     : R.string.status_nothing_selected;
             statusTextView.setText(statusId);
-            playButton.setVisibility(View.INVISIBLE);
+            hidePlayButton();
             return;
         }
-        playButton.setVisibility(View.VISIBLE);
+        sendRequestStatusBroadcast();
+    }
+
+
+    private void hidePlayButton(){
+        playButton.setVisibility(View.INVISIBLE);
     }
 
 
@@ -533,6 +530,12 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MediaPlayerService.ACTION_CHANGE_STATION);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
+        sendBroadcast(intent);
+    }
+
+
+    private void sendRequestStatusBroadcast(){
+        Intent intent = new Intent(MediaPlayerService.ACTION_REQUEST_STATUS);
         sendBroadcast(intent);
     }
 
