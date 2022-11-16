@@ -1,15 +1,53 @@
-ROCK FM!!!,http://www.my_rock_example_website.com:9876,http://www.my_rock.org.com,Rock
-Jazzy FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_jazz.org.com,Jazz
-Country FM!!!,http://www.country_example_website.com:9876,http://www.my_country.org.com,Country
-Blues FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_blues.org.com,Blues
-Metal FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_metal.org.com,Metal
-Soul FM!!!,http://www.jazzy_example_website.com:9876,http://www.my_soul.org.com,Soul
-User FM!!!,http://www.blah_example_website.com:9876,http://www.my_blah.org.com,User
-R&B FM!!!,http://www.rb_example_website.com:9876,http://www.my_rb.org.com,R&B
-Classical FM!!!,http://www.classical_example_website.com:9876,http://www.my_classicz.org.com,Classical
-Pop FM!!!,http://www.pop_example_website.com:9876,http://www.my_pop.org.com,Pop
-House FM!!!,http://www.house_example_website.com:9876,http://www.my_house.org.com,House
-Trance FM!!!,http://www.trance_example_website.com:9876,http://www.my_trance.org.com,Trance
-Punk FM!!!,http://www.punk_example_website.com:9876,http://www.my_punk.org.com,Punk
-Dance FM!!!,http://www.dance_example_website.com:9876,http://www.my_dance.org.com,Dance
-Bluegrass FM!!!,http://www.bluegrass_example_website.com:9876,http://www.my_bluegrass.org.com,Bluegrass
+#Rock
+http://us4.internet-radio.com:8258/,Classic Rock Florida HD Radio,http://www.classicrockflorida.com
+http://uk5.internet-radio.com:8189/,Undertow Radio (Music supplied by the "Free Music Archive"),http://freemusicarchive.org/
+http://130.166.82.184:8000/stream,KCSN 88.5 FM/HD1 - Smart Rock,http://www.kcsn.org
+#Classical
+http://37.251.146.169:8300/stream,Radio Classic Mozart,http://www.clasicradio.ro
+http://192.99.35.215:5338/stream,Classical Oasis,http://www.classical-oasis.com
+http://37.252.124.170:8010/adagioradio.mp3,Agagio Radio HQ
+http://185.105.4.53:3000/stream,Radio Dolmeldo Live,https://radiodomeldo.ro
+#Blues
+http://i4.streams.ovh:8352/stream,Blues Radio,http://bluesradio.gr
+http://hts06.kshost.com.br:10182/,61-BLUES,https://61-blues.com
+http://solid24.streamupsolutions.com:8010/stream,Bar Legend Radio,https://www.barlegendradio.net
+http://158.69.131.71:8036/stream,Austin Blues Radio,https://AustinBluesRadio.Net
+#Country
+http://192.111.140.11:8205/stream,Frontier Country,http://www.frontiercountryonline.com
+http://54.39.252.238:8522/stream,Tiki Bar Radio,http://tikibarradio.com/
+http://173.249.21.17:8036/stream,The Ranch - Classic Country And More,http://www.arizonasclassiccountry.com
+http://ophanim.net:7130/,Ocean Beach Radio,http://www.oceanbeachradio.com
+#Dance
+http://94.75.227.133:8525,Deep In Radio Official,https://www.deepinradio.com
+http://51.89.148.171:8022/stream,Dance Radio UK,https://danceradiouk.com
+http://145.239.26.146:7432,Disco Polo,https://discoparty.pl
+http://sr2.inmystream.info:8032/stream2, Italia Dance Music Radio,https://www.italiadancemusic.com
+#Jazz
+http://64.95.243.43:8002/stream,Best Smooth Jazz UK,http://bestsmoothjazz.com
+http://144.217.158.59:5120/stream,Smooth Jazz Florida Worldwide,http://www.smoothjazzflorida.com
+http://radio.wanderingsheep.net:8000/jazzcafe,Jazz Cafe,https://wsradio.net
+http://66.147.225.141:8021/stream,Crooner Radio,http://croonerradio.com
+#Metal
+http://135.125.56.148:2280/stream,Classic Metal Radio,http://classicmetalradio.net
+http://5.135.154.69:11590/stream,Metal Express Radio,http://www.metalexpressradio.com
+http://us2.internet-radio.com:8023,Loaded Radio,https://loadedradio.com
+#Pop
+http://158.69.114.190:8024/,The Big 80's Station,http://www.thebig80sstation.com
+http://5.135.191.40:8000/,Hot Hits UK
+#Punk
+http://149.56.155.73:8080/stream,Real Punk Radio,http://realpunkradio.com
+#Ireland
+http://icecast2.rte.ie/ieradio1,RTE Radio 1,https://www.rte.ie/radio/radio1/
+http://icecast2.rte.ie/rnag,RTÉ Raidió Na Gaeltachta,https://www.rte.ie/rnag/
+https://wg.cdn.tibus.net/fm104MP3128,FM104 Dublin's Hit Music Station,https://www.fm104.ie/
+https://edge.audioxi.com/98,Dublin's 98FM,https://www.98fm.com
+http://icecast.rte.ie/ie2fm,RTE 2FM,https://www.rte.ie/radio/2fm/
+https://edge.audioxi.com/RED,Cork's RedFM,https://redfm.ie/
+https://stream.btsstream.com:8002/semp3,South East Radio,https://www.southeastradio.ie/
+https://edge.Audioxi.com/TDAAC,Today FM,https://www.todayfm.com/
+https://wg.cdn.tibus.net/q102MP3128,Dublin's Q102,https://www.q102.ie/
+https://stream.audioxi.com/NOVA?aw_0_1st.playerid=liveradio.ie,Radio Nova,https://www.nova.ie
+https://wg.cdn.tibus.net/C103West,C103 West,https://www.c103.ie/
+https://edge.audioxi.com/HIGHLAND, Highland Radio,https://highlandradio.com/
+https://edge.audioxi.com/NT,Newstalk,https://www.newstalk.com/
+https://edge.audioxi.com/SP,Spin 1038,https://www.spin1038.com/
