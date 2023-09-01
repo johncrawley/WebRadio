@@ -9,8 +9,8 @@ android {
         applicationId "com.jcrawley.webradio"
         minSdk 26
         targetSdk 34
-        versionCode 2
-        versionName "1.01"
+        versionCode 3
+        versionName "1.05"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
