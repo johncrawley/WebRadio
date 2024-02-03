@@ -9,8 +9,8 @@ android {
         applicationId "com.jcrawley.webradio"
         minSdk 26
         targetSdk 34
-        versionCode 3
-        versionName "1.05"
+        versionCode 4
+        versionName "1.06"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,7 +28,7 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:5'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
