@@ -171,8 +171,15 @@ public class MediaPlayerService extends Service {
 
 
     private void initWifiLock(){
+        var wifiManager = ((WifiManager) getSystemService(Context.WIFI_SERVICE));
+        //deprecated, cannot
+      /*
         wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "jcrawley.webRadio.wifiWakeLock");
+
+       */
+
+
     }
 
 
@@ -195,8 +202,8 @@ public class MediaPlayerService extends Service {
 
     private void registerBroadcastReceivers(){
         for(BroadcastReceiver bcr : broadcastReceiverMap.keySet()){
-            IntentFilter intentFilter = new IntentFilter(broadcastReceiverMap.get(bcr));
-            registerReceiver(bcr, intentFilter);
+            var intentFilter = new IntentFilter(broadcastReceiverMap.get(bcr));
+            registerReceiver(bcr, intentFilter, RECEIVER_NOT_EXPORTED);
         }
     }
 

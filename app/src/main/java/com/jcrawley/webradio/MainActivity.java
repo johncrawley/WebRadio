@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void register(BroadcastReceiver receiver, String action){
-        registerReceiver(receiver, new IntentFilter(action));
+        registerReceiver(receiver, new IntentFilter(action), RECEIVER_NOT_EXPORTED);
     }
 
 
@@ -403,8 +403,8 @@ public class MainActivity extends AppCompatActivity {
 
         removeFromFavouritesConfirmationDialog = new AlertDialog.Builder(this);
         removeFromFavouritesConfirmationDialog.setMessage(getString(R.string.remove_station_from_favourites_confirmation_dialog_text))
-                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.no), dialogClickListener);
+                .setPositiveButton(getString(android.R.string.ok), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.cancel), dialogClickListener);
     }
 
 
@@ -425,21 +425,29 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void bindService() {
-        bindService(mediaPlayerServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+       // bindService(mediaPlayerServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
 
     private void unbindService(){
         if (isServiceBound) {
-            unbindService(serviceConnection);
+           // unbindService(serviceConnection);
             isServiceBound = false;
         }
     }
 
 
-    private void startMediaPlayerService(){
+    private void startMediaPlayerServiceOLD(){
         mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
         getApplicationContext().startForegroundService(mediaPlayerServiceIntent);
+    }
+
+
+    public void startMediaPlayerService(){
+        var mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
+        var context = getApplicationContext();
+        context.startForegroundService(mediaPlayerServiceIntent);
+        context.bindService(mediaPlayerServiceIntent, serviceConnection, 0);
     }
 
 
@@ -492,9 +500,9 @@ public class MainActivity extends AppCompatActivity {
     public void startLibraryFragment(){
         String tag = "library";
         View mainLayout = findViewById(R.id.mainLayout);
-        Bundle bundle = new Bundle();
+        var bundle = new Bundle();
         bundle.putInt(FaqDialogFragment.BUNDLE_TOTAL_HEIGHT, mainLayout.getMeasuredHeight());
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        var fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
         stationLibraryFragment = StationLibraryFragment.newInstance();
         stationLibraryFragment.setArguments(bundle);
@@ -512,7 +520,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sendStartBroadcast() {
-        Intent intent = new Intent(MediaPlayerService.ACTION_START_PLAYER);
+        var intent = new Intent(MediaPlayerService.ACTION_START_PLAYER);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
         sendBroadcast(intent);

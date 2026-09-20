@@ -3,14 +3,14 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk = 37
 
     defaultConfig {
         applicationId "com.jcrawley.webradio"
-        minSdk 26
-        targetSdk 34
-        versionCode 4
-        versionName "1.06"
+        minSdk = 33
+        targetSdk = 37
+        versionCode 7
+        versionName "1.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,10 +27,10 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'com.google.android.material:material:1.14.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
     testImplementation 'junit:junit:5'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }

@@ -156,8 +156,8 @@ public class EditStationFragment extends DialogFragment {
 
         deleteConfirmationDialog = new AlertDialog.Builder(activity);
         deleteConfirmationDialog.setMessage(getString(R.string.delete_station_confirmation_dialog_text))
-                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.no), dialogClickListener);
+                .setPositiveButton(getString(android.R.string.ok), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.cancel), dialogClickListener);
     }
 
 
