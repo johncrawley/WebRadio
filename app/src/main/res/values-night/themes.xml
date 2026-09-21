@@ -12,6 +12,11 @@
         <item name="website_link_color">@color/website_link_dark</item>
         <item name="selected_list_item_background_color">@color/selected_list_item_background_color_dark</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+
     </style>
 
 

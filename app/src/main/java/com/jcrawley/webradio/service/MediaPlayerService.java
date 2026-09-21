@@ -1,7 +1,6 @@
 package com.jcrawley.webradio.service;
 
 import android.Manifest;
-import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATION_CHANNEL_ID;
 import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATION_ID;
 
 public class MediaPlayerService extends Service {
@@ -58,6 +59,16 @@ public class MediaPlayerService extends Service {
     private WifiManager.WifiLock wifiLock;
     private MetadataHandler metadataHandler;
     Map<BroadcastReceiver, String> broadcastReceiverMap;
+    private final IBinder binder = new LocalBinder();
+    private RadioView radioView;
+
+
+    public class LocalBinder extends Binder {
+        public MediaPlayerService getService() {
+            return MediaPlayerService.this;
+        }
+    }
+
 
     public MediaPlayerService() {
         executorService = Executors.newScheduledThreadPool(3);
@@ -77,6 +88,8 @@ public class MediaPlayerService extends Service {
         public void onReceive(Context context, Intent intent) {
             currentUrl = intent.getStringExtra(TAG_STATION_URL);
             currentStationName = intent.getStringExtra(TAG_STATION_NAME);
+            log("serviceReceiverForStartPlayer : URL: " + currentUrl);
+
             play();
         }
     };
@@ -127,8 +140,13 @@ public class MediaPlayerService extends Service {
 
 
     @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+
+    private void log(String msg){
+        System.out.println("^^^ MediaPlayerService: " + msg);
     }
 
 
@@ -140,7 +158,6 @@ public class MediaPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        initWifiLock();
         metadataHandler = new MetadataHandler();
         setupBroadcastReceivers();
         mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
@@ -167,19 +184,6 @@ public class MediaPlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         return Service.START_NOT_STICKY; // service is not restarted when terminated
-    }
-
-
-    private void initWifiLock(){
-        var wifiManager = ((WifiManager) getSystemService(Context.WIFI_SERVICE));
-        //deprecated, cannot
-      /*
-        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "jcrawley.webRadio.wifiWakeLock");
-
-       */
-
-
     }
 
 
@@ -227,8 +231,13 @@ public class MediaPlayerService extends Service {
 
     private void moveToForeground(){
         mediaNotificationManager.init();
-        Notification notification = mediaNotificationManager.createNotification(getCurrentStatus(), "");
+        var notification = mediaNotificationManager.createNotification(getCurrentStatus(), NOTIFICATION_CHANNEL_ID);
         startForeground(NOTIFICATION_ID, notification);
+    }
+
+
+    public void setView(RadioView radioView){
+        this.radioView = radioView;
     }
 
 
@@ -260,8 +269,8 @@ public class MediaPlayerService extends Service {
 
 
     public void play() {
+        log("entered play()");
         updateViewsForConnecting();
-        wifiLock.acquire();
         stopRunningMediaPlayer();
         executorService.schedule(this::testUrlAndThenConnectWithMediaPlayer, 1, TimeUnit.MILLISECONDS);
     }

@@ -26,7 +26,7 @@ public class MediaNotificationManager {
     private final MediaPlayerService mediaPlayerService;
     final static int NOTIFICATION_ID = 1001;
     private PendingIntent pendingIntent;
-    final static String NOTIFICATION_CHANNEL_ID = "com.jcrawley.webradio-notification";
+    final static String NOTIFICATION_CHANNEL_ID = "Radioyo";
 
 
     MediaNotificationManager(Context context, MediaPlayerService mediaPlayerService){

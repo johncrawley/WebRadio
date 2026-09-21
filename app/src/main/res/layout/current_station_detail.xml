@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:text="@string/play_button_text"
             android:textColor="?attr/station_detail_button_text_color"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:ignore="ButtonStyle" />
 
         <Button

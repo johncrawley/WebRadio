@@ -1,5 +1,6 @@
 package com.jcrawley.webradio;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,8 +36,7 @@ import com.jcrawley.webradio.repository.StationEntity;
 import com.jcrawley.webradio.repository.StationsRepository;
 import com.jcrawley.webradio.repository.StationsRepositoryImpl;
 import com.jcrawley.webradio.service.MediaPlayerService;
-
-import java.util.List;
+import com.jcrawley.webradio.service.RadioView;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;
@@ -45,12 +45,13 @@ import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIE
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_NEXT_STATION;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_PREVIOUS_STATION;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements RadioView {
     private ListAdapterHelper listAdapterHelper;
     private StationsRepository stationsRepository;
     private String currentURL;
-    private Intent mediaPlayerServiceIntent;
     private boolean isServiceBound;
     private String currentStationName;
     private SharedPreferences sharedPreferences;
@@ -65,6 +66,70 @@ public class MainActivity extends AppCompatActivity {
     private StationLibraryFragment stationLibraryFragment;
     private StationEntity stationEntity;
     private AlertDialog.Builder removeFromFavouritesConfirmationDialog;
+    private MediaPlayerService mediaPlayerService;
+    private final AtomicBoolean isServiceConnected = new AtomicBoolean(false);
+
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            var binder = (MediaPlayerService.LocalBinder) service;
+            mediaPlayerService = binder.getService();
+            mediaPlayerService.setView(MainActivity.this);
+
+            isServiceConnected.set(true);
+        }
+
+        @Override public void onServiceDisconnected(ComponentName arg0) {
+            isServiceConnected.set(false);
+        }
+    };
+
+
+
+    @Override
+    public void selectPreviousStation(){
+        select(listAdapterHelper.getPreviousStation());
+    }
+
+
+    @Override
+    public void  selectNextStation(){
+        select(listAdapterHelper.getNextStation());
+    }
+
+
+    @Override
+    public void updateStatusViewOnStop(){
+        hideStopShowPlay();
+        statusTextView.setText(R.string.status_ready);
+    }
+
+
+    @Override
+    public void  updateStatusViewOnConnecting(){
+        hidePlayShowStop();
+        statusTextView.setText(R.string.status_connecting);
+        isConnectionErrorShowing = false;
+    }
+
+
+    @Override
+    public void updateStatusViewOnPlaying(){
+        hidePlayShowStop();
+        statusTextView.setText(R.string.status_playing);
+        isConnectionErrorShowing = false;
+    }
+
+
+    @Override
+    public void updateStatusViewOnError(){
+        hideStopShowPlay();
+        isConnectionErrorShowing = true;
+        statusTextView.setText(R.string.status_error);
+    }
+
+
 
     private final BroadcastReceiver serviceReceiverForPreviousStation = new BroadcastReceiver() {
         @Override
@@ -113,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         setupRepository();
         setupStationList();
@@ -136,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
-        bindService();
     }
 
 
@@ -229,7 +294,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void setupButtons(){
         playButton = (Button)setupButton(R.id.playButton, this::sendStartBroadcast);
         stopButton = (Button)setupButton(R.id.stopButton, this::sendStopBroadcast);
@@ -252,32 +316,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void updateStatusViewOnStop(){
-        hideStopShowPlay();
-        statusTextView.setText(R.string.status_ready);
-    }
-
-
-    private void updateStatusViewOnError(){
-        hideStopShowPlay();
-        isConnectionErrorShowing = true;
-        statusTextView.setText(R.string.status_error);
-    }
-
-
-    private void updateStatusViewOnConnecting(){
-        hidePlayShowStop();
-        statusTextView.setText(R.string.status_connecting);
-        isConnectionErrorShowing = false;
-    }
-
-
-    private void updateStatusViewOnPlaying(){
-        hidePlayShowStop();
-        statusTextView.setText(R.string.status_playing);
-        isConnectionErrorShowing = false;
-    }
-
 
     private void setupWebsiteLink(){
         View websiteLinkTextView = findViewById(R.id.websiteLinkTextView);
@@ -285,19 +323,27 @@ public class MainActivity extends AppCompatActivity {
             if(stationWebsite == null || stationWebsite.trim().isEmpty()){
                 return;
             }
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(stationWebsite));
+            var browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(stationWebsite));
             startActivity(browserIntent);
         });
     }
 
 
     private void hideStopShowPlay(){
+        log("entered hideStopShowPlay");
         stopButton.setVisibility(View.GONE);
         playButton.setVisibility(View.VISIBLE);
     }
 
 
+    private void log(String msg){
+        System.out.println("^^^ MainActivity: " + msg);
+    }
+
+
+
     private void hidePlayShowStop(){
+        log("entered hidePlayShowStop");
         playButton.setVisibility(View.GONE);
         stopButton.setVisibility(View.VISIBLE);
     }
@@ -360,8 +406,10 @@ public class MainActivity extends AppCompatActivity {
     private void setInitialStatus(){
         setWebsiteLinkVisibility();
         if(currentURL == null){
+            currentURL = "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
+            log("setInitialStatus() currentURL was null");
             updateStatusAfterListChange();
-            hidePlayButton();
+           // hidePlayButton();
             return;
         }
         playButton.setVisibility(View.VISIBLE);
@@ -388,7 +436,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setupDeleteConfirmationDialog(){
-        DialogInterface.OnClickListener dialogClickListener = (dialog, buttonChoice) -> {
+        var dialogClickListener = createDialogClickListener();
+        removeFromFavouritesConfirmationDialog = new AlertDialog.Builder(this);
+        removeFromFavouritesConfirmationDialog.setMessage(getString(R.string.remove_station_from_favourites_confirmation_dialog_text))
+                .setPositiveButton(getString(android.R.string.ok), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.cancel), dialogClickListener);
+    }
+
+
+    private DialogInterface.OnClickListener createDialogClickListener(){
+        return (dialog, buttonChoice) -> {
             switch (buttonChoice){
                 case DialogInterface.BUTTON_POSITIVE:
                     stationsRepository.setAsFavourite(stationEntity, false);
@@ -400,11 +457,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         };
-
-        removeFromFavouritesConfirmationDialog = new AlertDialog.Builder(this);
-        removeFromFavouritesConfirmationDialog.setMessage(getString(R.string.remove_station_from_favourites_confirmation_dialog_text))
-                .setPositiveButton(getString(android.R.string.ok), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.cancel), dialogClickListener);
     }
 
 
@@ -416,18 +468,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override public void onServiceConnected(ComponentName className, IBinder service) { isServiceBound = true; }
-        @Override public void onServiceDisconnected(ComponentName arg0) {
-            isServiceBound = false;
-        }
-    };
-
-
-    private void bindService() {
-       // bindService(mediaPlayerServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
 
     private void unbindService(){
         if (isServiceBound) {
@@ -438,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void startMediaPlayerServiceOLD(){
-        mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
+        Intent mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
         getApplicationContext().startForegroundService(mediaPlayerServiceIntent);
     }
 
@@ -453,24 +493,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void startAddStationFragment(){
         String tag = "add_station";
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        var fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
-        AddStationFragment stationDetailFragment = AddStationFragment.newInstance();
+        var stationDetailFragment = AddStationFragment.newInstance();
         stationDetailFragment.show(fragmentTransaction, tag);
     }
 
 
     public void startEditStationFragment(StationEntity station){
         String tag = "edit_station";
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        var fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
-        Bundle bundle = new Bundle();
+        var bundle = new Bundle();
         bundle.putLong(EditStationFragment.BUNDLE_STATION_ID, station.getId());
         bundle.putString(EditStationFragment.BUNDLE_STATION_NAME, station.getName());
         bundle.putString(EditStationFragment.BUNDLE_STATION_URL, station.getUrl());
         bundle.putString(EditStationFragment.BUNDLE_STATION_DESCRIPTION, station.getDescription());
         bundle.putString(EditStationFragment.BUNDLE_STATION_LINK, station.getLink());
-        EditStationFragment editStationFragment = EditStationFragment.newInstance();
+        var editStationFragment = EditStationFragment.newInstance();
         editStationFragment.setArguments(bundle);
         editStationFragment.show(fragmentTransaction, tag);
     }
@@ -478,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startAboutAppFragment(){
         String tag = "about_app";
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        var fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
         AboutAppFragment.newInstance().show(fragmentTransaction, tag);
     }
@@ -487,11 +527,11 @@ public class MainActivity extends AppCompatActivity {
     public void startFaqFragment(){
         String tag = "faq_dialog";
         View mainLayout = findViewById(R.id.mainLayout);
-        Bundle bundle = new Bundle();
+        var bundle = new Bundle();
         bundle.putInt(FaqDialogFragment.BUNDLE_TOTAL_HEIGHT, mainLayout.getMeasuredHeight());
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        var fragmentTransaction = getSupportFragmentManager().beginTransaction();
         removePreviousFragmentTransaction(tag, fragmentTransaction);
-        FaqDialogFragment faqDialogFragment = FaqDialogFragment.newInstance();
+        var faqDialogFragment = FaqDialogFragment.newInstance();
         faqDialogFragment.setArguments(bundle);
         faqDialogFragment.show(fragmentTransaction, tag);
     }
@@ -523,19 +563,20 @@ public class MainActivity extends AppCompatActivity {
         var intent = new Intent(MediaPlayerService.ACTION_START_PLAYER);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
+        log("sendStartBroadcast() about to send...");
         sendBroadcast(intent);
     }
 
 
     private void sendStopBroadcast(){
-        Intent intent = new Intent();
+        var intent = new Intent();
         intent.setAction(MediaPlayerService.ACTION_STOP_PLAYER);
         sendBroadcast(intent);
     }
 
 
     private void sendChangeStationBroadcast(){
-        Intent intent = new Intent(MediaPlayerService.ACTION_CHANGE_STATION);
+        var intent = new Intent(MediaPlayerService.ACTION_CHANGE_STATION);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
         sendBroadcast(intent);
@@ -554,7 +595,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void refreshListFromDb(){
-        List<StationEntity> items = stationsRepository.getAllForStationsList();
+        var items = stationsRepository.getAllForStationsList();
         items.sort((StationEntity a, StationEntity b) -> (int) (a.getTimeFavouriteWasEnabled() - b.getTimeFavouriteWasEnabled()));
         listAdapterHelper.setupList(items, android.R.layout.simple_list_item_1, findViewById(R.id.noResultsFoundLayout));
         updateStatusAfterListChange();
@@ -566,7 +607,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sendUpdateStationCountBroadcast(){
-        Intent intent = new Intent();
+        var intent = new Intent();
         intent.setAction(MediaPlayerService.ACTION_UPDATE_STATION_COUNT);
         intent.putExtra(MediaPlayerService.TAG_STATION_COUNT, listAdapterHelper.getCount());
         sendBroadcast(intent);
@@ -575,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveCurrentStationPreference(){
         sharedPreferences = getSharedPreferences();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        var editor = sharedPreferences.edit();
         editor.putString(PREF_PREVIOUS_STATION_NAME, currentStationName);
         editor.putString(PREF_PREVIOUS_STATION_URL, currentURL);
         editor.putString(PREF_PREVIOUS_STATION_WEBSITE_LINK, stationWebsite);
