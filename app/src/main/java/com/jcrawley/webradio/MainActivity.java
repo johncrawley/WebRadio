@@ -39,8 +39,8 @@ import com.jcrawley.webradio.service.MediaPlayerService;
 import com.jcrawley.webradio.service.RadioView;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
-import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;
-import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_PLAYING;
+//import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;
+//import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_PLAYING;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_STOP;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_NEXT_STATION;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_PREVIOUS_STATION;
@@ -275,8 +275,8 @@ public class MainActivity extends AppCompatActivity implements RadioView {
         register(serviceReceiverForPreviousStation, ACTION_SELECT_PREVIOUS_STATION);
         register(serviceReceiverForNextStation, ACTION_SELECT_NEXT_STATION);
         register(serviceReceiverForNotifyStop, ACTION_NOTIFY_VIEW_OF_STOP);
-        register(serviceReceiverForNotifyConnecting, ACTION_NOTIFY_VIEW_OF_CONNECTING);
-        register(serviceReceiverForNotifyPlaying, ACTION_NOTIFY_VIEW_OF_PLAYING);
+        //register(serviceReceiverForNotifyConnecting, ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        //register(serviceReceiverForNotifyPlaying, ACTION_NOTIFY_VIEW_OF_PLAYING);
         register(serviceReceiverForNotifyError, ACTION_NOTIFY_VIEW_OF_ERROR);
     }
 
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements RadioView {
 
 
     private void setupButtons(){
-        playButton = (Button)setupButton(R.id.playButton, this::sendStartBroadcast);
+        playButton = (Button)setupButton(R.id.playButton, this::startPlayer);
         stopButton = (Button)setupButton(R.id.stopButton, this::sendStopBroadcast);
         setupButton(R.id.addStationBigButton, this::startLibraryFragment);
     }
@@ -314,7 +314,6 @@ public class MainActivity extends AppCompatActivity implements RadioView {
             stationNameTextView.setText("");
         }
     }
-
 
 
     private void setupWebsiteLink(){
@@ -339,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements RadioView {
     private void log(String msg){
         System.out.println("^^^ MainActivity: " + msg);
     }
-
 
 
     private void hidePlayShowStop(){
@@ -558,13 +556,19 @@ public class MainActivity extends AppCompatActivity implements RadioView {
         fragmentTransaction.addToBackStack(null);
     }
 
-
+    /*
     private void sendStartBroadcast() {
         var intent = new Intent(MediaPlayerService.ACTION_START_PLAYER);
         intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
         intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
         log("sendStartBroadcast() about to send...");
-        sendBroadcast(intent);
+        //sendBroadcast(intent);
+    }
+
+     */
+
+    private void startPlayer(){
+        mediaPlayerService.play(currentURL, currentStationName);
     }
 
 

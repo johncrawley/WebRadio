@@ -36,7 +36,7 @@ public class MediaNotificationManager {
 
 
     Notification createNotification(String heading, String channelName){
-        final NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        var notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(heading)
                 .setContentText(channelName)
                 .setSilent(true)
@@ -60,7 +60,7 @@ public class MediaNotificationManager {
     }
 
     void setupNotificationClickForActivity(){
-        Intent resultIntent = new Intent(context, MainActivity.class);
+        var resultIntent = new Intent(context, MainActivity.class);
         resultIntent.setAction(Intent.ACTION_MAIN);
         resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -69,16 +69,16 @@ public class MediaNotificationManager {
 
     void updateNotification() {
         new Handler(Looper.getMainLooper()).post(() -> {
-            Notification notification = createNotification(mediaPlayerService.getCurrentStatus(), mediaPlayerService.getCurrentStationName());
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            var notification = createNotification(mediaPlayerService.getCurrentStatus(), mediaPlayerService.getCurrentStationName());
+            var notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(NOTIFICATION_ID, notification);
         });
     }
 
 
     private void setupNotificationChannel(){
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+        var notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        var channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                 "webradio-notification-channel",
                 NotificationManager.IMPORTANCE_DEFAULT);
         channel.setSound(null, null);

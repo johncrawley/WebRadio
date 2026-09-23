@@ -29,7 +29,7 @@ import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATIO
 
 public class MediaPlayerService extends Service {
 
-    public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
+   // public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
     public static final String ACTION_STOP_PLAYER = "com.jcrawley.webradio.stopPlayer";
     public static final String ACTION_CHANGE_STATION = "com.jcrawley.webradio.changeStation";
     public static final String ACTION_REQUEST_STATUS = "com.jcrawley.webradio.requestStatus";
@@ -39,8 +39,8 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_SELECT_PREVIOUS_STATION = "com.jcrawley.webradio.selectPreviousStation";
     public static final String ACTION_SELECT_NEXT_STATION = "com.jcrawley.webradio.selectNextStation";
     public static final String ACTION_NOTIFY_VIEW_OF_STOP = "com.jcrawley.webradio.notifyViewOfStop";
-    public static final String ACTION_NOTIFY_VIEW_OF_CONNECTING = "com.jcrawley.webradio.notifyViewOfPlay";
-    public static final String ACTION_NOTIFY_VIEW_OF_PLAYING = "com.jcrawley.webradio.notifyViewOfPlayInfo";
+    //public static final String ACTION_NOTIFY_VIEW_OF_CONNECTING = "com.jcrawley.webradio.notifyViewOfPlay";
+    //public static final String ACTION_NOTIFY_VIEW_OF_PLAYING = "com.jcrawley.webradio.notifyViewOfPlayInfo";
     public static final String ACTION_NOTIFY_VIEW_OF_ERROR = "com.jcrawley.webradio.notifyViewOfError";
 
     public static final String TAG_STATION_URL = "station_url";
@@ -102,7 +102,7 @@ public class MediaPlayerService extends Service {
         }
     };
 
-
+/*
     private final BroadcastReceiver serviceReceiverForRequestStatus = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -111,6 +111,7 @@ public class MediaPlayerService extends Service {
         }
     };
 
+*/
 
     private final BroadcastReceiver serviceReceiverForUpdateStationCount = new BroadcastReceiver() {
         @Override
@@ -196,11 +197,11 @@ public class MediaPlayerService extends Service {
     private void setupBroadcastReceiversMap(){
         broadcastReceiverMap = new HashMap<>();
         broadcastReceiverMap.put(serviceReceiverForStopPlayer,          ACTION_STOP_PLAYER);
-        broadcastReceiverMap.put(serviceReceiverForStartPlayer,         ACTION_START_PLAYER);
+       // broadcastReceiverMap.put(serviceReceiverForStartPlayer,         ACTION_START_PLAYER);
         broadcastReceiverMap.put(serviceReceiverForChangeStation,       ACTION_CHANGE_STATION);
         broadcastReceiverMap.put(serviceReceiverForPlayCurrent,         ACTION_PLAY_CURRENT);
         broadcastReceiverMap.put(serviceReceiverForUpdateStationCount,  ACTION_UPDATE_STATION_COUNT);
-        broadcastReceiverMap.put(serviceReceiverForRequestStatus,       ACTION_REQUEST_STATUS);
+       // broadcastReceiverMap.put(serviceReceiverForRequestStatus,       ACTION_REQUEST_STATUS);
     }
 
 
@@ -268,8 +269,15 @@ public class MediaPlayerService extends Service {
     }
 
 
+    public void play(String currentUrl, String currentStationName){
+        log("entered play: currentUrl: " + currentUrl);
+        this.currentUrl = currentUrl;
+        this.currentStationName = currentStationName;
+        play();
+    }
+
+
     public void play() {
-        log("entered play()");
         updateViewsForConnecting();
         stopRunningMediaPlayer();
         executorService.schedule(this::testUrlAndThenConnectWithMediaPlayer, 1, TimeUnit.MILLISECONDS);
@@ -285,7 +293,8 @@ public class MediaPlayerService extends Service {
 
 
     private void updateViewsForConnecting(){
-        sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        //sendBroadcast(ACTION_NOTIFY_VIEW_OF_CONNECTING);
+        radioView.updateStatusViewOnConnecting();
         isPlaying = true;
         wasInfoFound = false;
         mediaNotificationManager.updateNotification();
@@ -359,7 +368,8 @@ public class MediaPlayerService extends Service {
 
     private void updateStatusFromConnectingToPlaying(){
         if(!wasInfoFound){
-            sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
+            //sendBroadcast(ACTION_NOTIFY_VIEW_OF_PLAYING);
+            radioView.updateStatusViewOnPlaying();
             wasInfoFound = true;
             mediaNotificationManager.updateNotification();
         }
