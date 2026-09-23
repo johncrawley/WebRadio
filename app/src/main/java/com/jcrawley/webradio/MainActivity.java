@@ -39,9 +39,6 @@ import com.jcrawley.webradio.service.MediaPlayerService;
 import com.jcrawley.webradio.service.RadioView;
 
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_ERROR;
-//import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_CONNECTING;
-//import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_PLAYING;
-import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_NOTIFY_VIEW_OF_STOP;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_NEXT_STATION;
 import static com.jcrawley.webradio.service.MediaPlayerService.ACTION_SELECT_PREVIOUS_STATION;
 
@@ -52,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements RadioView {
     private ListAdapterHelper listAdapterHelper;
     private StationsRepository stationsRepository;
     private String currentURL;
-    private boolean isServiceBound;
     private String currentStationName;
     private SharedPreferences sharedPreferences;
     private final String PREF_PREVIOUS_STATION_NAME = "previous_station_name";
@@ -146,27 +142,6 @@ public class MainActivity extends AppCompatActivity implements RadioView {
     };
 
 
-    private final BroadcastReceiver serviceReceiverForNotifyStop = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateStatusViewOnStop();
-        }
-    };
-
-    private final BroadcastReceiver serviceReceiverForNotifyConnecting = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateStatusViewOnConnecting();
-        }
-    };
-
-    private final BroadcastReceiver serviceReceiverForNotifyPlaying = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateStatusViewOnPlaying();
-        }
-    };
-
     private final BroadcastReceiver serviceReceiverForNotifyError = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -200,26 +175,10 @@ public class MainActivity extends AppCompatActivity implements RadioView {
 
 
     @Override
-    protected void onStart(){
-        super.onStart();
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unbindService();
-    }
-
-
-    @Override
     protected  void onDestroy(){
         super.onDestroy();
         unregisterReceiver(serviceReceiverForPreviousStation);
         unregisterReceiver(serviceReceiverForNextStation);
-        unregisterReceiver(serviceReceiverForNotifyStop);
-        unregisterReceiver(serviceReceiverForNotifyConnecting);
-        unregisterReceiver(serviceReceiverForNotifyPlaying);
         unregisterReceiver(serviceReceiverForNotifyError);
     }
 
@@ -274,9 +233,6 @@ public class MainActivity extends AppCompatActivity implements RadioView {
     private void setupBroadcastReceivers(){
         register(serviceReceiverForPreviousStation, ACTION_SELECT_PREVIOUS_STATION);
         register(serviceReceiverForNextStation, ACTION_SELECT_NEXT_STATION);
-        register(serviceReceiverForNotifyStop, ACTION_NOTIFY_VIEW_OF_STOP);
-        //register(serviceReceiverForNotifyConnecting, ACTION_NOTIFY_VIEW_OF_CONNECTING);
-        //register(serviceReceiverForNotifyPlaying, ACTION_NOTIFY_VIEW_OF_PLAYING);
         register(serviceReceiverForNotifyError, ACTION_NOTIFY_VIEW_OF_ERROR);
     }
 
@@ -296,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements RadioView {
 
     private void setupButtons(){
         playButton = (Button)setupButton(R.id.playButton, this::startPlayer);
-        stopButton = (Button)setupButton(R.id.stopButton, this::sendStopBroadcast);
+        stopButton = (Button)setupButton(R.id.stopButton, this::stopPlayer);
         setupButton(R.id.addStationBigButton, this::startLibraryFragment);
     }
 
@@ -466,21 +422,6 @@ public class MainActivity extends AppCompatActivity implements RadioView {
     }
 
 
-
-    private void unbindService(){
-        if (isServiceBound) {
-           // unbindService(serviceConnection);
-            isServiceBound = false;
-        }
-    }
-
-
-    private void startMediaPlayerServiceOLD(){
-        Intent mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
-        getApplicationContext().startForegroundService(mediaPlayerServiceIntent);
-    }
-
-
     public void startMediaPlayerService(){
         var mediaPlayerServiceIntent = new Intent(this, MediaPlayerService.class);
         var context = getApplicationContext();
@@ -556,26 +497,18 @@ public class MainActivity extends AppCompatActivity implements RadioView {
         fragmentTransaction.addToBackStack(null);
     }
 
-    /*
-    private void sendStartBroadcast() {
-        var intent = new Intent(MediaPlayerService.ACTION_START_PLAYER);
-        intent.putExtra(MediaPlayerService.TAG_STATION_URL, currentURL);
-        intent.putExtra(MediaPlayerService.TAG_STATION_NAME, currentStationName);
-        log("sendStartBroadcast() about to send...");
-        //sendBroadcast(intent);
-    }
-
-     */
 
     private void startPlayer(){
-        mediaPlayerService.play(currentURL, currentStationName);
+        if (isServiceConnected.get()) {
+            mediaPlayerService.play(currentURL, currentStationName);
+        }
     }
 
 
-    private void sendStopBroadcast(){
-        var intent = new Intent();
-        intent.setAction(MediaPlayerService.ACTION_STOP_PLAYER);
-        sendBroadcast(intent);
+    private void stopPlayer(){
+        if(isServiceConnected.get()){
+            mediaPlayerService.stopPlayer();
+        }
     }
 
 

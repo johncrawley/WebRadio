@@ -5,12 +5,10 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -18,8 +16,6 @@ import android.os.PowerManager;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -56,9 +52,7 @@ public class MediaPlayerService extends Service {
     boolean wasInfoFound = false;
     private MediaNotificationManager mediaNotificationManager;
     private final ScheduledExecutorService executorService;
-    private WifiManager.WifiLock wifiLock;
     private MetadataHandler metadataHandler;
-    Map<BroadcastReceiver, String> broadcastReceiverMap;
     private final IBinder binder = new LocalBinder();
     private RadioView radioView;
 
@@ -160,7 +154,6 @@ public class MediaPlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         metadataHandler = new MetadataHandler();
-        setupBroadcastReceivers();
         mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
         moveToForeground();
     }
@@ -169,7 +162,6 @@ public class MediaPlayerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterBroadcastReceivers();
         releaseMediaPlayerAndLocks();
     }
 
@@ -188,44 +180,9 @@ public class MediaPlayerService extends Service {
     }
 
 
-    private void setupBroadcastReceivers(){
-        setupBroadcastReceiversMap();
-        registerBroadcastReceivers();
-    }
-
-
-    private void setupBroadcastReceiversMap(){
-        broadcastReceiverMap = new HashMap<>();
-        broadcastReceiverMap.put(serviceReceiverForStopPlayer,          ACTION_STOP_PLAYER);
-       // broadcastReceiverMap.put(serviceReceiverForStartPlayer,         ACTION_START_PLAYER);
-        broadcastReceiverMap.put(serviceReceiverForChangeStation,       ACTION_CHANGE_STATION);
-        broadcastReceiverMap.put(serviceReceiverForPlayCurrent,         ACTION_PLAY_CURRENT);
-        broadcastReceiverMap.put(serviceReceiverForUpdateStationCount,  ACTION_UPDATE_STATION_COUNT);
-       // broadcastReceiverMap.put(serviceReceiverForRequestStatus,       ACTION_REQUEST_STATUS);
-    }
-
-
-    private void registerBroadcastReceivers(){
-        for(BroadcastReceiver bcr : broadcastReceiverMap.keySet()){
-            var intentFilter = new IntentFilter(broadcastReceiverMap.get(bcr));
-            registerReceiver(bcr, intentFilter, RECEIVER_NOT_EXPORTED);
-        }
-    }
-
-
-    private void unregisterBroadcastReceivers(){
-        for(BroadcastReceiver bcr : broadcastReceiverMap.keySet()){
-            unregisterReceiver(bcr);
-        }
-    }
-
-
     private void releaseMediaPlayerAndLocks(){
         if (mediaPlayer != null) {
             mediaPlayer.release();
-        }
-        if (wifiLock.isHeld()) {
-            wifiLock.release();
         }
     }
 
@@ -393,28 +350,29 @@ public class MediaPlayerService extends Service {
     }
 
 
-    private void stopPlayer(){
+    public void stopPlayer(){
         stopPlayer(true);
     }
 
 
     private void stopPlayer(boolean notifyView){
-        releaseAndResetMediaPlayerAndWifiLock();
+        releaseAndResetMediaPlayer();
         isPlaying = false;
         wasInfoFound = false;
         mediaNotificationManager.updateNotification();
         if(notifyView) {
-            sendBroadcast(ACTION_NOTIFY_VIEW_OF_STOP);
+            if(radioView!= null){
+                radioView.updateStatusViewOnStop();
+            }
         }
     }
 
 
-    private void releaseAndResetMediaPlayerAndWifiLock(){
+    private void releaseAndResetMediaPlayer(){
         if (mediaPlayer != null) {
             mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;
-            wifiLock.release();
         }
     }
 
