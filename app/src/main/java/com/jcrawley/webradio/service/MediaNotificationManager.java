@@ -87,9 +87,8 @@ public class MediaNotificationManager {
     }
 
 
-
     private void addPlayButtonTo(NotificationCompat.Builder notification){
-        if(!mediaPlayerService.isPlaying() && !mediaPlayerService.getCurrentUrl().isEmpty()){
+        if(mediaPlayerService.isStopped() && mediaPlayerService.hasValidUrl()){
             notification.addAction(android.R.drawable.ic_media_play,
                     context.getString(R.string.notification_button_title_play),
                     createPendingIntentFor(ACTION_PLAY_CURRENT));

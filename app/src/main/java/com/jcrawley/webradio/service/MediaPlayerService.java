@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -16,6 +17,8 @@ import android.os.PowerManager;
 import com.jcrawley.webradio.R;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +28,8 @@ import static com.jcrawley.webradio.service.MediaNotificationManager.NOTIFICATIO
 
 public class MediaPlayerService extends Service {
 
-   // public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
-    public static final String ACTION_STOP_PLAYER = "com.jcrawley.webradio.stopPlayer";
+    public static final String ACTION_START_PLAYER = "com.jcrawley.webradio.startPlayer";
+   public static final String ACTION_STOP_PLAYER = "com.jcrawley.webradio.stopPlayer";
     public static final String ACTION_CHANGE_STATION = "com.jcrawley.webradio.changeStation";
     public static final String ACTION_REQUEST_STATUS = "com.jcrawley.webradio.requestStatus";
     public static final String ACTION_UPDATE_STATION_COUNT = "com.jcrawley.webradio.updateStationCount";
@@ -35,9 +38,10 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_SELECT_PREVIOUS_STATION = "com.jcrawley.webradio.selectPreviousStation";
     public static final String ACTION_SELECT_NEXT_STATION = "com.jcrawley.webradio.selectNextStation";
     public static final String ACTION_NOTIFY_VIEW_OF_STOP = "com.jcrawley.webradio.notifyViewOfStop";
-    //public static final String ACTION_NOTIFY_VIEW_OF_CONNECTING = "com.jcrawley.webradio.notifyViewOfPlay";
-    //public static final String ACTION_NOTIFY_VIEW_OF_PLAYING = "com.jcrawley.webradio.notifyViewOfPlayInfo";
     public static final String ACTION_NOTIFY_VIEW_OF_ERROR = "com.jcrawley.webradio.notifyViewOfError";
+    public static final String ACTION_NOTIFY_VIEW_OF_CONNECTING = "com.jcrawley.webradio.notifyViewOfPlay";
+    public static final String ACTION_NOTIFY_VIEW_OF_PLAYING = "com.jcrawley.webradio.notifyViewOfPlayInfo";
+
 
     public static final String TAG_STATION_URL = "station_url";
     public static final String TAG_STATION_NAME = "station_name";
@@ -55,6 +59,7 @@ public class MediaPlayerService extends Service {
     private MetadataHandler metadataHandler;
     private final IBinder binder = new LocalBinder();
     private RadioView radioView;
+    Map<BroadcastReceiver, String> broadcastReceiverMap;
 
 
     public class LocalBinder extends Binder {
@@ -96,7 +101,7 @@ public class MediaPlayerService extends Service {
         }
     };
 
-/*
+
     private final BroadcastReceiver serviceReceiverForRequestStatus = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -105,7 +110,6 @@ public class MediaPlayerService extends Service {
         }
     };
 
-*/
 
     private final BroadcastReceiver serviceReceiverForUpdateStationCount = new BroadcastReceiver() {
         @Override
@@ -150,10 +154,16 @@ public class MediaPlayerService extends Service {
     }
 
 
+    boolean isStopped(){
+        return !isPlaying;
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();
         metadataHandler = new MetadataHandler();
+        setupBroadcastReceivers();
         mediaNotificationManager = new MediaNotificationManager(getApplicationContext(), this);
         moveToForeground();
     }
@@ -169,8 +179,40 @@ public class MediaPlayerService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
+        unregisterBroadcastReceivers();
         mediaNotificationManager.dismissNotification();
         this.stopSelf();
+    }
+
+    private void setupBroadcastReceivers(){
+        setupBroadcastReceiversMap();
+        registerBroadcastReceivers();
+    }
+
+
+    private void setupBroadcastReceiversMap(){
+        broadcastReceiverMap = new HashMap<>();
+        broadcastReceiverMap.put(serviceReceiverForStopPlayer,          ACTION_STOP_PLAYER);
+        broadcastReceiverMap.put(serviceReceiverForStartPlayer,         ACTION_START_PLAYER);
+        broadcastReceiverMap.put(serviceReceiverForChangeStation,       ACTION_CHANGE_STATION);
+        broadcastReceiverMap.put(serviceReceiverForPlayCurrent,         ACTION_PLAY_CURRENT);
+        broadcastReceiverMap.put(serviceReceiverForUpdateStationCount,  ACTION_UPDATE_STATION_COUNT);
+        broadcastReceiverMap.put(serviceReceiverForRequestStatus,       ACTION_REQUEST_STATUS);
+    }
+
+
+    private void registerBroadcastReceivers(){
+        for(var bcr : broadcastReceiverMap.keySet()){
+            var intentFilter = new IntentFilter(broadcastReceiverMap.get(bcr));
+            registerReceiver(bcr, intentFilter, RECEIVER_NOT_EXPORTED);
+        }
+    }
+
+
+    private void unregisterBroadcastReceivers(){
+        for(BroadcastReceiver bcr : broadcastReceiverMap.keySet()){
+            unregisterReceiver(bcr);
+        }
     }
 
 
@@ -218,6 +260,11 @@ public class MediaPlayerService extends Service {
 
     String getCurrentUrl(){
         return currentUrl;
+    }
+
+
+    boolean hasValidUrl(){
+        return currentUrl != null && !currentUrl.isBlank();
     }
 
 
